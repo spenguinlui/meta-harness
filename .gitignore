@@ -1,0 +1,14 @@
+# 本機 target repo 清單（路徑、domain 描述等）— 不上 git
+targets.yml
+
+# 顧問動筆前的 audit trail（「打算改什麼／為什麼」）— 不上 git
+prescriptions/*
+!prescriptions/README.md
+
+# 顧問對話歷史（含真實 PII / infra ID / 業主對話）— 不上 git
+sessions/*
+!sessions/README.md
+
+# 任務性 case（特定 target 的蒸餾，他人 fork 不該看到別人任務）— 不上 git
+cases/*
+!cases/README.md
