@@ -12,3 +12,6 @@ sessions/*
 # 任務性 case（特定 target 的蒸餾，他人 fork 不該看到別人任務）— 不上 git
 cases/*
 !cases/README.md
+
+# 自家未消化失敗清單（各 fork 自有自的）— 不上 git
+BACKLOG.md
