@@ -1,7 +1,7 @@
-# Harness 11 大支柱（索引）
+# Harness 12 大支柱（索引）
 
-> 任何 agent harness 都應在這 11 條軸上做出明確設計決策。每條都不是 0/1 開關，而是有十幾種選項，且彼此耦合。
-> Stakes 不同的 target 不一定要全跑——小工具可能只需要支柱 1/3/5，infra 管理類可能要 1-11 全套（業主與顧問共同篩選）。
+> 任何 agent harness 都應在這 12 條軸上做出明確設計決策。每條都不是 0/1 開關，而是有十幾種選項，且彼此耦合。
+> Stakes 不同的 target 不一定要全跑——小工具可能只需要支柱 1/3/5，infra 管理類可能要 1-12 全套（業主與顧問共同篩選）。
 
 每條詳細設計決策、與其他支柱耦合、反模式、案例評析在 `pillars/` 子目錄：
 
@@ -13,9 +13,10 @@
 - [6. 權限 / 安全](pillars/6-safety.md)
 - [7. Hooks（reactive）](pillars/7-hooks.md) — **被動**攔截，外部事件發生時觸發
 - [8. Evaluation loop](pillars/8-evaluation-loop.md)
-- [9. 觀測](pillars/9-observability.md)
+- [9. 觀測](pillars/9-observability.md) — **system-facing IO 邊界**
 - [10. Multi-agent / Sub-agent Orchestration](pillars/10-multi-agent-orchestration.md) — **2026-05-09 新增**
-- [11. Triggers / Schedule（active）](pillars/11-triggers-schedule.md) — **主動**自我喚醒（cron / loop / scheduled wake-up）；**2026-05-09 新增**
+- [11. Triggers / Schedule（active）](pillars/11-triggers-schedule.md) — **主動**自我喚醒；**2026-05-09 新增**
+- [12. Viewer Interface](pillars/12-viewer-interface.md) — **viewer-facing IO 邊界**（給每天用工具的人看，不是 builder）；**2026-05-11 新增**
 
 ## 7 vs 11 邊界
 
@@ -27,6 +28,12 @@
 
 - **支柱 5 Execution loop** = 單一 agent 內部的迴圈
 - **支柱 10 Multi-agent** = 多個 agent 之間的 hand-off / context 邊界 / 結果整合
+
+## 9 vs 12 邊界（兩個 IO 邊界對稱）
+
+- **支柱 9 觀測** = 給**工程師 / 系統**看的 IO（trace / log / metric / cost）
+- **支柱 12 Viewer Interface** = 給**每天用工具的人**看的 IO（翻譯層 / 業主能力模型 / 回饋通道）
+- 沒分清 = 同一輸出對兩種對象說同樣的話，要嘛 builder 嫌囉嗦、要嘛 viewer 看不懂
 
 以下為摘要：
 

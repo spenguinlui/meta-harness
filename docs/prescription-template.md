@@ -22,12 +22,13 @@ prescription_version: <v1, v1.5, v2 ...>
 
 ---
 
-## Part A：需求摘要（Step 1 4 件事訪談結論）
+## Part A：需求摘要（Step 1 5 件事訪談結論）
 
 從對應 Phase 0 session 抽到的關鍵結論。所有後續 prescription 都 trace 回這裡：
 
 - **Mission statement**：一兩句話
-- **Persona**：誰會用、互動模式
+- **Persona**：誰會用、互動模式（**必含 builder vs viewer 區分**——builder = 設計這 target 的工程師；viewer = 每天跑指令看結果的人；可能同人可能不同人）
+- **Viewer 領域熟悉度**：viewer 在這 target 的領域是 peer 還是非專家？哪些子領域 peer / 哪些非 peer？決定支柱 12 翻譯層深度
 - **Key Success criteria**：尤其 SC2 failure floor（決定哪條支柱是 existential）
 - **Domain shape**：例如 `many_independent_projects` / `sequential_workflow` / `transform_pipeline`
 - **Anti-scope**：明確列出「不做」清單
@@ -56,9 +57,9 @@ prescription_version: <v1, v1.5, v2 ...>
 
 ---
 
-## Part C：11 支柱對應 + domain 新抽象（mechanism wiring）
+## Part C：12 支柱對應 + domain 新抽象（mechanism wiring）
 
-對 [9 支柱](pillars/) 每條，產出特化 prescription。**每條必含五個欄位**——少了 Mechanism 就走進「**有圖書館但沒人翻、有筆記本但沒人寫**」的反模式：只寫格式（static config）卻沒寫「何時讀／何時寫／lifecycle／validation」，AI 就自由發揮、可能完全不主動寫、或被 Claude Code 內建 memory 取代。
+對 [12 支柱](pillars/) 每條，產出特化 prescription。**每條必含五個欄位**——少了 Mechanism 就走進「**有圖書館但沒人翻、有筆記本但沒人寫**」的反模式：只寫格式（static config）卻沒寫「何時讀／何時寫／lifecycle／validation」，AI 就自由發揮、可能完全不主動寫、或被 Claude Code 內建 memory 取代。
 
 ```
 ### Pillar N: <name>
