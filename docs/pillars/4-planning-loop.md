@@ -63,11 +63,22 @@ stakes 越高 ack 越嚴。
 
 每個觸發點都要設計：是 fail-fast 還是繼續嘗試？
 
-### 5. Plan-as-memory
-完成的 plan 應該變 reusable artifact：
+### 5. Plan-as-memory + Outcome-as-skill（雙向飛輪）
+
+**Plan 端**（已知概念）：完成的 plan 應該變 reusable artifact：
 - 存成 template
 - 下次類似任務先召回
-- 跟 memory 系統打通
+- 跟 memory 系統打通（支柱 3 episodic memory）
+
+**Outcome 端**（從 ai-infra-management v1 學到的延伸）：plan 跑完落地後，**outcome 本身也該被沉澱**——若同類動作會反覆出現（業主 advise 結果手寫 ad-hoc bash ≥ 2 次），下次該抽象成 skill / sub-command，不當一次性。
+
+例：業主跑 `/advise sf-project compute` 後手做了一輪 EC2 monitoring baseline → 後續發現同類動作會反覆 → 抽象成 `skills/monitoring/create.sh`。
+
+設計準則：
+- **trigger 條件**：同一手動 outcome 反覆 ≥ 2 次、或業主明確「下次也想這樣做」
+- **抽象顆粒**：skill / sub-command / hook，依未來是否要 chained 決定
+- **與 plan-as-memory 對稱**：plan 是「下次怎麼想」，skill 是「下次怎麼做」；兩者都該回灌 memory 系統，不是消耗品
+- **builder 負責**：viewer 通常不會也不該抽象——這是 builder 端飛輪（對位支柱 12 builder vs viewer 分工）
 
 ### 6. 階層深度
 hierarchical planning 要決定深幾層：

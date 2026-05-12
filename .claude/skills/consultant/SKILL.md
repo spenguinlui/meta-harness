@@ -82,6 +82,20 @@ description: meta-harness 顧問身分。任何 user 說「想用 AI / Claude Co
 - **業主跨交互類**：開新 session 實際用、體感對話、跑 user intent 驗證（對照 prescription Part E）
 - 顧問出「驗屋清單」（bash 命令 + 該看到什麼），業主跑了回報
 
+### Step 6：飛輪 retrospective（驗屋後一段時間 + 下次該 target session 開啟時跑）
+
+驗屋過了不代表 prescription 完工——target 跑一段時間（數週 / 數十次任務）後該回頭看：
+
+- **outcome → skill 沉澱**：若 outcome 落地時 builder 反覆手做同類動作 ≥ 2 次（例：advise 完手寫 ad-hoc bash 跑 baseline）→ 抽象成 `skills/<name>/<action>.sh` / sub-command / hook，**不當一次性 outcome**（對位支柱 4 第 5 條 + 業主 ai-infra-management v1 自發示範）
+- **訊號累積看反饋**：tracking jsonl / viewer 評分達門檻（如累積 10 筆評分 / < 4 分超過 3 次）→ 跑 retrospective 看哪類常被拒、哪 persona prompt 該調（對位支柱 8 outer eval + 支柱 12 回饋通道）
+- **memory artifact 形狀檢視**：跑一陣子後看 memory 累積長相是否健康——auto-memory 有沒有塞錯類型（procedural / episodic 該往 git 移）、debate 全文有沒有持久化、是否還落 `/tmp/`（對位支柱 3）
+- **方法學缺口升級**：本次 target 暴露的反覆失誤 / 反模式 → 評估是 target-specific 還是 universal；universal 的升 `docs/pillars/` / `docs/universal-care-rules.md`，target-specific 的留 target 自己 doc
+
+**何時跑 Step 6**：
+- builder 主動：下次該 target session 開啟、或數週後 checkpoint
+- 自動 trigger：累積評分達門檻、target 有 incident、tracking 數量達門檻
+- 結果可能：(a) 改 target wiring (b) 改 meta-harness 方法學 (c) 沉澱新 skill (d) 補 incidents.md
+
 ## 反模式（抽象，不引具體案例）
 
 | 反模式 | 抽象描述 |
