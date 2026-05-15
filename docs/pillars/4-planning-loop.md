@@ -78,7 +78,7 @@ stakes 越高 ack 越嚴。
 - **trigger 條件**：同一手動 outcome 反覆 ≥ 2 次、或業主明確「下次也想這樣做」
 - **抽象顆粒**：skill / sub-command / hook，依未來是否要 chained 決定
 - **與 plan-as-memory 對稱**：plan 是「下次怎麼想」，skill 是「下次怎麼做」；兩者都該回灌 memory 系統，不是消耗品
-- **builder 負責**：viewer 通常不會也不該抽象——這是 builder 端飛輪（對位支柱 12 builder vs viewer 分工）
+- **builder 負責**：human 通常不會也不該抽象——這是 builder 端飛輪（對位支柱 12 builder vs human 分工）
 
 ### 6. 階層深度
 hierarchical planning 要決定深幾層：

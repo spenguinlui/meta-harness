@@ -40,7 +40,7 @@ description: meta-harness 顧問身分。任何 user 說「想用 AI / Claude Co
 | **形狀**：現有的核心概念 / 模組 / 抽象對位嗎？哪些是 intentional 設計、哪些是被現實逼出來的？ | 顧問不能默認既有抽象正確 | 「就照現在的架構」→ 重問「**哪個概念你最不確定該不該存在**」 |
 | **邊界（anti-scope）**：這 repo **不該**做什麼？（必逼，最易被忽略） | 不問 anti-scope = scope 自然擴張 = 設計圖過度膨脹 | 「都可以做」→ 警告寬 scope 反模式，逼挑 3 條 |
 | **失敗 floor + 預期壽命**：什麼狀況下你會放棄這個 repo？這東西預期跑多久？（一次性 / 數週 / 數月 / 數年 / 永久）| floor 決定哪條支柱 existential（必補強）；壽命決定淘汰機制強度 | 沒問壽命 = 默認永久 = 多數情況都會少設計淘汰機制 |
-| **Viewer 領域熟悉度**：每天用這 target 的人（viewer，**未必是你 builder**）在這個領域是 peer 還是非專家？哪些子領域熟、哪些不熟？ | 決定支柱 12（Viewer Interface）翻譯層該不該蓋、要多深；漏問 = 預設 viewer 是 peer = peer 術語直丟 viewer = jargon 牆 | 「都是我自己用」→ 仍要釐清你在哪些子領域是 peer / 哪些不是（infra peer 但會計非 peer / ML peer 但 ops 非 peer） |
+| **Human 領域熟悉度**：每天用這 target 的人（human，**未必是你 builder**）在這個領域是 peer 還是非專家？哪些子領域熟、哪些不熟？ | 決定支柱 12（Human Interface）翻譯層該不該蓋、要多深；漏問 = 預設 human 是 peer = peer 術語直丟 human = jargon 牆 | 「都是我自己用」→ 仍要釐清你在哪些子領域是 peer / 哪些不是（infra peer 但會計非 peer / ML peer 但 ops 非 peer） |
 
 產出 = `sessions/<date>-<topic>.md` 紀要含 5 段答案 + **12 支柱按 stakes 篩選表**（哪些 relevant / 哪些 N/A 一句帶過）。
 
@@ -87,7 +87,7 @@ description: meta-harness 顧問身分。任何 user 說「想用 AI / Claude Co
 驗屋過了不代表 prescription 完工——target 跑一段時間（數週 / 數十次任務）後該回頭看：
 
 - **outcome → skill 沉澱**：若 outcome 落地時 builder 反覆手做同類動作 ≥ 2 次（例：advise 完手寫 ad-hoc bash 跑 baseline）→ 抽象成 `skills/<name>/<action>.sh` / sub-command / hook，**不當一次性 outcome**（對位支柱 4 第 5 條 + 業主 ai-infra-management v1 自發示範）
-- **訊號累積看反饋**：tracking jsonl / viewer 評分達門檻（如累積 10 筆評分 / < 4 分超過 3 次）→ 跑 retrospective 看哪類常被拒、哪 persona prompt 該調（對位支柱 8 outer eval + 支柱 12 回饋通道）
+- **訊號累積看反饋**：tracking jsonl / human 評分達門檻（如累積 10 筆評分 / < 4 分超過 3 次）→ 跑 retrospective 看哪類常被拒、哪 persona prompt 該調（對位支柱 8 outer eval + 支柱 12 回饋通道）
 - **memory artifact 形狀檢視**：跑一陣子後看 memory 累積長相是否健康——auto-memory 有沒有塞錯類型（procedural / episodic 該往 git 移）、debate 全文有沒有持久化、是否還落 `/tmp/`（對位支柱 3）
 - **方法學缺口升級**：本次 target 暴露的反覆失誤 / 反模式 → 評估是 target-specific 還是 universal；universal 的升 `docs/pillars/` / `docs/universal-care-rules.md`，target-specific 的留 target 自己 doc
 

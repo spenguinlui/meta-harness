@@ -27,8 +27,8 @@ prescription_version: <v1, v1.5, v2 ...>
 從對應 Phase 0 session 抽到的關鍵結論。所有後續 prescription 都 trace 回這裡：
 
 - **Mission statement**：一兩句話
-- **Persona**：誰會用、互動模式（**必含 builder vs viewer 區分**——builder = 設計這 target 的工程師；viewer = 每天跑指令看結果的人；可能同人可能不同人）
-- **Viewer 領域熟悉度**：viewer 在這 target 的領域是 peer 還是非專家？哪些子領域 peer / 哪些非 peer？決定支柱 12 翻譯層深度
+- **Persona**：誰會用、互動模式（**必含 builder vs human 區分**——builder = 設計這 target 的工程師；human = 每天跑指令看結果的人；可能同人可能不同人）
+- **Human 領域熟悉度**：human 在這 target 的領域是 peer 還是非專家？哪些子領域 peer / 哪些非 peer？決定支柱 12 翻譯層深度
 - **Key Success criteria**：尤其 SC2 failure floor（決定哪條支柱是 existential）
 - **Domain shape**：例如 `many_independent_projects` / `sequential_workflow` / `transform_pipeline`
 - **Anti-scope**：明確列出「不做」清單
@@ -101,12 +101,12 @@ domain 自己的新抽象（target 業主的核心概念，如 Watcher / Recomme
 某些支柱不問會踩典型反模式，本 template 強制要求 prescription 答：
 
 - **支柱 8 Evaluation loop 必答**：「**做完任務的結果，能不能回連到當初的計畫 / 決策？怎麼連？**」
-  - 沒連 = outer eval 飛輪斷一截，系統只能憑 viewer 主觀回報、無法客觀學習
+  - 沒連 = outer eval 飛輪斷一截，系統只能憑 human 主觀回報、無法客觀學習
   - 常見實作：commit message reference / cloud-state tag / transaction log / audit trail 編號 / 多重綁定
   - 答 N/A 必附理由（如「純 read-only target、沒 mutating outcome」）
 
-- **支柱 12 Viewer Interface 必答**：「**viewer 是不是這 target 領域 peer？非 peer 時翻譯層怎麼蓋？回饋通道怎麼設計？builder 還在嗎？**」
-  - viewer 非 peer 沒蓋翻譯層 = jargon 牆 = 等於沒輸出
+- **支柱 12 Human Interface 必答**：「**human 是不是這 target 領域 peer？非 peer 時翻譯層怎麼蓋？回饋通道怎麼設計？builder 還在嗎？**」
+  - human 非 peer 沒蓋翻譯層 = jargon 牆 = 等於沒輸出
   - 沒回饋通道 = 訊號流失 = 系統無法迭代
   - builder 不存在 = 結構問題，mechanism 救不了
 

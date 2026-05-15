@@ -16,7 +16,7 @@
 - [9. 觀測](pillars/9-observability.md) — **system-facing IO 邊界**
 - [10. Multi-agent / Sub-agent Orchestration](pillars/10-multi-agent-orchestration.md) — **2026-05-09 新增**
 - [11. Triggers / Schedule（active）](pillars/11-triggers-schedule.md) — **主動**自我喚醒；**2026-05-09 新增**
-- [12. Viewer Interface](pillars/12-viewer-interface.md) — **viewer-facing IO 邊界**（給每天用工具的人看，不是 builder）；**2026-05-11 新增**
+- [12. Human Interface](pillars/12-human-interface.md) — **human-facing IO 邊界**（給每天用工具的人看，不是 builder）；**2026-05-11 新增**
 
 ## 7 vs 11 邊界
 
@@ -32,8 +32,8 @@
 ## 9 vs 12 邊界（兩個 IO 邊界對稱）
 
 - **支柱 9 觀測** = 給**工程師 / 系統**看的 IO（trace / log / metric / cost）
-- **支柱 12 Viewer Interface** = 給**每天用工具的人**看的 IO（翻譯層 / 業主能力模型 / 回饋通道）
-- 沒分清 = 同一輸出對兩種對象說同樣的話，要嘛 builder 嫌囉嗦、要嘛 viewer 看不懂
+- **支柱 12 Human Interface** = 給**每天用工具的人**看的 IO（翻譯層 / 業主能力模型 / 回饋通道）
+- 沒分清 = 同一輸出對兩種對象說同樣的話，要嘛 builder 嫌囉嗦、要嘛 human 看不懂
 
 以下為摘要：
 
