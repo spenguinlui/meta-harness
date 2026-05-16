@@ -9,7 +9,7 @@
 ## 一個 case 通常含
 
 - `<target>-prescription.md` — 設計圖 snapshot（按 `docs/prescription-template.md` 格式）
-- `<target>-axis-cases.md` — 11 設計軸對應評析
+- `<target>-design axis-cases.md` — 11 設計軸對應評析
 - `<target>-domain-rules.md` — 從 universal 砍出的 domain 規則範例
 
 ## 顧問不主動 Read

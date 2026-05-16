@@ -84,4 +84,4 @@
 - **Sub-agent 沒被分配 read-only / mutating 邊界**：高權限子 agent 不該被父 agent 用來做低風險探索
 - **共用 memory / state 卻無鎖**：N 個 sub-agent 並行寫同一 state → race condition
 
-具體案例見 `cases/<target>-axis-cases.md`。
+具體案例見 `cases/<target>-design axis-cases.md`。

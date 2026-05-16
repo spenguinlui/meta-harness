@@ -48,7 +48,7 @@ cd ~/meta-harness && claude
 ## 核心
 
 - **6 步業主-建築師流程** — `.claude/skills/consultant/SKILL.md`
-- **12 大設計軸（pattern library）** — `docs/axes.md`
+- **12 大設計軸（pattern library）** — `docs/design-axes.md`
   Tool / Context / Memory / Planning / Execution / Safety / Hooks / Eval / Observability / Multi-agent / Triggers / **Human Interface**
 - **7 universal rules（衛生規則）** — `docs/universal-care-rules.md`
 - **設計圖格式** — `docs/prescription-template.md`
@@ -58,8 +58,8 @@ cd ~/meta-harness && claude
 ```
 .claude/                顧問 wiring（hook + skill）
 docs/
-  axes.md            12 設計軸索引
-  axes/              每設計軸深度
+  design-axes.md            12 設計軸索引
+  design-axes/              每設計軸深度
   universal-care-rules.md   R-1~R-7
   prescription-template.md  設計圖格式
 cases/                  案例庫（gitignored — 各 fork 自家任務不交叉）

@@ -3,20 +3,20 @@
 > 任何 agent harness 都應在這 12 條軸上做出明確設計決策。每條都不是 0/1 開關，而是有十幾種選項，且彼此耦合。
 > Stakes 不同的 target 不一定要全跑——小工具可能只需要設計軸 1/3/5，infra 管理類可能要 1-12 全套（業主與顧問共同篩選）。
 
-每條詳細設計決策、與其他設計軸耦合、反模式、案例評析在 `axes/` 子目錄：
+每條詳細設計決策、與其他設計軸耦合、反模式、案例評析在 `design-axes/` 子目錄：
 
-- [1. Tool 執行](axes/1-tool-execution.md)
-- [2. Context 管理](axes/2-context-management.md)
-- [3. Memory 管理](axes/3-memory.md)
-- [4. Planning loop](axes/4-planning-loop.md)
-- [5. Execution loop](axes/5-execution-loop.md) — 單一 agent 的「模型↔工具」迴圈
-- [6. 權限 / 安全](axes/6-safety.md)
-- [7. Hooks（reactive）](axes/7-hooks.md) — **被動**攔截，外部事件發生時觸發
-- [8. Evaluation loop](axes/8-evaluation-loop.md)
-- [9. 觀測](axes/9-observability.md) — **system-facing IO 邊界**
-- [10. Multi-agent / Sub-agent Orchestration](axes/10-multi-agent-orchestration.md) — **2026-05-09 新增**
-- [11. Triggers / Schedule（active）](axes/11-triggers-schedule.md) — **主動**自我喚醒；**2026-05-09 新增**
-- [12. Human Interface](axes/12-human-interface.md) — **human-facing IO 邊界**（給每天用工具的人看，不是 builder）；**2026-05-11 新增**
+- [1. Tool 執行](design-axes/1-tool-execution.md)
+- [2. Context 管理](design-axes/2-context-management.md)
+- [3. Memory 管理](design-axes/3-memory.md)
+- [4. Planning loop](design-axes/4-planning-loop.md)
+- [5. Execution loop](design-axes/5-execution-loop.md) — 單一 agent 的「模型↔工具」迴圈
+- [6. 權限 / 安全](design-axes/6-safety.md)
+- [7. Hooks（reactive）](design-axes/7-hooks.md) — **被動**攔截，外部事件發生時觸發
+- [8. Evaluation loop](design-axes/8-evaluation-loop.md)
+- [9. 觀測](design-axes/9-observability.md) — **system-facing IO 邊界**
+- [10. Multi-agent / Sub-agent Orchestration](design-axes/10-multi-agent-orchestration.md) — **2026-05-09 新增**
+- [11. Triggers / Schedule（active）](design-axes/11-triggers-schedule.md) — **主動**自我喚醒；**2026-05-09 新增**
+- [12. Human Interface](design-axes/12-human-interface.md) — **human-facing IO 邊界**（給每天用工具的人看，不是 builder）；**2026-05-11 新增**
 
 ## 7 vs 11 邊界
 

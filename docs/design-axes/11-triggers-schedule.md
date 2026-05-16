@@ -74,4 +74,4 @@
 - **Schedule 不可見**：user 不知道排了什麼、下次什麼時候會冒出 alert
 - **Trigger 帶不夠 context**：醒來不知道為什麼醒、要查上一次結果才能繼續
 
-具體案例見 `cases/<target>-axis-cases.md`。
+具體案例見 `cases/<target>-design axis-cases.md`。
