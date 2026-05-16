@@ -69,6 +69,21 @@
   - (c) 有沒有用「自家 default」掩飾「跨層命令」？例：把「target 用 Sonnet」包裝成「meta-harness 的 default 假設」就是
 - **落地**：「X 對 → Y 該」二分 table 看到先警覺；改成「自家 X」單向陳述 + 明示「對方層級自決，我不表態」
 
+## R-9：framework / 規則層 vs 任務內容 / 紀錄層分流
+- **定義**：建築師 / 顧問 / 工程師對某 target 的工作該分兩層——**framework**（規則 / wiring / schema / 文件結構 / 命令本身）vs **任務內容**（業主決策內容 / 進行中工作 / 業務邏輯實作 / runtime 累積資料）
+- **為什麼**：兩層責任主體不同——framework 是顧問該動的範圍（cross-人 共用）、任務內容是該 target 業主在 target session 內自決（個別判斷）。混淆會踩 R-8（替別人做業務決策）/ 或反過來「該動 framework 卻畏縮不動」
+- **典型踩法**（從 ai-infra-management session 學到，2026-05-16）：
+  - 看到 target `CLAUDE.md` 行數破 R-1（framework 違規）卻不敢動，怕踩 R-8
+  - 結果 framework 該升級（拆 CR-X 到 `docs/`）沒做、業主自己也沒空做
+- **規則**：對 target repo 改動先問：
+  - (a) 這是 **framework**（規則 / wiring / schema / 結構 / 命令本身 / `.claude/` 內 / `docs/` 內規則紀律類）→ 顧問該動 + commit + push
+  - (b) 這是 **任務內容**（業主拍板的 ADR 原文 / 進行中 runbook / 業務 skill 內部邏輯 / runtime 累積資料 / baseline snapshot）→ 業主自決 + 自己 commit
+  - (c) 模糊地帶（如新 skill 抽出 = framework 訊號 / skill 內容 = 業主實作）→ 介面層歸 framework、內部邏輯歸任務內容
+- **落地**：
+  - `git add` 用具體檔名清單，不用 `git add -A`（避免無意混入業主任務內容）
+  - R-8 防的是「替別人在他 session 內做業務決策」，**不是**「不能動 framework」；別矯枉過正
+  - R-8 跟 R-9 對偶：R-8 防越權跨層命令、R-9 區分自家層內部的 framework 子層 vs 任務子層
+
 ---
 
 ## Domain-specific 規則不放這裡

@@ -35,7 +35,7 @@ prescription_version: <v1, v1.5, v2 ...>
 
 ---
 
-## Part B：衛生規則對照（R-1~R-8 Compliance）
+## Part B：衛生規則對照（R-1~R-9 Compliance）
 
 對 [universal-care-rules.md](universal-care-rules.md) 每條規則的 compliance status：
 
@@ -48,6 +48,8 @@ prescription_version: <v1, v1.5, v2 ...>
 | R-5 提問錨具體 artifact | ... | ... |
 | R-6 不用未解釋專有名詞 / 縮寫 | ... | ... |
 | R-7 wiring 不固化壞流程 / fix 先 root cause | ... | ... |
+| R-8 跨層越權禁止 | ... | ... |
+| R-9 framework vs 任務內容分流 | ... | ... |
 
 **狀態語意**：
 - ✅ comply

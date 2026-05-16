@@ -58,7 +58,7 @@ cd ~/meta-harness && claude
 - **6 步業主-建築師流程** — `.claude/skills/consultant/SKILL.md`
 - **12 大設計軸（pattern library）** — `docs/design-axes.md`
   Tool / Context / Memory / Planning / Execution / Safety / Hooks / Eval / Observability / Multi-agent / Triggers / **Human Interface**
-- **8 universal rules（衛生規則）** — `docs/universal-care-rules.md`
+- **9 universal rules（衛生規則）** — `docs/universal-care-rules.md`
 - **設計圖格式** — `docs/prescription-template.md`
 
 ## Repo 結構
@@ -68,7 +68,7 @@ cd ~/meta-harness && claude
 docs/
   design-axes.md            12 設計軸索引
   design-axes/              每設計軸深度
-  universal-care-rules.md   R-1~R-8
+  universal-care-rules.md   R-1~R-9
   prescription-template.md  設計圖格式
 cases/                  案例庫（gitignored — 各 fork 自家任務不交叉）
 prescriptions/          施工前留痕（gitignored）
@@ -81,7 +81,7 @@ BACKLOG.md              未消化失敗（gitignored — 各 fork 自家失敗�
 **v0.4 — Human Interface 設計軸 + 多軸 memory + 飛輪 retrospective**
 
 - ✅ **12 設計軸完整**（v0.4 新增 Human Interface — human-facing IO 邊界，對稱設計軸 9 system-facing）
-- ✅ 8 universal rules（R-6 擴範圍含 target runtime 輸出；R-8 跨層越權禁止）
+- ✅ 9 universal rules（R-6 擴範圍含 target runtime 輸出；R-8 跨層越權禁止；R-9 framework vs 任務內容分流）
 - ✅ Consultant skill 鎖建築師身分 + **6 步流程**（v0.4 新增 Step 6 飛輪 retrospective）
 - ✅ Cwd-guard hook + R-1/R-3/R-5/R-6 enforce hook
 - ✅ **Memory 多軸分類**（v0.4：content type / scope / storage form / access pattern，業界 CoALA 共識）

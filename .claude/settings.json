@@ -1,4 +1,5 @@
 {
+  "autoMemoryEnabled": false,
   "hooks": {
     "SessionStart": [
       { "hooks": [{ "type": "command", "command": ".claude/hooks/cwd-guard.sh" }] }
