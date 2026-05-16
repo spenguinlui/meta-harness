@@ -246,3 +246,34 @@ Memory 說 X 存在，用前要 grep 一下。Memory 是「過去某時為真」
 - 全塞 user memory 的代價：換人接手知識斷層、跨專案污染、git 看不到、團隊看不到、無法 audit
 - 寫入前自問：「這條離開我這個人還對嗎？離開這 session 還對嗎？」決定 scope
 
+### 10. Auto-memory 變終點而非孵化層（**Claude Code 預設行為的結構性傾向**）
+- Claude Code 預設 prompt 鼓勵 AI 看到「值得記住的偏好」就寫 user-scope auto-memory——但沒分流判準告訴 AI「這該存 user memory 還是該升 git docs/」
+- 後果：規則卡在 user memory 永遠不升級，team 接手看不到、跨 fork 不共用
+- 對位機制本身的問題：「per-project user memory」hybrid scope（`~/.claude-work/projects/<path>/memory/`）讓「個人偏好」跟「專案知識」混存，AI 無 scope 判準 → 預設都往這塞
+
+---
+
+## Auto-memory 健康使用 pattern：孵化層 vs 成熟層
+
+user-scope auto-memory 該當「**規則尚未成熟到升 universal rule 的孵化中介層**」，不該當「永久存放規則的終點」：
+
+```
+踩到某類失敗 → 寫 auto-memory 條目（孵化期）
+            ↓ 累積跑過幾次驗證確實普世
+            ↓
+升 docs/universal-care-rules.md R-N（成熟期 / 跨 fork 共用）
+            ↓ auto-memory 該條目可砍或保留當「個人風格版」
+```
+
+**範例**（從 meta-harness session 學到）：
+- `feedback_no_cross_layer_overreach`：踩過 → 寫 auto-memory → 確認跨類重複適用 → 升 R-8 ✅
+- 升完 universal rule 後 auto-memory 條目仍保留也 OK（個人風格不衝突）
+
+**判準（什麼時候該升 git）**：
+- (a) 這條規則離開「我這個人」還對嗎？跨 user 還對 → 升 user-level `~/.claude/CLAUDE.md` 或 universal rule
+- (b) 這條規則離開「這個專案」還對嗎？跨 project 還對 → 升 universal rule
+- (c) 累積踩過幾次都吻合此規則 → 升 git
+- (d) team 接手新人也該看到 → 升 git
+
+**反向 pattern（避免）**：寫一次 auto-memory 就放著、永遠不 review 升級。這違反設計軸 3 反模式 #10「auto-memory 變終點」。
+

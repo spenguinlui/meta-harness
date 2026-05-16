@@ -105,6 +105,11 @@ domain 自己的新抽象（target 業主的核心概念，如 Watcher / Recomme
   - 常見實作：commit message reference / cloud-state tag / transaction log / audit trail 編號 / 多重綁定
   - 答 N/A 必附理由（如「純 read-only target、沒 mutating outcome」）
 
+- **設計軸 3 Memory 必答**：「**user-scope auto-memory 寫入紀律是什麼？什麼時候該升 git（universal rule / project CLAUDE.md / docs/）？**」
+  - 沒紀律 = Claude Code 預設「都往那塞」→ user memory 變垃圾場、規則永遠不升 git、team 接手斷層
+  - 對位設計軸 3 反模式 #10「Auto-memory 變終點」+ #9「過度依賴 user-scope auto-memory」
+  - 答 N/A 必附理由（如「solo project 沒接手考量」）
+
 - **設計軸 12 Human Interface 必答**：「**human 是不是這 target 領域 peer？非 peer 時翻譯層怎麼蓋？回饋通道怎麼設計？builder 還在嗎？**」
   - human 非 peer 沒蓋翻譯層 = jargon 牆 = 等於沒輸出
   - 沒回饋通道 = 訊號流失 = 系統無法迭代

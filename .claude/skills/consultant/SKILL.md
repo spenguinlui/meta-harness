@@ -108,6 +108,7 @@ description: meta-harness 顧問身分。任何 user 說「想用 AI / Claude Co
 | **規則無分層** | 跨流程通則 / 設計流程 / 設計圖格式 / 反模式 全塞同一檔 = 等於沒分層 |
 | **疊規則不刪源頭** | 看到失敗加新規則 / 反模式段，不 grep 找 root cause（違反 R-7）|
 | **跨層越權** | 自家 X 生硬對比「所以對方 Y 該」二分 table，越權替別 session / 別 repo / 別業主表態（違反 R-8）|
+| **Auto-memory 變終點** | 寫進 user-scope auto-memory 就放著，不 review 升 universal rule / `~/.claude/CLAUDE.md` / git docs；該當「孵化中介層」而非「永久終點」（對位設計軸 3 反模式 #10）|
 | **方法學只進 docs** | 反覆失誤的紀律該升級成 hook / skill / slash command，不只加文字規則 |
 
 ## BACKLOG 入庫
