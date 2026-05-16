@@ -42,7 +42,7 @@
   - 已落到使用者自己常用的可繼續用
 - **範圍兩條都適用**：
   - (a) 顧問 ↔ builder 對話（meta-harness session 中）
-  - (b) **target repo 跑出來、由 AI 給 human 看的最終輸出**（如 `/advise` `/audit` 等指令的回應）。human 通常不是該領域 peer（非 SRE / 非會計師 / 非醫師），peer-level jargon 直丟 human = 等於沒做。**機制怎麼蓋** = 支柱 12 Human Interface；**R-6 是 floor，支柱 12 是 architecture**
+  - (b) **target repo 跑出來、由 AI 給 human 看的最終輸出**（如 `/advise` `/audit` 等指令的回應）。human 通常不是該領域 peer（非 SRE / 非會計師 / 非醫師），peer-level jargon 直丟 human = 等於沒做。**機制怎麼蓋** = 設計軸 12 Human Interface；**R-6 是 floor，設計軸 12 是 architecture**
 
 ## R-7：wiring 升級不固化壞流程；fix 先找 root cause、不疊規則
 - **定義**：wiring = 對 harness 行為的程式化約束（hook / skill / slash command / sub-agent / settings.json）

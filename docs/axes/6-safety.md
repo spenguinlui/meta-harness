@@ -1,4 +1,4 @@
-# 支柱 6：權限/安全
+# 設計軸 6：權限/安全
 
 哪些動作可自動跑、哪些要問人、怎麼防 prompt injection。
 
@@ -69,9 +69,9 @@ stakes 高 = dry-run 預設開、強制 first。
 
 Claude Code 的 permission system 與 settings.json 是這層。
 
-## 跟其他支柱的耦合
+## 跟其他設計軸的耦合
 
-| 支柱 | 耦合點 |
+| 設計軸 | 耦合點 |
 |---|---|
 | Tool | destructive 標記是 safety 的依據 |
 | Planning | dry-run 是 plan 的執行前環節 |

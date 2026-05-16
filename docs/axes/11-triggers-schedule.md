@@ -1,19 +1,19 @@
-# 支柱 11：Triggers / Schedule
+# 設計軸 11：Triggers / Schedule
 
-主動觸發 agent 工作的機制 — 跟支柱 7 Hooks（被動 reactive）相對。
+主動觸發 agent 工作的機制 — 跟設計軸 7 Hooks（被動 reactive）相對。
 
-- **支柱 7 Hooks**：reactive，外部事件（user 動作 / tool 呼叫）發生時觸發
-- **支柱 11 Triggers**：active，agent 自我 schedule（時間到 / cron / loop / 條件達成）觸發
+- **設計軸 7 Hooks**：reactive，外部事件（user 動作 / tool 呼叫）發生時觸發
+- **設計軸 11 Triggers**：active，agent 自我 schedule（時間到 / cron / loop / 條件達成）觸發
 
 業界 2026 主流架構（如 Zylon 五層）explicitly 把 triggers 列獨立層，跟 hooks 拆開。
 
 ---
 
-## 為什麼獨立成支柱（不併入 Hooks）
+## 為什麼獨立成設計軸（不併入 Hooks）
 
 - Hooks 精神是「**有事我攔下**」（PreToolUse / PostToolUse / UserPromptSubmit）— 沒事不出現
 - Triggers 精神是「**沒事我自己跑**」（cron / loop / scheduled wake-up）— agent 主動行動
-- 兩者觸發語意完全不同；混在一條支柱會讓設計者搞不清「reactive vs active」邊界
+- 兩者觸發語意完全不同；混在一條設計軸會讓設計者搞不清「reactive vs active」邊界
 
 ## 設計決策
 
@@ -46,16 +46,16 @@
 - Schedule 改動有無 audit log
 
 ### 6. 觸發 → 派工
-- Trigger fire 後，agent 自己跑？還是 fan-out 給 sub-agent？（耦合支柱 10）
+- Trigger fire 後，agent 自己跑？還是 fan-out 給 sub-agent？（耦合設計軸 10）
 - Trigger 帶什麼 context（純時間 / 帶 last result / 帶外部事件 payload）
 
-## 與其他支柱耦合
+## 與其他設計軸耦合
 
-- **支柱 10 Multi-agent**：trigger fire → 常見組合是 spawn sub-agent 跑批
-- **支柱 5 Execution loop**：trigger 是 execution loop 的「啟動 source」之一
-- **支柱 7 Hooks**：trigger fire 後仍受 hooks 攔截（如 PreToolUse 還是會跑）
-- **支柱 8 Eval**：scheduled eval（每週跑 outer eval benchmark）是典型用例
-- **支柱 9 觀測**：trigger 自身要被 trace（不然「為什麼這時候跑」debug 不出來）
+- **設計軸 10 Multi-agent**：trigger fire → 常見組合是 spawn sub-agent 跑批
+- **設計軸 5 Execution loop**：trigger 是 execution loop 的「啟動 source」之一
+- **設計軸 7 Hooks**：trigger fire 後仍受 hooks 攔截（如 PreToolUse 還是會跑）
+- **設計軸 8 Eval**：scheduled eval（每週跑 outer eval benchmark）是典型用例
+- **設計軸 9 觀測**：trigger 自身要被 trace（不然「為什麼這時候跑」debug 不出來）
 
 ## Claude Code 對應機制
 
@@ -74,4 +74,4 @@
 - **Schedule 不可見**：user 不知道排了什麼、下次什麼時候會冒出 alert
 - **Trigger 帶不夠 context**：醒來不知道為什麼醒、要查上一次結果才能繼續
 
-具體案例見 `cases/<target>-pillar-cases.md`。
+具體案例見 `cases/<target>-axis-cases.md`。

@@ -1,4 +1,4 @@
-# 支柱 3：Memory 管理
+# 設計軸 3：Memory 管理
 
 跨 session 的持續知識。和 context 不是同一件事——context 管「這次怎麼塞」，memory 管「下次還在不在」。
 
@@ -187,9 +187,9 @@ Memory 說 X 存在，用前要 grep 一下。Memory 是「過去某時為真」
 - Project memory 不該寫個人偏好（會 commit 出去）
 - 邊界清楚比節省精巧重要
 
-## 跟其他支柱的耦合
+## 跟其他設計軸的耦合
 
-| 支柱 | 耦合點 |
+| 設計軸 | 耦合點 |
 |---|---|
 | Eval | eval 失敗 → 寫 memory；memory 累積 → eval 驗證有效性。**飛輪核心**。|
 | Planning | plan 該召回類似任務的 memory |

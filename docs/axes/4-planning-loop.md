@@ -1,4 +1,4 @@
-# 支柱 4：Planning loop
+# 設計軸 4：Planning loop
 
 做之前想：拆解、排序、預測風險。和 execution / evaluation 對稱。
 
@@ -68,7 +68,7 @@ stakes 越高 ack 越嚴。
 **Plan 端**（已知概念）：完成的 plan 應該變 reusable artifact：
 - 存成 template
 - 下次類似任務先召回
-- 跟 memory 系統打通（支柱 3 episodic memory）
+- 跟 memory 系統打通（設計軸 3 episodic memory）
 
 **Outcome 端**（從 ai-infra-management v1 學到的延伸）：plan 跑完落地後，**outcome 本身也該被沉澱**——若同類動作會反覆出現（業主 advise 結果手寫 ad-hoc bash ≥ 2 次），下次該抽象成 skill / sub-command，不當一次性。
 
@@ -78,7 +78,7 @@ stakes 越高 ack 越嚴。
 - **trigger 條件**：同一手動 outcome 反覆 ≥ 2 次、或業主明確「下次也想這樣做」
 - **抽象顆粒**：skill / sub-command / hook，依未來是否要 chained 決定
 - **與 plan-as-memory 對稱**：plan 是「下次怎麼想」，skill 是「下次怎麼做」；兩者都該回灌 memory 系統，不是消耗品
-- **builder 負責**：human 通常不會也不該抽象——這是 builder 端飛輪（對位支柱 12 builder vs human 分工）
+- **builder 負責**：human 通常不會也不該抽象——這是 builder 端飛輪（對位設計軸 12 builder vs human 分工）
 
 ### 6. 階層深度
 hierarchical planning 要決定深幾層：
@@ -92,9 +92,9 @@ plan 該標出哪些步驟可並行：
 - 亂並行 = 衝突、難 debug
 - 顯式標註依賴圖
 
-## 跟其他支柱的耦合
+## 跟其他設計軸的耦合
 
-| 支柱 | 耦合點 |
+| 設計軸 | 耦合點 |
 |---|---|
 | Eval | plan 該預設驗收條件，這條件變 inner eval |
 | Memory | plan 召回過往類似任務的紀錄 |

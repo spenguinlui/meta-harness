@@ -1,4 +1,4 @@
-# 支柱 8：Evaluation loop
+# 設計軸 8：Evaluation loop
 
 最容易被忽略、但對「能否系統化改進」決定性最大的一條。分兩層，性質完全不同。
 
@@ -116,7 +116,7 @@
 - 環境錯 → 修 fixture
 - 規格不清 → 修 eval set 或標 unscored
 
-## 跟其他支柱的耦合
+## 跟其他設計軸的耦合
 
 ### 跟 Memory（核心飛輪）
 - Outer fail → 寫 memory「下次注意」

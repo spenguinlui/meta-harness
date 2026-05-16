@@ -1,4 +1,4 @@
-# 支柱 2：Context 管理
+# 設計軸 2：Context 管理
 
 單 session 內 token 怎麼配。Context 是模型「當下能看到的一切」，不是無限的。
 
@@ -49,9 +49,9 @@ Context 不只是 token 量，還有「資訊密度」：
 - 同樣 1000 token，純 log vs 結構化摘要差很多
 - 給模型「對它有用」的部分，不是「全部資訊」
 
-## 跟其他支柱的耦合
+## 跟其他設計軸的耦合
 
-| 支柱 | 耦合點 |
+| 設計軸 | 耦合點 |
 |---|---|
 | Tool | tool 輸出進 context，輸出大小決定 context 壓力 |
 | Memory | memory 召回後塞 context，召回策略影響 context budget |

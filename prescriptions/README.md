@@ -10,7 +10,7 @@
 prescriptions/YYYY-MM-DD-<target-domain>.md
 ```
 
-內容：打算改什麼檔、為什麼、對應哪條支柱／lesson、預期效果。
+內容：打算改什麼檔、為什麼、對應哪條設計軸／lesson、預期效果。
 
 ## 為什麼留痕但不上 git
 
@@ -19,5 +19,5 @@ prescriptions/YYYY-MM-DD-<target-domain>.md
 
 ## 跟 sessions/ 的差別
 
-- `sessions/`（上 git）：完整顧問對話紀錄、Phase 0 / 9 支柱 audit 過程
+- `sessions/`（上 git）：完整顧問對話紀錄、Phase 0 / 9 設計軸 audit 過程
 - `prescriptions/`（不上 git）：對某次 target repo 寫檔的「動筆理由」摘要

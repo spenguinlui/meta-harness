@@ -1,4 +1,4 @@
-# 支柱 7：Hooks/事件
+# 設計軸 7：Hooks/事件
 
 在 tool call 前後、session 邊界、特定事件注入自訂行為。Hooks 是「harness 自律」與「平台強制」的差異點。
 
@@ -65,11 +65,11 @@ hook 每次都跑，要快：
 - Hook 是否阻擋了什麼
 - 沒觀測的 hook 會默默壞掉
 
-## 對映其他支柱的實作
+## 對映其他設計軸的實作
 
-Hook 是其他支柱的**實作機制**：
+Hook 是其他設計軸的**實作機制**：
 
-| 該支柱要做的事 | 用 hook 怎麼實作 |
+| 該設計軸要做的事 | 用 hook 怎麼實作 |
 |---|---|
 | Safety：destructive 強制 ack | pre-tool hook 攔截、要求 chat 確認 |
 | Eval inner：post-action verify | post-tool hook 跑驗證腳本 |

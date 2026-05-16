@@ -1,4 +1,4 @@
-# 支柱 1：Tool 執行
+# 設計軸 1：Tool 執行
 
 模型輸出 tool call，harness 解析並執行，回傳結果。看似最簡單，設計決策最瑣碎。
 
@@ -51,9 +51,9 @@ harness 根據聲明套不同安全策略（destructive 強制確認）。
 
 這條跟 execution loop 耦合最深。
 
-## 跟其他支柱的耦合
+## 跟其他設計軸的耦合
 
-| 支柱 | 耦合點 |
+| 設計軸 | 耦合點 |
 |---|---|
 | Context | tool 輸出進 context，schema 不穩 cache 失效 |
 | Memory | destructive tool 該觸發 memory 寫入（決策紀錄）|

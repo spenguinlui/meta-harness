@@ -1,4 +1,4 @@
-# 支柱 5：Execution loop（Agent loop）
+# 設計軸 5：Execution loop（Agent loop）
 
 模型－工具來回交替的整體迴圈引擎。承載其他 loop 運轉的底層心跳。
 
@@ -76,9 +76,9 @@
 - background 結果怎麼通知回主 loop
 - 多個 background 平行管理
 
-## 跟其他支柱的耦合
+## 跟其他設計軸的耦合
 
-| 支柱 | 耦合點 |
+| 設計軸 | 耦合點 |
 |---|---|
 | Planning | plan 的步數變 step budget |
 | Eval | inner eval 失敗觸發 retry / replan |

@@ -1,4 +1,4 @@
-# 支柱 10：Multi-agent / Sub-agent Orchestration
+# 設計軸 10：Multi-agent / Sub-agent Orchestration
 
 把任務拆給多個 agent 並行 / 串聯處理，主 agent 負責編排（orchestration = 編排）。
 
@@ -6,9 +6,9 @@
 
 ---
 
-## 為什麼獨立成支柱（不併入 Execution loop）
+## 為什麼獨立成設計軸（不併入 Execution loop）
 
-- Execution loop（支柱 5）= 單一 agent 的「模型↔工具」迴圈
+- Execution loop（設計軸 5）= 單一 agent 的「模型↔工具」迴圈
 - Multi-agent orchestration = 多個 agent 之間的 hand-off / context 邊界 / 結果整合
 - 兩者的決策軸完全不同（並行失敗策略、context 隔離程度、子 agent 拆分顆粒）
 - 業界 2026 後普遍把 multi-agent 視為獨立架構層
@@ -59,15 +59,15 @@
 - 每個 sub-agent 的 input / output / cost / duration 該寫進哪？
 - 失敗 sub-agent 的 trace 該保留多久？
 
-## 與其他支柱耦合
+## 與其他設計軸耦合
 
-- **支柱 2 Context**：sub-agent 是 context 隔離的主要工具；context 邊界決定要不要開
-- **支柱 5 Execution loop**：每個 sub-agent 自己有 execution loop
-- **支柱 6 Safety**：destructive op 經 sub-agent dry-run 是常見模式
-- **支柱 7 Hooks**：sub-agent 完成可觸發 PostToolUse hook
-- **支柱 8 Eval**：multi-agent vote 是一種 inner eval
-- **支柱 9 觀測**：每個 sub-agent 是 trace 的一個 span
-- **支柱 11 Triggers**：`/loop` 觸發批量 sub-agent fan-out 是常見組合
+- **設計軸 2 Context**：sub-agent 是 context 隔離的主要工具；context 邊界決定要不要開
+- **設計軸 5 Execution loop**：每個 sub-agent 自己有 execution loop
+- **設計軸 6 Safety**：destructive op 經 sub-agent dry-run 是常見模式
+- **設計軸 7 Hooks**：sub-agent 完成可觸發 PostToolUse hook
+- **設計軸 8 Eval**：multi-agent vote 是一種 inner eval
+- **設計軸 9 觀測**：每個 sub-agent 是 trace 的一個 span
+- **設計軸 11 Triggers**：`/loop` 觸發批量 sub-agent fan-out 是常見組合
 
 ## Claude Code 對應機制
 
@@ -84,4 +84,4 @@
 - **Sub-agent 沒被分配 read-only / mutating 邊界**：高權限子 agent 不該被父 agent 用來做低風險探索
 - **共用 memory / state 卻無鎖**：N 個 sub-agent 並行寫同一 state → race condition
 
-具體案例見 `cases/<target>-pillar-cases.md`。
+具體案例見 `cases/<target>-axis-cases.md`。
