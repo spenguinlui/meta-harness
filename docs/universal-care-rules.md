@@ -56,6 +56,19 @@
   - 新 wiring commit message 必含「自動化什麼好習慣」
   - 新規則 / 反模式段 commit 必含「為什麼不能刪源頭」；答不出 = 沒做 root cause 分析
 
+## R-8：跨層越權禁止——自家層的問題在自家層修，不替別層表態
+- **定義**：設計者 / 顧問 / 文件 / wiring 對「自家層級之外」（別 session / 別 repo / 別業主 / 別角色 / 別子系統的權限範圍）做命令式表態
+- **為什麼**：把「自家 X」生硬對比成「所以對方該 Y」的二分 table = 越權替別層做選擇、剝奪對方自主性。R-7 管「自家當下 vs 未來」（時間軸），R-8 管「自家 vs 別層」（空間軸），兩條互補
+- **典型踩法**（從 ai-infra-management v1 session 學到，2026-05-16）：
+  - meta-harness README 寫「大腦 = Opus 4.7 / **手腳 = Sonnet（target 用）**」table
+  - 「自家 = 大腦」陳述對，但生硬推論「對方 = 手腳所以用 X」就越權替 target repo 業主在 target session 內的 model 選擇表態
+  - 業主原話「我會在選擇適合的 model」明示自主——meta-harness 不需替他預設
+- **規則**：寫建議 / 文件 / 設計時自檢三條：
+  - (a) 這條建議是對哪個 session / repo / 角色 / 子系統開？對「自家」OK；對「別層」必停
+  - (b) 對立面（如「X 對 → Y 該」中的 Y）是不是另一層的權限範圍？是 → 砍掉或改單向陳述
+  - (c) 有沒有用「自家 default」掩飾「跨層命令」？例：把「target 用 Sonnet」包裝成「meta-harness 的 default 假設」就是
+- **落地**：「X 對 → Y 該」二分 table 看到先警覺；改成「自家 X」單向陳述 + 明示「對方層級自決，我不表態」
+
 ---
 
 ## Domain-specific 規則不放這裡

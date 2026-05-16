@@ -35,7 +35,7 @@ prescription_version: <v1, v1.5, v2 ...>
 
 ---
 
-## Part B：衛生規則對照（R-1~R-7 Compliance）
+## Part B：衛生規則對照（R-1~R-8 Compliance）
 
 對 [universal-care-rules.md](universal-care-rules.md) 每條規則的 compliance status：
 
