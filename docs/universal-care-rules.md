@@ -40,9 +40,11 @@
   - 縮寫首次出現必括號展開（ADR=Architecture Decision Record，架構決策紀錄）
   - 真要用英文（檔名 / API / 業界唯一指稱）首次出現括號中文
   - 已落到使用者自己常用的可繼續用
-- **範圍兩條都適用**：
+- **範圍三條都適用**：
   - (a) 顧問 ↔ builder 對話（meta-harness session 中）
-  - (b) **target repo 跑出來、由 AI 給 human 看的最終輸出**（如 `/advise` `/audit` 等指令的回應）。human 通常不是該領域 peer（非 SRE / 非會計師 / 非醫師），peer-level jargon 直丟 human = 等於沒做。**機制怎麼蓋** = 設計軸 12 Human Interface；**R-6 是 floor，設計軸 12 是 architecture**
+  - (b) **target repo 跑出來、由 AI 給 human 看的最終輸出**（如 `/advise` `/audit` 等指令的回應）。human 通常不是該領域 peer（非 SRE / 非會計師 / 非醫師），peer-level jargon 直丟 human = 等於沒做
+  - (c) **command description / help text / error message 等 viewer-facing 介面文字**（從 ai-infra-management v1 業主反饋學到）。human 在自動補全（`/<cmd>` 列表）/ `--help` / 出錯時讀這些 → 決定**用不用、何時用、出錯該怎麼救**。peer-level jargon 直丟 = 命令等於不存在 / error 等於無解。例：description 寫「External-knowledge advisor with 4-stage architect-debate pipeline」業主猜錯用法（誤以為「跨專案一次診斷」結果只跑單專案），命令對業主關閉
+  - **機制怎麼蓋** = 設計軸 12 Human Interface；**R-6 是 floor，設計軸 12 是 architecture**
 
 ## R-7：wiring 升級不固化壞流程；fix 先找 root cause、不疊規則
 - **定義**：wiring = 對 harness 行為的程式化約束（hook / skill / slash command / sub-agent / settings.json）
