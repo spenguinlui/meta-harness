@@ -17,16 +17,13 @@
    └─ Step 6 飛輪 retrospective（跑一段時間後回看：outcome 沉澱 / 訊號累積 / memory 形狀 / 方法學缺口升級）
 ```
 
-## Repo 角色分工建議：大腦 vs 手腳
+## 進 meta-harness session 時 model 建議
 
-meta-harness 設計時可把 repo 分兩類，**建議用不同 model**：
+進 `~/meta-harness && claude` 開 session 跑設計工作（出 prescription / 改方法學 / 設計 target repo wiring）時，**建議用最強 model**（如 Opus 4.7 xhigh）——設計 / 推理 / 方法學任務的思考品質不能弱（弱 model 容易出 jargon 牆 / 反模式 / 邏輯漏洞）。
 
-| 角色 | 例 | 建議 model | 為什麼 |
-|---|---|---|---|
-| **大腦**（brain） | `meta-harness` 本身——設計 / 推理 / 方法學 / 出 prescription | **建議用最強**（如 Opus 4.7 xhigh） | 思考品質不能弱——jargon 牆 / 反模式 / 邏輯漏洞較易出現於弱 model |
-| **手腳**（limbs） | target repo（如 ai-infra-management）——執行 / 實作 / 跑大量 token 任務（寫測試 / 爬文件 / grep） | 業主自選（多數情境 Sonnet 夠用） | 成本 / 速度優先；大腦已決定方向、手腳照做 |
+開 session 前自己 `/model` 切換（AI 無法切自己的 model，這是設計者主動操作）。不硬鎖在 settings.json——保留偶爾用較弱 model 跑 light task（如純 grep）的彈性。
 
-進 meta-harness session 前 builder 自己確認 model，不是的話用 `/model` 切換（AI 無法切自己的 model，這是 builder 主動操作）。不硬鎖在 settings.json——保留 builder 偶爾用較弱 model 跑 light task（如純 grep）的彈性。
+> **不對 target repo 該用什麼 model 表態**——target repo 業主在 target session 內自決，meta-harness 不跨層管。
 
 ## Builder vs Human（兩種角色）
 
