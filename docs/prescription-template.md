@@ -12,6 +12,11 @@
 target_repo: <name + URL>
 generated_at: <ISO timestamp>
 status: draft | active | superseded
+implementation_medium: claude-code-harness | web-app | api-service | saas | hybrid | other
+  # claude-code-harness：主要 artifact 是 hook / skill / settings.json / bash script
+  # web-app / api-service / saas：主要 artifact 是 route / DB schema / component / infra config
+  # hybrid：AI harness 嵌在 web/SaaS 產品內（如 OpenClaw、Hermes agent 類）
+  # → Part D 的 artifact 語言跟著切換，不預設 bash/Claude Code
 source_sessions:
   - <link to Phase 0 session>
   - <link to 12 design axes audit session>
@@ -119,53 +124,69 @@ domain 自己的新抽象（target 業主的核心概念，如 Watcher / Recomme
 
 ---
 
-## Part D：安裝清單（要寫進 target 的具體檔案）
+## Part D：實作清單（要寫進 target 的具體 artifact）
 
-具體可執行的安裝清單，按類別分組：
+具體可執行的實作清單，按類別分組。**artifact 語言跟著 Header `implementation_medium` 切換**——不預設 bash / Claude Code 結構。
 
-### D.1 File-level
-新建檔案、CLAUDE.md 加段落、文件結構。
+### D.0 實作介質宣告
 
-### D.2 Hook installations
-`.claude/hooks/` 下的 script + `.claude/settings.json` 註冊。
-
-**每個 hook 必含 Matcher Precision 三項**（防 hook matcher 過寬 → false positive，例如裸字面 `"inventory"` 會擋自家 commit message 含此字眼的正常工作）：
+在此明確本 prescription 的 artifact 類型，讓 Part D.1–D.5 的讀者知道用什麼語言看：
 
 ```
-- Hook ID: <name>
-- Trigger event: PreToolUse | PostToolUse | UserPromptSubmit | SessionStart | Stop ...
-- Tool matcher: <Bash | Edit | Write | * 等>
-
-- Matcher precision (必填三項):
-  1. Harness prefix anchor:
-     <命令必含 target 自家 CLI prefix（如 `<target>/bin/...`）；不允許高頻字面（如 'inventory' / 'force'）為觸發>
-     <若該 hook 用語意/regex 觸發，明示 anchor pattern + 預期不會誤匹配的字串範例>
-  2. Exclusion list:
-     <已知該排除的 path / command / context 清單（meta 場景如 hook 自己 commit / lesson 撰寫 / audit log 必排除）>
-  3. False-positive scan checklist:
-     <安裝前用以下輸入跑一次 trace mode，確認不誤觸：>
-     - <寫 5 個「應該不觸發」的命令 / message 範例>
-     - <寫 3 個「應該觸發」的命令 / message 範例（正向 ground truth）>
-     - <若涉及 commit message 攔截：跑 `git log --oneline -50` 反推哪些舊 commit 會被擋，標出 false-positive>
-
-- Spec: <script 邏輯>
-- Validates: V<n>
+implementation_medium: <同 Header>
+tech_stack: <主要語言 / 框架 / 平台，如 Next.js + PostgreSQL / FastAPI + Redis / bash + Claude Code>
+artifact_language:
+  - claude-code-harness  → D.1 = CLAUDE.md / docs；D.2 = hooks；D.3 = bin/ skills；D.4 = settings.json
+  - web-app / api-service → D.1 = 路由 / 元件 / DB schema；D.2 = middleware / webhook；D.3 = service / module；D.4 = env / config
+  - saas / hybrid        → 混合以上，每條 artifact 標明所在層（harness 層 / 應用層）
 ```
 
-**反模式**（明令禁止）：
+### D.1 核心檔案 / 結構
+依介質而定：
+- **claude-code-harness**：CLAUDE.md 段落、文件結構、docs/ 規則類文件
+- **web-app / api-service**：路由定義、DB schema、元件骨架
+- **saas / hybrid**：依所在層分開列（harness 層 / 應用層標清楚）
 
-- ❌ matcher 只用裸字面/全域 regex（如 `inventory`、`force` 等高頻詞）做攔截
-- ❌ 沒 exclusion list（特別是 hook 自己 commit / lesson 撰寫 / audit log 等 meta 場景）
-- ❌ 安裝後才發現誤擋——必先做 false-positive scan
+### D.2 事件攔截 / Middleware
+依介質而定：
+- **claude-code-harness**：`.claude/hooks/` 下的 script + `.claude/settings.json` 註冊
 
-### D.3 Skill additions
-新 `bin/` 子命令、新 skill 目錄。
+  **每個 hook 必含 Matcher Precision 三項**（防 hook matcher 過寬 → false positive）：
 
-### D.4 Settings adjustments
-permissions、env vars、其他 `.claude/settings.json` 條目。
+  ```
+  - Hook ID: <name>
+  - Trigger event: PreToolUse | PostToolUse | UserPromptSubmit | SessionStart | Stop ...
+  - Tool matcher: <Bash | Edit | Write | * 等>
+  - Matcher precision (必填三項):
+    1. Harness prefix anchor:
+       <命令必含 target 自家 CLI prefix；不允許高頻字面（如 'inventory' / 'force'）為觸發>
+    2. Exclusion list:
+       <已知該排除的 path / command / context 清單>
+    3. False-positive scan checklist:
+       - <5 個「應該不觸發」的命令 / message 範例>
+       - <3 個「應該觸發」的命令 / message 範例>
+  - Spec: <script 邏輯>
+  - Validates: V<n>
+  ```
 
-### D.5 Directory structure
-top-level 新目錄（含 `.gitkeep` 確保入版控）。
+  **反模式**：❌ matcher 只用裸字面/全域 regex；❌ 沒 exclusion list；❌ 安裝後才發現誤擋
+
+- **web-app / api-service**：middleware、webhook handler、event listener
+- **saas / hybrid**：標明 harness 層 hook vs 應用層 middleware
+
+### D.3 指令 / 服務模組
+依介質而定：
+- **claude-code-harness**：新 `bin/` 子命令、新 skill 目錄
+- **web-app / api-service**：新 service、新 API module、新 worker
+- **saas / hybrid**：標明所在層
+
+### D.4 設定 / 環境
+依介質而定：
+- **claude-code-harness**：permissions、env vars、`.claude/settings.json` 條目
+- **web-app / api-service**：`.env`、feature flags、infra config、CI/CD 設定
+
+### D.5 目錄結構
+top-level 新目錄（含入版控的空檔確保結構存在）。
 
 每項格式：
 

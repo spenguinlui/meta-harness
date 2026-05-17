@@ -4,6 +4,20 @@
 
 ---
 
+## Prescription 預設偏向 bash / Claude Code artifact
+
+meta-harness 的 12 設計軸本身是介質中性的——Tool 執行、Memory、Planning loop、Eval 對任何 AI agent harness 都成立，不論它是 bash script、web app、SaaS 還是 hybrid 產品（如 OpenClaw、Hermes agent 這類本體是 SaaS 的 AI harness）。
+
+偏差不在設計軸，在 prescription Part D——安裝清單預設寫的是 `.claude/hooks/`、`bin/`、`settings.json`，顧問看到這個格式自然往 bash 套，對著一個需要 API route / DB schema / frontend component 的 target 寫出錯的 artifact。
+
+修正方式：
+- Phase 0「形狀」問題必問實作介質：「這個 target 最終跑起來是什麼樣子——CLI / 網頁 / API / 嵌在某個產品裡？」
+- Prescription Header 宣告 `implementation_medium`，Part D artifact 語言跟著切換
+
+**meta-harness 的適用邊界**：target 有 AI agent 在裡面就適用，不論實作介質。純軟體（完全沒有 AI）才超出範圍。
+
+---
+
 ## Phase 0 每一問都有它的替代成本
 
 5 個訪談問題不是儀式，各自防一種具體失敗：

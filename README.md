@@ -2,6 +2,7 @@
 
 > **設計 AI agent harness 的方法論 + 顧問 wiring**
 > Prompt engineering 改字；harness engineering 改模型周圍的整套系統。
+> 適用任何實作介質——bash harness、web app、SaaS、hybrid 產品，只要裡面有 AI agent 就適用。
 
 ## What
 
