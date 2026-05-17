@@ -9,7 +9,7 @@
 
 ```
 ~/meta-harness session
-   ├─ Step 1 需求討論（5 件事訪談 10-20 min）
+   ├─ Step 1 需求討論（專案介紹 + 5 件事訪談 10-20 min）
    ├─ Step 2 顧問獨自出設計圖 → prescriptions/<date>-<target>.md
    ├─ Step 3 業主 review loop
    ├─ Step 4 分期實作落地 → 絕對路徑寫進 target repo
@@ -56,16 +56,22 @@ cd ~/meta-harness && claude
 ## 核心
 
 - **6 步業主-建築師流程** — `.claude/skills/consultant/SKILL.md`
+- **顧問決策邏輯** — `docs/consultant-flow.md`（Phase 0→1 重排機制）
 - **12 大設計軸（pattern library）** — `docs/design-axes.md`
   Tool / Context / Memory / Planning / Execution / Safety / Hooks / Eval / Observability / Multi-agent / Triggers / **Human Interface**
 - **9 universal rules（衛生規則）** — `docs/universal-care-rules.md`
 - **設計圖格式** — `docs/prescription-template.md`
+- **新手入口** — `docs/getting-started.md`
+- **實戰教訓** — `docs/lessons.md`
 
 ## Repo 結構
 
 ```
 .claude/                顧問 wiring（hook + skill）
 docs/
+  getting-started.md        新手入口（30 分鐘內跑完 Phase 0）
+  consultant-flow.md        顧問決策邏輯（Phase 0→1 重排機制）
+  lessons.md                實戰教訓
   design-axes.md            12 設計軸索引
   design-axes/              每設計軸深度
   universal-care-rules.md   R-1~R-9

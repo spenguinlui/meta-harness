@@ -14,7 +14,7 @@ generated_at: <ISO timestamp>
 status: draft | active | superseded
 source_sessions:
   - <link to Phase 0 session>
-  - <link to 9 design axes audit session>
+  - <link to 12 design axes audit session>
   - <other relevant sessions>
 universal_care_rules_baseline: <commit hash of universal-care-rules.md>
 prescription_version: <v1, v1.5, v2 ...>
