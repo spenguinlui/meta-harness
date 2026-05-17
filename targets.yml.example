@@ -2,9 +2,15 @@
 #
 # 顧問 session 開場時可從此檔挑一個 target，或直接在對話中告訴顧問絕對路徑。
 # 開場 checklist 會要求顧問複誦目標路徑請使用者確認，避免改錯 repo。
+#
+# status 欄位：
+#   concept       — 還沒 repo / 純記錄，顧問不可選為 audit target
+#   pending-audit — 有 repo 但尚未做 meta-harness audit
+#   audited       — 已跑過完整 audit（last_audited 必填）
 
 - name: ai-infra-management
   path: /Users/you/ai-infra-management
+  status: audited
   domain: 個人 AWS infra 管理
   last_audited: 2026-05-03
   notes: |
@@ -13,6 +19,16 @@
 
 - name: my-ai-automation
   path: /Users/you/my-ai-automation
-  domain: AI 自動化作業（pending audit）
+  status: pending-audit
+  domain: AI 自動化作業
   last_audited: null
   notes: 想先健檢 memory 管理層
+
+- name: my-next-idea
+  path: null
+  status: concept
+  domain: 一句話講這專案想解決什麼
+  last_audited: null
+  notes: |
+    想解決的問題 / 還沒決定的點 / 啟動觸發條件。
+    repo 開了後升級成 pending-audit、補 path。

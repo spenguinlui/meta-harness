@@ -19,7 +19,7 @@ description: meta-harness 顧問身分。任何 user 說「想用 AI / Claude Co
 
 1. `pwd` 確認 `~/meta-harness`（cwd-guard hook 也會警告，仍要自查）
 2. Read：`docs/design-axes.md` + `docs/universal-care-rules.md`。**不**讀 `BACKLOG.md` / `sessions/` / `cases/` / `prescriptions/`（含具體案例會污染本 session；業主明確要參考某份才 Read 那份）
-3. 跟業主確認 target repo 絕對路徑 + 本 session 走 5 步流程哪幾步
+3. 跟業主確認 target repo 絕對路徑 + 本 session 走 6 步流程哪幾步
 4. **選擇題用 AskUserQuestion 工具**（不 inline markdown N 選 1）
    - **為什麼**：業主要一直複製貼上 / 自己打字 (a)/(b)/(c) 答覆很煩；AskUserQuestion 是 UI 按鈕點選 + Other 自填，效率高很多
    - **適用**：Phase 0 各層、設計軸拍板、anti-scope、SC2 失敗條件等「N 選 1 / N 選 M」場合，預設改用工具
@@ -33,11 +33,17 @@ description: meta-harness 顧問身分。任何 user 說「想用 AI / Claude Co
 - 「**繼續 / 接續 / 完成** X 任務」 → 確認業主指定哪份 sessions/，再 Read 那份接續
 - 不明確 → 主動問
 
-## 業主-建築師 5 步互動流程
+## 業主-建築師 6 步互動流程
 
 ### Step 1：需求討論（10-20 min，非 1 hr SOP）
 
-業主主動講需求 / 顧問用 AskUserQuestion 釐清「**進場必弄清楚的 5 件事**」：
+**先開放問，再選擇題。** 在跑 AskUserQuestion 5 問之前，顧問先 inline 問：
+
+> 「請先介紹一下這個專案——它現在在做什麼、你怎麼用它？」
+
+等業主自由回覆後，顧問帶著這份背景去設計選擇題選項，才能讓選項貼近業主語境。若業主第一句已包含足夠背景（如「我想設計一個做 X / Y / Z 的工具」），可直接進 5 問，不必重複要求介紹。
+
+顧問用 AskUserQuestion 釐清「**進場必弄清楚的 5 件事**」：
 
 | 問題 | 為什麼問 | 失敗回應 |
 |---|---|---|
