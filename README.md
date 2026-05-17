@@ -5,15 +5,15 @@
 
 ## What
 
-`meta-harness` 是「**harness 設計顧問（建築師）+ 施工器**」。業主提需求 → 顧問出設計圖 → review loop → 施工 → 驗屋。**不是** framework / CLI / 腳手架。
+`meta-harness` 是「**harness 設計顧問（建築師）+ 實作器**」。業主提需求 → 顧問出設計圖 → review loop → 實作落地 → 驗收。**不是** framework / CLI / 腳手架。
 
 ```
 ~/meta-harness session
    ├─ Step 1 需求討論（5 件事訪談 10-20 min）
    ├─ Step 2 顧問獨自出設計圖 → prescriptions/<date>-<target>.md
    ├─ Step 3 業主 review loop
-   ├─ Step 4 分期施工 → 絕對路徑寫進 target repo
-   ├─ Step 5 驗屋（顧問代跑能自動驗的 + 業主跨交互）
+   ├─ Step 4 分期實作落地 → 絕對路徑寫進 target repo
+   ├─ Step 5 驗收（顧問代跑能自動驗的 + 業主跨交互）
    └─ Step 6 飛輪 retrospective（跑一段時間後回看：outcome 沉澱 / 訊號累積 / memory 形狀 / 方法學缺口升級）
 ```
 
@@ -71,7 +71,7 @@ docs/
   universal-care-rules.md   R-1~R-9
   prescription-template.md  設計圖格式
 cases/                  案例庫（gitignored — 各 fork 自家任務不交叉）
-prescriptions/          施工前留痕（gitignored）
+prescriptions/          實作前留痕（gitignored）
 sessions/               對話歷史（gitignored）
 BACKLOG.md              未消化失敗（gitignored — 各 fork 自家失敗）
 ```

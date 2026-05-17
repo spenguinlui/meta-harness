@@ -50,7 +50,7 @@ claude
 
 顧問獨自寫 `prescriptions/<date>-<target>.md`，完成後把**重點摘要貼給你看**（不是叫你自己打開檔案）。
 
-你的工作是 review 摘要、給文字回饋。沒意見就說「OK 施工」。
+你的工作是 review 摘要、給文字回饋。沒意見就說「OK 開始實作」。
 
 ---
 
@@ -60,8 +60,8 @@ claude
 Phase 0  需求訪談（你 + 顧問）
 Phase 1  建築師出設計圖（顧問獨自）
 Phase 2  業主 review，反覆修改
-Phase 3  分期施工 → 寫進 target repo
-Phase 4  驗屋（顧問自動驗 + 你跨 session 試用）
+Phase 3  分期實作落地 → 寫進 target repo
+Phase 4  驗收（顧問自動驗 + 你跨 session 試用）
 Phase 5  飛輪 retrospective（數週後回看）
 ```
 
@@ -72,7 +72,7 @@ Phase 5  飛輪 retrospective（數週後回看）
 ## 常見第一次卡關
 
 **「顧問問太多了」**
-→ Anti-scope 那題最多人想跳過。不問 = 設計圖過度膨脹 = 施工後更難砍。先給 3 條粗略邊界就夠。
+→ Anti-scope 那題最多人想跳過。不問 = 設計圖過度膨脹 = 實作後更難砍。先給 3 條粗略邊界就夠。
 
 **「我的 target repo 還沒建」**
 → 可以，顧問會出設計圖後再建目錄 / 初始化。先聊需求。
