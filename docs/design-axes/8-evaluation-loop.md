@@ -2,6 +2,8 @@
 
 最容易被忽略、但對「能否系統化改進」決定性最大的一條。分兩層，性質完全不同。
 
+> **R-10 是這條軸的衛生 floor**：可機驗的 outcome 必須先自驗再交付（見 `universal-care-rules.md` R-10）。R-10 是「必做」、本設計軸是「怎麼做」的參數空間。Reference 實作：`experiments/consolidation-loop/`。
+
 ## 兩層結構
 
 ### Inner eval（單次任務內、即時）

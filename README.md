@@ -75,7 +75,7 @@ docs/
   lessons.md                實戰教訓
   design-axes.md            12 設計軸索引
   design-axes/              每設計軸深度
-  universal-care-rules.md   R-1~R-9
+  universal-care-rules.md   R-1~R-10
   prescription-template.md  設計圖格式
 cases/                  案例庫（gitignored — 各 fork 自家任務不交叉）
 prescriptions/          實作前留痕（gitignored）

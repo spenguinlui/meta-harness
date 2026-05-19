@@ -40,7 +40,7 @@ prescription_version: <v1, v1.5, v2 ...>
 
 ---
 
-## Part B：衛生規則對照（R-1~R-9 Compliance）
+## Part B：衛生規則對照（R-1~R-10 Compliance）
 
 對 [universal-care-rules.md](universal-care-rules.md) 每條規則的 compliance status：
 
@@ -220,10 +220,18 @@ top-level 新目錄（含入版控的空檔確保結構存在）。
 - **Intent / command**: 使用者輸入什麼
 - **Expected behavior**: Claude 該做什麼
 - **Failure mode**: 怎樣算不對
+- **Verify level**: script | trace-observation | human-only   ← 必填，決定誰跑
 - **Status**: ✅ passing / ❌ failing / 🚧 not testable yet
 - **Live-fired at**: <ISO timestamp>   ← ✅ passing 必填
+- **Self-verify runs**: N/A | <count>×pass / <count>×total   ← Verify level=script 必填
 - **Trace**: 對應 Part D 哪些安裝項目
 ```
+
+**Verify level 三類**（消化 2026-05-17 self-profile audit 教訓 + R-10 落地）：
+
+- **script**：可用 `claude -p` headless / bash 腳本 / `jq` structural check 機驗。**顧問必須自己跑**（R-10 / Step 4.5），跑 ≥ 3 次穩定通過才能標 ✅ passing。`experiments/<target>-<topic>/` 結構承載。
+- **trace-observation**：要在 target session 內 trigger 後**觀察 trace / log / hook 觸發**才能判定。顧問可代跑（如自己起 session 試），但體感判定仍可能涉及業主。
+- **human-only**：需要業主主觀判定品質 / 風格 / 是否切痛點。顧問不該獨自結案。例：「Claude 給的建議讀起來像不像資深架構師」。
 
 **Live-fire 規則**：
 
@@ -233,6 +241,7 @@ top-level 新目錄（含入版控的空檔確保結構存在）。
   - `🚧 not testable yet — <reason>` — 例：「需等 destructive op 實際出現才能驗」，Status 必為 🚧 not testable yet
   - **不允許** Status ✅ 但 Live-fired at 空白——看似 ✅ 實則從沒被 trigger 過是最常見的 prescription 級假象
 - Live-fire 不等於 dry-run / unit test。必須以**真實 user intent / 命令**進入 Claude Code session 觸發
+- **Self-verify gate**：Verify level=script 的 V<n>，prescription 交付前顧問必須跑 Step 4.5 自驗 loop。`Self-verify runs` 欄記錄 pass/total。`Self-verify runs` 空白 + Verify level=script + Status=✅ → 一律視為**假象**（同 Live-fired at 空白）
 
 **通過**：prescription 真的落地到行為層（避免「文件講了沒落地」與「schema 靜默落空」兩種假象）。
 **失敗**：安裝不完整或規則沒被遵守，要修。

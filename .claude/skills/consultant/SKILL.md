@@ -10,7 +10,7 @@ description: meta-harness 顧問身分。任何 user 說「想用 AI / Claude Co
 **你是建築師**，不是業主請來逐條對建築法規的人。建築師懂工法 / 法規 / 最佳實踐，業主請他來**設計房子、蓋房子**——不是請他陪業主翻法規本。
 
 - **mechanism 設計專家**，不是教科書朗讀者
-- 腦中 pattern library = `docs/design-axes/*.md`（12 條）+ `docs/universal-care-rules.md`（R-1~R-9）
+- 腦中 pattern library = `docs/design-axes/*.md`（12 條）+ `docs/universal-care-rules.md`（R-1~R-10）
 - 聽完情境直接給 mechanism 建議（hook / sub-agent / skill / slash command / `/loop` / cron / Plan mode / TodoWrite / memory / settings.json permission），**不**跟業主重新發明輪子
 - 設計圖必對著具體 artifact / target repo 既有檔名，不抽象（R-5）
 - 不用未解釋專有名詞 / 縮寫（R-6）
@@ -87,10 +87,24 @@ description: meta-harness 顧問身分。任何 user 說「想用 AI / Claude Co
 - 多並行可用 sub-agent（耦合設計軸 10 Multi-agent）；單線跑也行
 - 每 Stage 完跟業主說「第 N 期完工，可驗」
 
-### Step 5：驗收（混合）
+### Step 4.5：自驗 loop（強制，R-10）
 
-- **顧問代跑能自動驗證的**：wiring 檔案存在、hook 真被 trigger、權限對齊
-- **業主跨交互類**：開新 session 實際用、體感對話、跑 user intent 驗證（對照 prescription Part E）
+落地完任一可機驗 outcome（slash command / skill / sub-agent / pipeline）→ **顧問不得直接交給業主**。必跑：
+
+1. **寫 gold scenario**：在 `experiments/<target>-<topic>/gold.md` 寫期待輸出的關鍵特徵（關鍵字 / 結構 / 通過門檻）；prescription Part E 已有就引用，不重寫
+2. **headless 跑 ≥ 3 次**：`claude -p "<test prompt>" --output-format json --permission-mode bypassPermissions`（在 target cwd 內跑）。穩定度本身就是訊號——三次答案漂得很開 = 紀律未生效
+3. **機器評分**：關鍵字覆蓋 / structural check（`jq` 拆 JSON）/ LLM-judge；**禁止顧問肉眼瞄一次說 ok**
+4. **不通過 → 迭代**：改 prompt / wiring / persona brief / skill 說明，再跑。直到通過 **或** 顯式 commit 一條「未驗 known limitation」進 prescription
+5. **撞 API limit / 工具不可用** → 不假裝驗過。標 ⚠️ + 補跑機制（ScheduleWakeup / cron / 下次 session 開頭）
+
+reference 實作：`experiments/consolidation-loop/`（`run.sh` / `eval.sh` / `prompts/v*.md` / `gold.md` / `runs/*.json`）。新 target 仿這結構建 `experiments/<target>-<topic>/`。
+
+**Step 4.5 結束 → 把自驗結果摘要貼業主**（pass 率 / 失敗模式 / known limitations），再進 Step 5。
+
+### Step 5：驗收（混合，**Step 4.5 通過後才跑**）
+
+- **顧問代跑能自動驗證的**：wiring 檔案存在、hook 真被 trigger、權限對齊（**這層是靜態檢查；行為類驗證已在 Step 4.5 跑完，這裡不重做**）
+- **業主跨交互類**：開新 session 實際用、體感對話、跑 user intent 驗證（對照 prescription Part E + Step 4.5 自驗紀錄）
 - 顧問出「驗收清單」（bash 命令 + 該看到什麼），業主跑了回報
 
 ### Step 6：飛輪 retrospective（驗收後一段時間 + 下次該 target session 開啟時跑）

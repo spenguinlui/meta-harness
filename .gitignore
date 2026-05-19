@@ -15,3 +15,10 @@ cases/*
 
 # 自家未消化失敗清單（各 fork 自有自的）— 不上 git
 BACKLOG.md
+
+# experiments/ 自驗 loop 的 raw runs 含 target 真實 infra ID / 專案名 — 不上 git
+# 結構檔（README / gold / prompts / run.sh / eval.sh）入版控，runs/ 只是本機跑出來的證據
+experiments/*/runs/
+
+# ScheduleWakeup runtime 狀態 — 不上 git
+.claude/scheduled_tasks.lock

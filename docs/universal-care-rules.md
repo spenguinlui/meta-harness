@@ -84,6 +84,32 @@
   - R-8 防的是「替別人在他 session 內做業務決策」，**不是**「不能動 framework」；別矯枉過正
   - R-8 跟 R-9 對偶：R-8 防越權跨層命令、R-9 區分自家層內部的 framework 子層 vs 任務子層
 
+## R-10：可機驗的 outcome 必須先自驗再交付（don't throw verification over the wall）
+- **定義**：當設計的 outcome 是「Claude 在某情境下會給某種輸出」「某 script / skill / slash command 跑某 input 會產某結果」這類**可重複跑、可機評**的東西時，禁止「設計 → 落地 → 丟業主驗」。必須中間插入 **自驗 loop**：寫 gold scenario → headless 跑（claude -p） → 比對 → 不通過就迭代 prompt / wiring / skill 設計，直到通過或明確標記 known limitation
+- **為什麼**：把「outcome 對不對 / 穩不穩定」推給業主跑 → (a) 業主時間貴 (b) 業主未必有完整脈絡能評（顧問才知設計意圖）(c) 失敗反饋遲到、迭代成本暴漲 (d) 顧問交付的「完工」其實是「未驗成品」，責任結構錯位
+- **典型踩法**（從 2026-05-18 ai-infra-management /advise 視角優化 session 學到）：
+  - 顧問訪談業主 → 寫 prescription → 落地實作 → 丟業主「請你 review + 跑跑看」
+  - 業主自己手動跑 3 次才發現「同 prompt 三次答案完全不同」「pipeline 在某情境會 fabrication」
+  - 這些反覆失敗本來顧問交付前自己跑 ≥ 3 次就會看到
+- **規則**：
+  - (a) 落地完任一可機驗 outcome → 先寫 ≥ 1 個 gold scenario（具體 prompt / input + 期待輸出的關鍵特徵 / 通過門檻）寫進 prescription 或 `experiments/<topic>/gold.md`
+  - (b) headless 跑 ≥ 3 次（穩定度本身就是訊號；單跑一次過 = 沒驗）
+  - (c) 評分用關鍵字覆蓋 / structural check / LLM-judge，**禁止只憑顧問肉眼瞄一次說 ok**
+  - (d) 不通過 → 迭代到通過 **或** 明確 commit 一條「未驗 known limitation：<具體哪部分 / 為什麼不能機驗 / 業主介入點是什麼>」
+  - (e) **無法現場驗時**（撞 API limit / 工具不可用 / 環境壞）→ 不可假裝驗過。交付時必標「⚠️ 自驗未跑：<原因>。預計 <時間 / 條件> 補跑」+ 補跑機制（cron / wakeup / 排程）
+- **不適用的 outcome**（這條不卡）：
+  - 純文件文字 / 概念說明（無 input-output 行為可驗）
+  - mutating ops 在 prod 的單次性動作（驗證代價 > 風險本身的，走人工 review）
+  - 業主明示「我自己想跑、不要先驗」
+- **落地**：
+  - `experiments/<target>-<topic>/` 結構：`run.sh` + `eval.sh` + `prompts/v1.md` + `gold.md` + `runs/`（參考 `experiments/consolidation-loop/`）
+  - prescription Part E（user intent demo）寫具體 ≥ 1 條 prompt + 期待覆蓋的關鍵字 / 結構
+  - consultant SKILL.md Step 4.5「自驗」強制（在 Step 4 落地 與 Step 5 驗收 之間）
+- **與其他 R 條關係**：
+  - R-4（fabrication 防線）：R-4 防內容造假、R-10 防「行為造假」（聲稱會這樣動但沒實測）
+  - R-7（不固化壞流程）：R-10 強制自驗會自然暴露壞流程，配合 R-7 改源頭而非疊蓋
+  - R-9（framework vs 任務內容）：R-10 適用於 framework 改動 + 任務內容中 outcome 可機驗的部分；mutating ops 走 R-9(b) 業主自決
+
 ---
 
 ## Domain-specific 規則不放這裡

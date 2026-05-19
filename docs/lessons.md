@@ -1,6 +1,6 @@
 # Lessons
 
-> 跑過 meta-harness 後沉澱的教訓。和 `universal-care-rules.md`（R-1~R-9）的差別：rules 是已落地為 enforcement 的規則，這裡是「設計決策背後的洞察」——為什麼這樣設計、當初踩了什麼。
+> 跑過 meta-harness 後沉澱的教訓。和 `universal-care-rules.md`（R-1~R-10）的差別：rules 是已落地為 enforcement 的規則，這裡是「設計決策背後的洞察」——為什麼這樣設計、當初踩了什麼。
 
 ---
 
@@ -105,6 +105,26 @@ Plan-as-memory + Outcome-as-skill 的雙向飛輪在設計圖裡看起來很美�
 - 沒 memory 的 eval = 每次評估從零開始（沒有歷史輸入）
 
 prescription template 的 memory 段和 eval 段要互引必填欄位，否則設計師容易只設計其中一條。
+
+---
+
+## 「驗證越牆丟給業主」是預設失敗模式（R-10 學到的）
+
+顧問流程原本是：訪談 → 設計圖 → 落地 → **業主驗收**。實際發生：業主自己跑 3 次發現「同 prompt 三次答案完全不同」「pipeline 在某情境會 fabrication」。這些問題本來顧問交付前自己跑 ≥ 3 次就會看到。
+
+根因不是顧問懶——是流程沒強制自驗。當「驗證」是預設交給業主時，沒有任何機制阻止顧問把未驗成品標 ✅ passing 交出。
+
+2026-05-18 ai-infra-management /advise Stage 0 改造的自驗 loop 跑出 4 個發現：
+1. eval false positive #1：「合併」字 hit 但語境是 ElastiCache 節點，非專案合併
+2. eval false positive #2：「請業主選視角」被當成「真分析」短回應通過
+3. Stage 0 規則 (d) 沒觸發：main agent 把「用戶取消」當業主明示停止
+4. /advise 自身有 tracking replay 反模式：看到 24hr 內同類紀錄就 replay 舊結論冒充新 advise
+
+每一個都會以「✅ passing」姿態交付給業主，由業主跑 3 次手動發現。
+
+修正：R-10 強制 outcome 可機驗的必先自驗、Step 4.5 自驗 loop 插在落地與驗收之間、prescription Part E 加 `Verify level` 欄位 + `Self-verify runs` 欄位、`experiments/<target>-<topic>/` 結構承載。
+
+副作用收穫：自驗 loop 本身也會踩到 R-10 自己的 edge case（撞 API limit 怎麼辦），這些 edge case 寫進規則本身 → 規則就是 dogfood 的。
 
 ---
 

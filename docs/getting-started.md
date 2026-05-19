@@ -91,7 +91,7 @@ Phase 5  飛輪 retrospective（數週後回看）
 |---|---|
 | `docs/design-axes.md` | 12 設計軸索引（設計參數總覽） |
 | `docs/design-axes/<軸>.md` | 每條軸的深度設計選項 + 反模式 |
-| `docs/universal-care-rules.md` | R-1~R-9 衛生規則（顧問內建強制遵守） |
+| `docs/universal-care-rules.md` | R-1~R-10 衛生規則（顧問內建強制遵守） |
 | `docs/prescription-template.md` | 設計圖格式（供 review 時對照） |
 | `docs/consultant-flow.md` | 顧問重排機制（顧問怎麼做判斷） |
 | `prescriptions/` | 每次 session 的設計圖留痕（gitignored） |
