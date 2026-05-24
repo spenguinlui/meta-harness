@@ -166,3 +166,13 @@ figma2code 實例：Pagination 按鈕間距放大 3.2 倍（gap 20px→64px）�
 修正：設計依據要**翻成 target 語境的白話**（不是「因為 R-10」，是「可機驗的改動先自己跑過再交付」）；prescription / R-N / 設計軸留 meta-harness 本機；落地後 grep target 自檢。這跟 R-6（不用未解釋 jargon）同源——只是這次 jargon 是 meta-harness 自己的內部語言，最容易盲。
 
 **第二層教訓（同日，更貴）**：立了 R-12 grep 自檢後，顧問**把它跑成「印出來看看」而非「擋 commit 的 gate」**——grep 明明命中了 docs 網站的洩漏，卻用 `||` 接著無條件 commit + push，洩漏就上了 remote，得 fix-forward 再補一個 commit。教訓：**自檢只有當成 blocking gate 才有用**（有命中 → 先清 → 再 grep 零命中 → 才 commit）。指令層面別把 check 跟 commit 用 `&&` 串成一氣——check 要先獨立跑、看結果、才決定 commit。這條已寫進 R-12 落地。
+
+---
+
+## 說明書要畫「agent loop + 人機分工」，不只列任務（figma-to-code 學到）
+
+manual-template 的 Viewer 段原本只有「我想做 X → 這樣說」(任務清單)，沒有一段畫出 **agent 自動循環的迴圈 + 人在哪交棒 / 何時拿回控制**。對「會自己循環」的 target(figma2code 的「寫 code → 視覺檢查 → 改」自動 loop、ai-infra 的 advise 4 架構師辯論 loop)，這是**它最大的特點**，卻被淹在任務表裡——viewer 看完不知道「我交了任務後 AI 到底在自動做什麼、我何時該介入」。
+
+根因:「常見任務」回答「**能叫它做什麼**」,但沒回答「**叫了之後 control flow 怎麼跑**」。這兩個是不同問題。對位設計軸 5(execution loop)+ 12(human interface 的「可中斷時機 / 控制權交還」)——設計軸有，但說明書模板漏了把它畫給 viewer。
+
+修正:manual-template 加 Viewer #5「工作流程迴圈(人 vs AI 分工)」,agent-loop target 必寫;ASCII loop 圖最清楚(誰在迴圈裡、AI 自動循環什麼、何時回報驗收)。/document checklist 同步加。業主一句「很難理解到 AI 工作流程 Loop」點出的。

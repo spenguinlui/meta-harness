@@ -27,14 +27,16 @@
 | 2 | **快速開始** | 前置工具 / 安裝 / 第一次跑（最短路徑到「看到它動」） | repo（package.json scripts、README 既有） |
 | 3 | **存取與參數** | `.env` 要哪些值 **+ 怎麼拿到**（帳號 / token / 權限申請步驟） | `.env.example` + Part A persona |
 | 4 | **怎麼用 / 常見任務** | 「我想做 X → 這樣下指令」具體範例（viewer 最常讀的一段） | Part A 使命 + Part E user intent |
-| 5 | **可用指令 / skill 清單** | 有哪些 `/command`、各自何時用（一句白話用途） | `.claude/skills/` + `.claude/commands/` |
-| 6 | **產出什麼 + 怎麼確認做對了** | 會生出哪些檔 / 結果 + viewer 怎麼驗證成功 | Part D 產出 + Part E 驗收 |
-| 7 | **邊界:不做什麼 + 已知限制** | 明確排除的能力 + known limitations（防誤用、防錯誤期待） | Part A anti-scope + Part F |
-| 8 | **出錯怎麼辦** | 常見失敗 → 怎麼救（含 error message 對照） | Part F + 實測踩過的坑 |
-| 9 | **誰維護 / 怎麼回報** | 維護人是誰、怎麼回報問題 / 給回饋 | Phase 0 builder + 設計軸 12 回饋通道 |
-| 10 | **詞彙表**（條件性） | 領域術語白話對照 | **僅 viewer 非該領域 peer 時才寫**（設計軸 12 翻譯層） |
+| 5 | **工作流程迴圈（人 vs AI 分工）**（條件性） | 畫出 agent 自動循環的迴圈 + 人在哪交棒 / 何時拿回控制驗收（ASCII 圖最清楚）。和 #4「常見任務」不同:#4 是「能叫它做什麼」,#5 是「叫了之後 AI 自己在迴圈裡自動做什麼、你何時不用管」 | **target 有 AI 自動 loop 時必寫**（設計軸 5 execution loop + 12 human interface） |
+| 6 | **可用指令 / skill 清單** | 有哪些 `/command`、各自何時用（一句白話用途） | `.claude/skills/` + `.claude/commands/` |
+| 7 | **產出什麼 + 怎麼確認做對了** | 會生出哪些檔 / 結果 + viewer 怎麼驗證成功 | Part D 產出 + Part E 驗收 |
+| 8 | **邊界:不做什麼 + 已知限制** | 明確排除的能力 + known limitations（防誤用、防錯誤期待） | Part A anti-scope + Part F |
+| 9 | **出錯怎麼辦** | 常見失敗 → 怎麼救（含 error message 對照） | Part F + 實測踩過的坑 |
+| 10 | **誰維護 / 怎麼回報** | 維護人是誰、怎麼回報問題 / 給回饋 | Phase 0 builder + 設計軸 12 回饋通道 |
+| 11 | **詞彙表**（條件性） | 領域術語白話對照 | **僅 viewer 非該領域 peer 時才寫**（設計軸 12 翻譯層） |
 
-**精簡版**（壽命短 / 自用工具）：至少 1、2、3、4、7。
+**精簡版**（壽命短 / 自用工具）：至少 1、2、3、4、8。
+**有 AI 自動 loop 的 target**：#5 必寫——viewer 最容易卡在「我交了任務,AI 到底在自動做什麼、我何時該介入」,沒這段就只看到任務表、不懂流程。
 
 ## 維護者文件結構（CONTRIBUTING.md / docs/architecture.md）
 
