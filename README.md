@@ -1,3 +1,5 @@
+> 🌐 **繁體中文** | [English](README.en.md)
+
 # meta-harness
 
 > **設計 AI agent harness 的方法論 + 顧問 wiring。**
@@ -162,8 +164,9 @@ Step 4 落地時，顧問會用**絕對路徑**把 wiring 檔案直接寫進你�
 | `.claude/skills/consultant/SKILL.md` | 顧問身分定義 + 完整 6 步流程（核心） |
 | `docs/design-axes.md` | **12 大設計軸索引**（設計參數總覽） |
 | `docs/design-axes/<n>.md` | 每條設計軸的深度選項 + 反模式 |
-| `docs/universal-care-rules.md` | 9 條 universal rules（R-1~R-10，顧問內建強制遵守的衛生規則） |
+| `docs/universal-care-rules.md` | universal rules（R-1~R-11，顧問內建強制遵守的衛生規則） |
 | `docs/prescription-template.md` | 設計圖格式（review 時對照） |
+| `docs/manual-template.md` | 說明書格式（target 交付文件結構） |
 | `docs/consultant-flow.md` | 顧問決策邏輯（Phase 0→1 重排機制） |
 | `docs/lessons.md` | 實戰教訓 |
 
@@ -181,15 +184,17 @@ Step 4 落地時，顧問會用**絕對路徑**把 wiring 檔案直接寫進你�
 .claude/
   hooks/                    顧問 wiring 的 hook（cwd 守衛、行數檢查、提問自查）
   skills/consultant/        顧問身分 skill（核心）
-  commands/                 /design /healthcheck /retro 三個前門
+  skills/{design,healthcheck,retro,document}/  四個模式前門
+  commands/                 slash command 可發現入口
   settings.json             hook 註冊
 docs/
   getting-started.md        新手入口
   consultant-flow.md        顧問決策邏輯
   design-axes.md            12 設計軸索引
   design-axes/              每設計軸深度
-  universal-care-rules.md   R-1~R-10 衛生規則
+  universal-care-rules.md   R-1~R-11 衛生規則
   prescription-template.md  設計圖格式
+  manual-template.md        說明書格式
   lessons.md                實戰教訓
 experiments/
   consolidation-loop/       自驗 loop 的 reference 實作（run.sh / eval.sh / prompts / gold）
@@ -210,7 +215,7 @@ BACKLOG.md                  未消化的失敗 / 缺口清單
 **v0.4 — Human Interface 設計軸 + 多軸 memory + 飛輪 retrospective**
 
 - ✅ **12 設計軸完整**（v0.4 新增 Human Interface — human-facing IO 邊界，對稱設計軸 9 system-facing）
-- ✅ 9 條 universal rules（R-6 擴含 target runtime 輸出；R-8 跨層越權禁止；R-9 framework vs 任務內容分流；R-10 可機驗 outcome 必先自驗）
+- ✅ universal rules R-1~R-11（R-8 跨層越權禁止；R-9 framework vs 任務內容分流；R-10 可機驗 outcome 必先自驗；R-11 可被他人使用必交付雙語說明書）
 - ✅ Consultant skill 鎖建築師身分 + 完整 6 步流程
 - ✅ Cwd-guard hook + R-1/R-3/R-5/R-6 enforce hook
 - ✅ Memory 多軸分類（content type / scope / storage form / access pattern）
