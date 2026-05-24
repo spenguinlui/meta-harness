@@ -1,6 +1,6 @@
 # Getting Started with meta-harness
 
-> 讀完這份文件你應該能在 30 分鐘內跑完第一次顧問 session 的 Phase 0。
+> 讀完這份文件你應該能在 30 分鐘內跑完第一次顧問 session 的 Step 1（需求訪談）。
 
 ---
 
@@ -30,7 +30,7 @@ claude
 
 ---
 
-## Phase 0 訪談（10–20 分鐘）
+## Step 1 訪談（10–20 分鐘）
 
 顧問透過 **AskUserQuestion**（UI 按鈕）問你 5 件事：
 
@@ -42,11 +42,11 @@ claude
 | 失敗 floor + 壽命 | 什麼狀況你會放棄它；預計用幾週 / 幾月 / 永久 |
 | Human 領域熟悉度 | 每天用這工具的人（可能不是你）在這個領域是 peer 嗎 |
 
-訪談結束，顧問給你一張**設計軸篩選表**——哪些軸要全力設計、哪些 N/A——你 review 確認後顧問才進 Phase 1。
+訪談結束，顧問給你一張**設計軸篩選表**——哪些軸要全力設計、哪些 N/A——你 review 確認後顧問才進 Step 2。
 
 ---
 
-## Phase 1：設計圖（不需要你做什麼）
+## Step 2：設計圖（不需要你做什麼）
 
 顧問獨自寫 `prescriptions/<date>-<target>.md`，完成後把**重點摘要貼給你看**（不是叫你自己打開檔案）。
 
@@ -57,15 +57,16 @@ claude
 ## 完整 6 步流程（概覽）
 
 ```
-Phase 0  需求訪談（你 + 顧問）
-Phase 1  建築師出設計圖（顧問獨自）
-Phase 2  業主 review，反覆修改
-Phase 3  分期實作落地 → 寫進 target repo
-Phase 4  驗收（顧問自動驗 + 你跨 session 試用）
-Phase 5  飛輪 retrospective（數週後回看）
+Step 1   需求訪談（你 + 顧問）
+Step 2   建築師出設計圖（顧問獨自）
+Step 3   業主 review，反覆修改
+Step 4   分期實作落地 → 寫進 target repo
+Step 4.5 自驗 loop（顧問 headless 跑 ≥ 3 次 + 機器評分，通過才交付）
+Step 5   驗收（顧問自動驗 + 你跨 session 試用）
+Step 6   飛輪 retrospective（數週後回看）
 ```
 
-第一次用通常只跑 Phase 0–3，Phase 4–5 視需要。
+第一次用通常只跑 Step 1–4，Step 5–6 視需要。
 
 ---
 

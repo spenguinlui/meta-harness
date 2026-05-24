@@ -27,11 +27,19 @@ description: meta-harness 顧問身分。任何 user 說「想用 AI / Claude Co
    - **例外**：純開放題（「半年後你怎麼判斷變好了」這種要 user 自由回的）仍 inline；給 representative 選項 + Other 也 OK
    - **混合用**：inline markdown 描述問題本身（背景 / 推薦 / tradeoff）仍可，但**選項本身用工具**
 
-### 業主第一句話的判斷
+### 觸發模式（command 前門 + 自然語言皆可）
 
-- 「**設計 / 重新設計 / 我想做** X」 → Step 1 起，不接續任何 sessions/ 紀錄
-- 「**繼續 / 接續 / 完成** X 任務」 → 確認業主指定哪份 sessions/，再 Read 那份接續
-- 不明確 → 主動問
+四種模式各有明確進場時機。command 是可發現的前門，進去後仍走顧問對話、非腳手架：
+
+| 模式 | Command | 自然語言 | 何時用 | 走哪段 |
+|---|---|---|---|---|
+| 設計 | `/design <target>` | 「設計 / 重新設計 / 我想做 X」 | 新建 or 重設既有 harness | Step 1 起 6 步流程 |
+| 健檢 | `/healthcheck <target>` | 「健檢 / 體檢 X」 | 既有系統定點體檢、找缺口（冷啟動可做） | 下方「健檢模式」段 |
+| 飛輪回顧 | `/retro <target>` | 「回顧 / retrospective X」 | target 跑一陣子後回看進化 | Step 6 |
+| 接續 | （無 command）| 「繼續 / 接續 / 完成 X」 | 接上次 session | 確認哪份 sessions/ 再 Read 接續 |
+
+- 第一句不明確 → 主動問是哪個模式。
+- 健檢中發現需要動手重設計 → 提議轉 `/design`。
 
 ## 業主-建築師 6 步互動流程
 
@@ -120,6 +128,19 @@ reference 實作：`experiments/consolidation-loop/`（`run.sh` / `eval.sh` / `p
 - builder 主動：下次該 target session 開啟、或數週後 checkpoint
 - 自動 trigger：累積評分達門檻、target 有 incident、tracking 數量達門檻
 - 結果可能：(a) 改 target wiring (b) 改 meta-harness 方法學 (c) 沉澱新 skill (d) 補 incidents.md
+
+## 健檢模式（/healthcheck）— 12 設計軸定點體檢
+
+獨立模式，**非 6 步流程**。拿 12 設計軸當鏡子評既有系統現況、找缺口，**不出完整設計圖**。
+
+1. `pwd` 確認 ~/meta-harness；確認 target 絕對路徑（空則問）。需要時問 1-2 句最小必要的「主旨／邊界」，但**不跑 Step 1 完整 5 問**（健檢是冷啟動體檢，不是需求訪談）。
+2. Read `docs/design-axes.md`（索引）→ 逐軸 Read `docs/design-axes/<n>.md`。
+3. 對照 target 既有 wiring（檔案結構 / hook / skill / command / settings.json / MCP）逐軸評：
+   - 狀態：有做 / 部分 / 沒做 / N-A
+   - 缺口或反模式：**錨具體檔名 + 行號**（R-5）
+   - 風險與建議方向（不寫完整設計圖）
+4. 產出健檢報告：**12 軸對照表 + 重點風險排序**。給 human 看的段落用中文功能名、不丟未解釋縮寫（R-6）。
+5. 收尾：若體檢發現需要重設計，提議轉 `/design <target>`。
 
 ## 反模式（抽象，不引具體案例）
 
