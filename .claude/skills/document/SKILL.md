@@ -58,7 +58,8 @@ description: meta-harness 顧問——為已設計/落地的 target repo 產出�
 
 1. 逐檔 Write 到 target（絕對路徑）：Viewer 說明書（README 雙語 + 必要的 docs 雙語）+ 維護者文件（CONTRIBUTING 雙語）。
 2. 收尾跟業主說：產了哪些檔、主語言是什麼、哪些段標了 `[需業主補]`。
-3. 文件是 target 的**任務內容介面層**——framework 結構由顧問落地（R-9）；commit 與否照業主 target 慣例。
+3. **落地後跑 self-containment 自檢（R-12）**：`grep -rn "meta-harness\|prescription\|設計軸\|consultant\|顧問\|Stage [0-9]\|R-[0-9]" <target> --include=*.md` → 有命中（非 target 自身文案）= 洩漏框架身分，清掉。
+4. 文件是 target 的**任務內容介面層**——framework 結構由顧問落地（R-9）；commit 與否照業主 target 慣例。
 
 ## 反模式
 
@@ -69,3 +70,4 @@ description: meta-harness 顧問——為已設計/落地的 target repo 產出�
 | 雙語交錯 | 中英同段交錯排版，兩種語言都讀不順 |
 | 流暢虛構 | 寫出 repo 沒有的指令 / 參數（違反 R-4）→ 該標 `[需業主補]` |
 | 翻譯識別字 | 把指令 / 路徑 / env 名 / 顏色碼也翻譯 → 複製貼上就壞 |
+| 洩漏框架身分 | target 檔引用 meta-harness / prescription / R-N / 設計軸 / 顧問 jargon → target 該 self-contained，設計依據用 target 自己的話講（R-12）|

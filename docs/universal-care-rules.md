@@ -122,6 +122,21 @@
 - **不適用**：一次性純自用腳本（明確不交接 + 壽命短）。判準同設計軸 12「builder 不存在的 target 不該設計」的反面——有第二個使用者 / 交接可能就適用。
 - **落地**：流程 Step 5.5 跑 `/document` skill（驗收後）；結構見 `docs/manual-template.md`。
 
+## R-12：target 落地檔必 self-contained——不洩漏 meta-harness 自身（don't leak the framework into the target）
+- **定義**：顧問寫進 target repo 的任何檔（README / docs / CONTRIBUTING / 程式註解 / skill / hook）**不可引用 meta-harness 自身的內部 artifact 或行話**：`prescriptions/<...>` 路徑、`R-N` 規則代號、`設計軸 N`、`顧問 / consultant`、`業主`（對 target 用 owner / 維護者 / 你）、`Stage N`（prescription 分期）等。
+- **為什麼**：target 是獨立專案。它的讀者 clone 下來**沒有 meta-harness**——指向 `prescriptions/…（本機）` 是死連結；`R-10`、`設計軸 5` 是 target 讀者不該需要懂的框架行話。框架的內部身分滲進 task content = 把 target 跟顧問工具耦死、破壞 self-containment（R-9 的延伸：R-9 管「誰改什麼」，R-12 管「改進去的內容不帶框架身分」）。
+- **典型踩法**（2026-05-24 figma2code dogfood 後業主抓到）：CONTRIBUTING 寫「完整設計圖在 meta-harness prescription（本機）」「動 wiring 前讀 universal-care-rules R-7/R-10」、known-diffs 寫「對應 prescription 設計軸 5」、code 註解寫「設計軸 5 預算護欄」——共 5 檔 7 處。
+- **規則**：
+  - (a) **設計依據用 target 自己的話講**：不是「因為 R-10」，而是把該原則翻成 target 語境的一句白話（「可機驗的改動先自己跑過再交付」）。
+  - (b) **provenance 最多一行可選 attribution**：業主想 credit 才加「Built with meta-harness（連結）」（如 ai-infra-management README）；預設不提。
+  - (c) prescription / 設計軸 / R-N 留在 **meta-harness 本機**（它們本來就 gitignored），不進 target。
+- **落地自檢**（顧問落地 / 跑 `/document` 後必跑）：
+  ```
+  grep -rn "meta-harness\|prescription\|設計軸\|universal-care\|consultant\|顧問\|Stage [0-9]\|R-[0-9]" <target> --include=*.md --include=*.mjs --include=*.ts | grep -v node_modules
+  ```
+  有命中（非 target 自身網站文案）= 洩漏，清掉。
+- **不適用**：target 自身內容剛好含這些字（如綠電網站文案「專業顧問服務」）——看語境，非框架行話不算。
+
 ---
 
 ## Domain-specific 規則不放這裡

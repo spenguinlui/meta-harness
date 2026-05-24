@@ -40,7 +40,7 @@ prescription_version: <v1, v1.5, v2 ...>
 
 ---
 
-## Part B：衛生規則對照（R-1~R-11 Compliance）
+## Part B：衛生規則對照（R-1~R-12 Compliance）
 
 對 [universal-care-rules.md](universal-care-rules.md) 每條規則的 compliance status：
 
@@ -57,6 +57,7 @@ prescription_version: <v1, v1.5, v2 ...>
 | R-9 framework vs 任務內容分流 | ... | ... |
 | R-10 可機驗 outcome 先自驗再交付 | ... | ... |
 | R-11 可被他人使用必交付說明書 | ... | 走 Step 5.5 `/document`；不交接的自用腳本 N/A |
+| R-12 target 落地檔 self-contained | ... | 落地後 grep target 無 meta-harness 行話 |
 
 **狀態語意**：
 - ✅ comply

@@ -94,6 +94,7 @@ description: meta-harness 顧問身分。任何 user 說「想用 AI / Claude Co
 - prescription 拆 Stage 1 / 2 / 3...
 - 逐 Stage 把檔案 Write 到 target repo（絕對路徑、cwd 不離開 meta-harness）
 - 多並行可用 sub-agent（耦合設計軸 10 Multi-agent）；單線跑也行
+- **落地檔 self-contained（R-12）**：寫進 target 的內容（含設計依據、註解）不引用 meta-harness 自身（prescription / R-N / 設計軸 / 顧問 jargon）——設計依據用 target 自己的話講；每 Stage 完 grep target 自檢無框架行話
 - 每 Stage 完跟業主說「第 N 期完工，可驗」
 
 ### Step 4.5：自驗 loop（強制，R-10）
