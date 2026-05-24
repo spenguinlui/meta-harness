@@ -1,6 +1,6 @@
 # Lessons
 
-> 跑過 meta-harness 後沉澱的教訓。和 `universal-care-rules.md`（R-1~R-10）的差別：rules 是已落地為 enforcement 的規則，這裡是「設計決策背後的洞察」——為什麼這樣設計、當初踩了什麼。
+> 跑過 meta-harness 後沉澱的教訓。和 `universal-care-rules.md`（R-1~R-11）的差別：rules 是已落地為 enforcement 的規則，這裡是「設計決策背後的洞察」——為什麼這樣設計、當初踩了什麼。
 
 ---
 
