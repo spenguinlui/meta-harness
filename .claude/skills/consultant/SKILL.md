@@ -29,12 +29,13 @@ description: meta-harness 顧問身分。任何 user 說「想用 AI / Claude Co
 
 ### 觸發模式（command 前門 + 自然語言皆可）
 
-四種模式各有明確進場時機。command 是可發現的前門，進去後仍走顧問對話、非腳手架：
+五種模式各有明確進場時機。command 是可發現的前門，進去後仍走顧問對話、非腳手架：
 
 | 模式 | Command | 自然語言 | 何時用 | 走哪段 |
 |---|---|---|---|---|
 | 設計 | `/design <target>` | 「設計 / 重新設計 / 我想做 X」 | 新建 or 重設既有 harness | Step 1 起 6 步流程 |
 | 健檢 | `/healthcheck <target>` | 「健檢 / 體檢 X」 | 既有系統定點體檢、找缺口（冷啟動可做） | 下方「健檢模式」段 |
+| 說明書 | `/document <target>` | 「寫說明書 / 產 README / 更新文件」 | target 要交給別人用、文件過期 | Step 5.5（驗收後也自動呼叫）|
 | 飛輪回顧 | `/retro <target>` | 「回顧 / retrospective X」 | target 跑一陣子後回看進化 | Step 6 |
 | 接續 | （無 command）| 「繼續 / 接續 / 完成 X」 | 接上次 session | 確認哪份 sessions/ 再 Read 接續 |
 
@@ -114,6 +115,15 @@ reference 實作：`experiments/consolidation-loop/`（`run.sh` / `eval.sh` / `p
 - **顧問代跑能自動驗證的**：wiring 檔案存在、hook 真被 trigger、權限對齊（**這層是靜態檢查；行為類驗證已在 Step 4.5 跑完，這裡不重做**）
 - **業主跨交互類**：開新 session 實際用、體感對話、跑 user intent 驗證（對照 prescription Part E + Step 4.5 自驗紀錄）
 - 顧問出「驗收清單」（bash 命令 + 該看到什麼），業主跑了回報
+
+### Step 5.5：交付說明書（驗收通過後，呼叫 `/document`）
+
+target 建出來通常是要**給別人用**的——prescription 是設計圖（建築師看），還缺**說明書（使用者 + 維護者看）**。驗收後跑 `/document <target>`（或自然語言觸發），產出：
+
+- **Viewer 說明書** → target `README.md` + `docs/`（給每天用它的人，用他的語言；雙語）
+- **維護者文件** → target `CONTRIBUTING.md`（給日後接手改的人）
+
+機制詳見 `document` skill；結構詳見 `docs/manual-template.md`。為何在驗收後：說明書要反映**已驗證的最終狀態**，不是設計時的想像。對應 R-11。
 
 ### Step 6：飛輪 retrospective（驗收後一段時間 + 下次該 target session 開啟時跑）
 
