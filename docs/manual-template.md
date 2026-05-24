@@ -75,6 +75,17 @@
 
 ---
 
+## 進階：大型 / 成熟 target 的文件組織（選用，來源：ai-infra-management）
+
+當 target 累積到很多份 docs（超出基本 README 的 1-10 段、有多個記憶 / 文件落點）時，光把文件平鋪會讓 viewer 不知從哪讀起。兩個 pattern 讓厚文件仍可導航：
+
+1. **讀順序階梯**（reading-order ladder）：不平鋪，給**分層讀順序**——「5 分鐘進入狀況 → 30 分鐘理解架構 → 動手 / 動 prod 前必讀 → 領域知識（碰到再查）→ 演化與歷史」。落在 `docs/_READING_ORDER.md`，README 指向它。對位設計軸 12（viewer 介面）+ 設計軸 3 反模式「把 memory 當文件平鋪丟人猜」的反向。
+2. **「寫東西前該問哪裡」路由表**：當 target 有多個記憶落點（如 knowledge / decisions / runbook / postmortems），給「想寫 X → 該進哪格」的決策表，避免內容亂落、之後召回變噪音。落在文件分流判準檔（如 `docs/<knowledge>/_README.md`）。
+
+**何時用**：target docs 超過約 8-10 份、或有多種記憶落點時。**小 target（figma2code 級）不必**——平鋪 1-10 段就夠，硬搞五層階梯反而過度（對位設計軸篩選「壽命 / 規模決定深度」）。
+
+---
+
 ## 產出守則
 
 1. **每段必有來源**：寫不出來源 = 該段在編造（R-4）→ 標 `[需業主補：<什麼>]`，不要流暢虛構。
