@@ -58,7 +58,7 @@ description: meta-harness 顧問——為已設計/落地的 target repo 產出�
 
 1. 逐檔 Write 到 target（絕對路徑）：Viewer 說明書（README 雙語 + 必要的 docs 雙語）+ 維護者文件（CONTRIBUTING 雙語）。
 2. 收尾跟業主說：產了哪些檔、主語言是什麼、哪些段標了 `[需業主補]`。
-3. **落地後跑 self-containment 自檢（R-12）**：`grep -rn "meta-harness\|prescription\|設計軸\|consultant\|顧問\|Stage [0-9]\|R-[0-9]" <target> --include=*.md` → 有命中（非 target 自身文案）= 洩漏框架身分，清掉。
+3. **落地後 self-containment 自檢（R-12，blocking gate）**：`grep -rn "meta-harness\|prescription\|設計軸\|consultant\|顧問\|Stage [0-9]\|R-[0-9]" <target> --include=*.md` → 有命中（非 target 自身文案）= 洩漏，**先清乾淨 + 再 grep 確認零命中才能 commit**。grep 跑成「印出來看看」不算做（會帶著洩漏 push 出去）。
 4. 文件是 target 的**任務內容介面層**——framework 結構由顧問落地（R-9）；commit 與否照業主 target 慣例。
 
 ## 反模式

@@ -134,7 +134,7 @@
   ```
   grep -rn "meta-harness\|prescription\|設計軸\|universal-care\|consultant\|顧問\|Stage [0-9]\|R-[0-9]" <target> --include=*.md --include=*.mjs --include=*.ts | grep -v node_modules
   ```
-  有命中（非 target 自身網站文案）= 洩漏，清掉。
+  **這是 blocking gate、不是裝飾**：有命中（非 target 自身文案）→ 先清乾淨 → 再跑一次 grep 確認零命中 → **才能 commit**。把 grep 跑成「印出來看看」就形同沒做（2026-05-24 顧問就是只看不擋，帶著 docs 網站洩漏 commit + push 出去才被抓）。
 - **不適用**：target 自身內容剛好含這些字（如綠電網站文案「專業顧問服務」）——看語境，非框架行話不算。
 
 ---
