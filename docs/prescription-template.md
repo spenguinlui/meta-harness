@@ -55,6 +55,8 @@ prescription_version: <v1, v1.5, v2 ...>
 | R-7 wiring 不固化壞流程 / fix 先 root cause | ... | ... |
 | R-8 跨層越權禁止 | ... | ... |
 | R-9 framework vs 任務內容分流 | ... | ... |
+| R-10 可機驗 outcome 先自驗再交付 | ... | ... |
+| R-11 可被他人使用必交付說明書 | ... | 走 Step 5.5 `/document`；不交接的自用腳本 N/A |
 
 **狀態語意**：
 - ✅ comply

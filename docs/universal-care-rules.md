@@ -110,6 +110,18 @@
   - R-7（不固化壞流程）：R-10 強制自驗會自然暴露壞流程，配合 R-7 改源頭而非疊蓋
   - R-9（framework vs 任務內容）：R-10 適用於 framework 改動 + 任務內容中 outcome 可機驗的部分；mutating ops 走 R-9(b) 業主自決
 
+## R-11：可被他人使用的 target 必交付說明書（don't ship without a manual）
+- **定義**：target 設計 / 落地後若會給「**不是 builder 的人**」用（交接、團隊、開源、甚至半年後的自己），交付前必產**雙語說明書**——Viewer 說明書 + 維護者文件。
+- **為什麼**：harness 的價值要被別人接得住才算交付。沒說明書 = 只有 builder 腦中知道怎麼用 = 換人即斷層（對應設計軸 12「builder 必存在 / 回饋通道」+ 設計軸 9 vs 12 兩個 IO 邊界）。prescription 是設計圖（建築師看），**不是**使用者說明書。
+- **規則**：
+  - (a) **Viewer 說明書**（target `README.md` + `docs/`）給每天用它的人，用**他的語言**（深度看 viewer 是不是該領域 peer——peer 直用術語、非 peer 白話 + 括號 + 藏實作細節）
+  - (b) **維護者文件**（target `CONTRIBUTING.md` / `docs/architecture.md`）給日後接手改的人，講架構 / wiring / 怎麼擴充
+  - (c) 兩讀者**分流不混**（混 = 設計軸 9/12 邊界反模式：builder 嫌囉嗦 + viewer 看不懂）
+  - (d) **雙語兩個檔、不交錯**（主檔 + companion + 頂端語言切換行；只翻散文，不翻程式碼 / 路徑 / 指令 / env 名 / 識別字）
+  - (e) 內容從 prescription + repo 現況萃取，**每段有來源、不流暢虛構**（接 R-4；缺口標 `[需業主補：X]`）
+- **不適用**：一次性純自用腳本（明確不交接 + 壽命短）。判準同設計軸 12「builder 不存在的 target 不該設計」的反面——有第二個使用者 / 交接可能就適用。
+- **落地**：流程 Step 5.5 跑 `/document` skill（驗收後）；結構見 `docs/manual-template.md`。
+
 ---
 
 ## Domain-specific 規則不放這裡
