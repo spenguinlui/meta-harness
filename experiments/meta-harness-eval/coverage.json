@@ -1,8 +1,20 @@
 {
   "target": "meta-harness",
-  "generated_at": "2026-05-27T16:01:02Z",
+  "generated_at": "2026-05-27T16:06:49Z",
   "runner": "experiments/meta-harness-eval/run-self-verify.sh",
   "scorers": [
+    {
+      "name": "test-consultant-skill-structure.sh",
+      "pattern": "A",
+      "checks": 12,
+      "last_pass": true
+    },
+    {
+      "name": "test-coverage-json-schema.sh",
+      "pattern": "A",
+      "checks": 2,
+      "last_pass": true
+    },
     {
       "name": "test-cross-references.sh",
       "pattern": "A",
@@ -52,6 +64,12 @@
       "last_pass": true
     },
     {
+      "name": "test-slash-command-flow-integrity.sh",
+      "pattern": "A",
+      "checks": 6,
+      "last_pass": true
+    },
+    {
       "name": "test-target-coverage.sh",
       "pattern": "A",
       "checks": 1,
@@ -65,25 +83,22 @@
     }
   ],
   "totals": {
-    "scorers": 10,
-    "checks_total": 196,
-    "checks_passed": 196
+    "scorers": 13,
+    "checks_total": 216,
+    "checks_passed": 216
   },
   "mechanisms_inventory": {
     "total": 15,
-    "covered": 10,
-    "coverage_pct": 67,
-    "uncovered": [
-      "slash-command-design-flow-integrity",
-      "slash-command-retro-flow-integrity",
-      "slash-command-document-flow-integrity",
-      "consultant-skill-prompt-quality (Pattern C，需 LLM-judge)",
-      "coverage.json-schema-validation (跨 target 結構齊一)"
+    "covered": 15,
+    "coverage_pct": 100,
+    "uncovered": [],
+    "_deferred": [
+      "consultant-skill-prompt-quality-deep-eval (Pattern C LLM-judge；目前由 test-consultant-skill-structure 做結構近似)"
     ],
     "_note": "builder 手動維護 total / uncovered；covered / coverage_pct 由 generate-coverage.sh 自動算"
   },
   "last_run": {
-    "timestamp": "2026-05-27T16:01:02Z",
+    "timestamp": "2026-05-27T16:06:49Z",
     "rc": 0
   }
 }
