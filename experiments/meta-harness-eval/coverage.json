@@ -1,6 +1,6 @@
 {
   "target": "meta-harness",
-  "generated_at": "2026-05-27T15:53:50Z",
+  "generated_at": "2026-05-27T16:01:02Z",
   "runner": "experiments/meta-harness-eval/run-self-verify.sh",
   "scorers": [
     {
@@ -10,40 +10,80 @@
       "last_pass": true
     },
     {
+      "name": "test-design-axes-doc-completeness.sh",
+      "pattern": "A",
+      "checks": 13,
+      "last_pass": true
+    },
+    {
+      "name": "test-healthcheck-axis-consistency.sh",
+      "pattern": "A",
+      "checks": 2,
+      "last_pass": true
+    },
+    {
       "name": "test-prescription-format.sh",
       "pattern": "A",
       "checks": 14,
       "last_pass": true
     },
     {
+      "name": "test-prescription-template-structure.sh",
+      "pattern": "A",
+      "checks": 8,
+      "last_pass": true
+    },
+    {
+      "name": "test-run-self-verify-runner-integrity.sh",
+      "pattern": "B",
+      "checks": 4,
+      "last_pass": true
+    },
+    {
+      "name": "test-self-verify-stop-hook-behavior.sh",
+      "pattern": "B",
+      "checks": 3,
+      "last_pass": true
+    },
+    {
+      "name": "test-skill-spec-format.sh",
+      "pattern": "A",
+      "checks": 2,
+      "last_pass": true
+    },
+    {
       "name": "test-target-coverage.sh",
       "pattern": "A",
-      "checks": 0,
+      "checks": 1,
+      "last_pass": true
+    },
+    {
+      "name": "test-universal-care-rules-schema.sh",
+      "pattern": "A",
+      "checks": 2,
       "last_pass": true
     }
   ],
   "totals": {
-    "scorers": 3,
-    "checks_total": 161,
-    "checks_passed": 161
+    "scorers": 10,
+    "checks_total": 196,
+    "checks_passed": 196
   },
   "mechanisms_inventory": {
-    "total": 10,
-    "covered": 3,
-    "coverage_pct": 30,
+    "total": 15,
+    "covered": 10,
+    "coverage_pct": 67,
     "uncovered": [
-      "healthcheck-command-axis-consistency",
-      "design-axes-doc-completeness",
-      "universal-care-rules-schema",
-      "skill-spec-format",
-      "prescription-template-structure",
-      "self-verify-stop-hook-behavior",
-      "run-self-verify-runner-integrity"
+      "slash-command-design-flow-integrity",
+      "slash-command-retro-flow-integrity",
+      "slash-command-document-flow-integrity",
+      "consultant-skill-prompt-quality (Pattern C，需 LLM-judge)",
+      "coverage.json-schema-validation (跨 target 結構齊一)"
     ],
     "_note": "builder 手動維護 total / uncovered；covered / coverage_pct 由 generate-coverage.sh 自動算"
   },
   "last_run": {
-    "timestamp": "2026-05-27T15:53:50Z",
+    "timestamp": "2026-05-27T16:01:02Z",
     "rc": 0
   }
 }
