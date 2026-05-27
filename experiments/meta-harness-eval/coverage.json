@@ -1,0 +1,49 @@
+{
+  "target": "meta-harness",
+  "generated_at": "2026-05-27T15:48:19Z",
+  "runner": "experiments/meta-harness-eval/run-self-verify.sh",
+  "scorers": [
+    {
+      "name": "test-cross-references.sh",
+      "pattern": "A",
+      "checks": 147,
+      "last_pass": true
+    },
+    {
+      "name": "test-prescription-format.sh",
+      "pattern": "A",
+      "checks": 14,
+      "last_pass": true
+    },
+    {
+      "name": "test-target-coverage.sh",
+      "pattern": "A",
+      "checks": 0,
+      "last_pass": true
+    }
+  ],
+  "totals": {
+    "scorers": 3,
+    "checks_total": 161,
+    "checks_passed": 161
+  },
+  "mechanisms_inventory": {
+    "total": 10,
+    "covered": 3,
+    "coverage_pct": 30,
+    "uncovered": [
+      "healthcheck-command-axis-consistency",
+      "design-axes-doc-completeness",
+      "universal-care-rules-schema",
+      "skill-spec-format",
+      "prescription-template-structure",
+      "self-verify-stop-hook-behavior",
+      "run-self-verify-runner-integrity"
+    ],
+    "_note": "builder 手動維護 total / uncovered；covered / coverage_pct 由 generate-coverage.sh 自動算"
+  },
+  "last_run": {
+    "timestamp": "2026-05-27T15:48:19Z",
+    "rc": 0
+  }
+}

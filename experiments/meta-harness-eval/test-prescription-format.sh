@@ -1,4 +1,5 @@
 #!/bin/bash
+# pattern: A
 # test-prescription-format.sh — 驗 prescriptions/*.md 結構齊（單一真實來源 + drift 偵測）
 #
 # 驗每份 prescription：

@@ -1,4 +1,5 @@
 #!/bin/bash
+# pattern: A
 # test-target-coverage.sh — 驗 targets.yml 列的 target 都有 coverage.json（軸 13 落地進度儀表板）
 #
 # 背景：coverage.json 是 Phase 3 才會引入的新概念（軸 13 自驗覆蓋率）。

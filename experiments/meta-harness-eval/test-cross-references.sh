@@ -1,4 +1,5 @@
 #!/bin/bash
+# pattern: A
 # test-cross-references.sh — 一鍵驗 prescriptions 引用的 R-N / 軸 N 真實存在
 # Pattern A：單一真實來源 + drift 偵測
 #   (A) R-N 真實清單  = docs/universal-care-rules.md 的 `^## R-\d+`
