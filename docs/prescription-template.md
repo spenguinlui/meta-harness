@@ -125,6 +125,32 @@ domain 自己的新抽象（target 業主的核心概念，如 Watcher / Recomme
   - 沒回饋通道 = 訊號流失 = 系統無法迭代
   - builder 不存在 = 結構問題，mechanism 救不了
 
+### 軟體工程紀律映射
+
+Wiring 設計可（也應該）用軟體工程方法學的語言來精確描述。常見對應：
+
+| 概念 | harness 對應例 | 出處 |
+|---|---|---|
+| **Strategy Pattern** | engine pluggable（agent-engines.yml + dispatch；claude vs codex 是同介面兩實作）| Design Patterns |
+| **Specification Pattern** | 規則資料化（如 atdd-task `tool-safety.yml` 的 destructive 清單）| Domain-Driven Design |
+| **Middleware / Chain of Responsibility** | hook 鏈（PreToolUse → Tool → PostToolUse → SubagentStop）| Design Patterns |
+| **Facade** | slash command（`/continue` 把底下 pipeline 包成單一入口）| Design Patterns |
+| **Repository** | MCP（`atdd_task_*` 封裝 task 持久化、與 client 解耦）| DDD |
+| **Bounded Context** | agent scope 紀律（risk-reviewer 不做 spec-gap，那是 gatekeeper 的）| DDD |
+| **Ubiquitous Language** | 「信心度」「e2eDecision」「reviewFindings」這類 domain 詞彙必須跨 prescription/skill/agent 一致 | DDD |
+| **Hexagonal / Ports-and-Adapters** | `ports/` 目錄結構（atdd-task `ports/mcp`/`ports/api`/`ports/worker`）| Clean Architecture |
+| **ATDD（Acceptance Test-Driven Development）** | 本 template Part E 必須先寫、Part D wiring 後落、`run-self-verify` 綠才算完 | XP / ATDD |
+| **SRP / DIP（SOLID）** | 單一責任：一個 hook 一個 gate；依賴反轉：agent prompt 不該依賴具體引擎（dispatch 層抽掉）| SOLID |
+
+**為什麼明寫**：違反 SRP 的 God hook、洩漏實作的 prompt、跨 context 的 ubiquitous language drift——這些在自驗 / hook 接口層會自然暴露。**有名字之後，設計討論的精度與 review 效率會提升**；不是為套 pattern 而套。
+
+**LLM-specific patterns**（傳統方法學未直接 cover、要在 harness domain 另建）：
+
+- 4 種自驗 pattern（單一真實來源+drift 偵測 / 觸發+斷言 / Scorer+METRICS / 快照+Diff）—— 對應傳統 unit test pattern 的 LLM-aware 演化版
+- prompt caching economy、agentic loop、eval-driven prompt iteration、model routing、context window 預算
+
+Prescription Part D 設計 wiring 時，若觸及這些 LLM-specific 議題（如 dispatch、cost-correct 量測），需明確標示採用的 pattern，便於跨 prescription 比對與重用。
+
 ---
 
 ## Part D：實作清單（要寫進 target 的具體 artifact）
@@ -248,6 +274,28 @@ top-level 新目錄（含入版控的空檔確保結構存在）。
 
 **通過**：prescription 真的落地到行為層（避免「文件講了沒落地」與「schema 靜默落空」兩種假象）。
 **失敗**：安裝不完整或規則沒被遵守，要修。
+
+### Self-verify 基建（target 級硬規則，與 R-10 配對）
+
+`Verify level=script` 的 V<n> **必須**對應一支 `experiments/<target>-eval/test-<feature>.sh`（target 內收，可機跑、無需 live session）。寫 scorer 走四種 pattern 之一（揀適合的、別硬發明）：
+
+| Pattern | 適用情境 | 招式 |
+|---|---|---|
+| **單一真實來源 + drift 偵測** | 配置 / wiring 跨檔一致性 | 在 script 內 hardcode 真實來源，parse N 個檔比對 |
+| **觸發 + 斷言** | hook / 中介機制是否被吃到 | 構造 stdin / 環境，呼叫 hook，斷言 stdout/exit code |
+| **Scorer + METRICS 行** | 行為品質（agent 輸出對不對）| 受控實例 + ground truth + 統一 `METRICS\|` 行供彙整 |
+| **快照 + Diff** | 副作用是否正確 | 跑前 snapshot state，跑後比 |
+
+**串成硬規則**（target 端施作）：
+
+- `experiments/<target>-eval/run-self-verify.sh` 為**單一 entry point**：跑所有 `test-*.sh`，回 0 / 1。`/done`、Stop hook、CI 都叫同一個。
+- `.claude/hooks/self-verify-on-stop.sh` 註冊到 `settings.json` 的 `Stop`：drift → exit 2 擋住 Claude 結束本輪。
+- target 端先做這兩條基建（一次性），之後每加一個 V<n>=script，只多寫一支 `test-*.sh`。
+
+**參考實作**（首落地 target）：`atdd-task` repo
+- runner：`experiments/atdd-eval/run-self-verify.sh`
+- Stop hook：`.claude/hooks/self-verify-on-stop.sh`
+- 已有的 scorer：`test-model-routing.sh`（Pattern 1）、`test-confidence-gate.sh`（Pattern 2）、`eval-coder.sh` / `eval-reviewer.sh` etc.（Pattern 3）
 
 ---
 

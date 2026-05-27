@@ -1,6 +1,6 @@
-# Harness 12 大設計軸（索引）
+# Harness 13 大設計軸（索引）
 
-> 任何 agent harness 都應在這 12 條軸上做出明確設計決策。每條都不是 0/1 開關，而是有十幾種選項，且彼此耦合。
+> 任何 agent harness 都應在這 13 條軸上做出明確設計決策。每條都不是 0/1 開關，而是有十幾種選項，且彼此耦合。
 > Stakes 不同的 target 不一定要全跑——小工具可能只需要設計軸 1/3/5，infra 管理類可能要 1-12 全套（業主與顧問共同篩選）。
 
 每條詳細設計決策、與其他設計軸耦合、反模式、案例評析在 `design-axes/` 子目錄：
@@ -17,6 +17,7 @@
 - [10. Multi-agent / Sub-agent Orchestration](design-axes/10-multi-agent-orchestration.md) — **2026-05-09 新增**
 - [11. Triggers / Schedule（active）](design-axes/11-triggers-schedule.md) — **主動**自我喚醒；**2026-05-09 新增**
 - [12. Human Interface](design-axes/12-human-interface.md) — **human-facing IO 邊界**（給每天用工具的人看，不是 builder）；**2026-05-11 新增**
+- [13. Self-Verify Coverage](design-axes/13-self-verify-coverage.md) — **自驗覆蓋率**（把 R-10 從紀律升級成 KPI）；**2026-05-27 新增**
 
 ## 7 vs 11 邊界
 
