@@ -10,9 +10,11 @@ set -u
 
 HUB="${CLAUDE_PROJECT_DIR:-$(cd "$(dirname "$0")/../.." && pwd)}"
 cd "$HUB" || exit 1
-EVAL_DIR="experiments/meta-harness-eval"
-COV="$EVAL_DIR/coverage.json"
-TARGET_NAME=$(basename "$HUB")  # meta-harness
+# 自動從腳本位置推 EVAL_DIR（portable，meta-harness 與各 target 共用同一份程式）
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+EVAL_DIR=${SCRIPT_DIR#${HUB}/}
+COV="${EVAL_DIR}/coverage.json"
+TARGET_NAME=$(basename "${HUB}")
 
 # 對每支 test 跑一次、抓 rc 與 check 數
 SCORERS_JSON=""; TOTAL_SCORERS=0; TOTAL_CHECKS=0; PASSED_CHECKS=0; ANY_FAIL=0

@@ -1,6 +1,6 @@
 {
   "target": "meta-harness",
-  "generated_at": "2026-05-27T15:48:19Z",
+  "generated_at": "2026-05-27T15:53:50Z",
   "runner": "experiments/meta-harness-eval/run-self-verify.sh",
   "scorers": [
     {
@@ -43,7 +43,7 @@
     "_note": "builder 手動維護 total / uncovered；covered / coverage_pct 由 generate-coverage.sh 自動算"
   },
   "last_run": {
-    "timestamp": "2026-05-27T15:48:19Z",
+    "timestamp": "2026-05-27T15:53:50Z",
     "rc": 0
   }
 }

@@ -46,14 +46,14 @@ for item in data:
     # path=None / null 是 concept 階段，跳過
     if not path:
         continue
-    rows.append((name, path))
+    rows.append((name, path, item.get('eval_dir') or ''))
 
 if not rows:
     print('SCHEMA_ERROR: 找不到任何 target 條目（需有 name + path）', file=sys.stderr)
     sys.exit(3)
 
-for n, p in rows:
-    print(n + '\t' + p)
+for n, p, ed in rows:
+    print(n + '\t' + p + '\t' + ed)
 " 2>&1)
 rc=$?
 
@@ -70,10 +70,12 @@ PENDING=0
 LANDED_LIST=""
 PENDING_LIST=""
 
-while IFS=$'\t' read -r name path; do
+while IFS=$'\t' read -r name path eval_dir; do
   [ -z "${name}" ] && continue
   TOTAL=$((TOTAL + 1))
-  COV="${path}/experiments/${name}-eval/coverage.json"
+  # eval_dir 可由 targets.yml 個別 override；無設定則用 experiments/<name>-eval
+  EVAL_REL="${eval_dir:-experiments/${name}-eval}"
+  COV="${path}/${EVAL_REL}/coverage.json"
   if [ -f "${COV}" ]; then
     LANDED=$((LANDED + 1))
     LANDED_LIST="${LANDED_LIST}  ✅ ${name}  →  ${COV}"$'\n'
