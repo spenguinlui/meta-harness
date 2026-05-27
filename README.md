@@ -162,19 +162,37 @@ Step 4 落地時，顧問會用**絕對路徑**把 wiring 檔案直接寫進你�
 |---|---|
 | `docs/getting-started.md` | **新手入口**——30 分鐘內跑完第一次 Phase 0 |
 | `.claude/skills/consultant/SKILL.md` | 顧問身分定義 + 完整 6 步流程（核心） |
-| `docs/design-axes.md` | **12 大設計軸索引**（設計參數總覽） |
+| `docs/design-axes.md` | **13 大設計軸索引**（設計參數總覽） |
 | `docs/design-axes/<n>.md` | 每條設計軸的深度選項 + 反模式 |
-| `docs/universal-care-rules.md` | universal rules（R-1~R-11，顧問內建強制遵守的衛生規則） |
+| `docs/universal-care-rules.md` | universal rules（R-1~R-12，顧問內建強制遵守的衛生規則） |
 | `docs/prescription-template.md` | 設計圖格式（review 時對照） |
 | `docs/manual-template.md` | 說明書格式（target 交付文件結構） |
 | `docs/consultant-flow.md` | 顧問決策邏輯（Phase 0→1 重排機制） |
 | `docs/lessons.md` | 實戰教訓 |
 
-### 12 大設計軸
+### 13 大設計軸
 
-> Tool / Context / Memory / Planning / Execution / Safety / Hooks / Eval / Observability / Multi-agent / Triggers / **Human Interface**
+> Tool / Context / Memory / Planning / Execution / Safety / Hooks / Eval / Observability / Multi-agent / Triggers / Human Interface / **Self-Verify Coverage**
 
 每一條都是「設計參數」而非開關，彼此耦合——這正是為什麼用顧問模式而非固定模板。
+
+### 軸 13 自驗覆蓋率（self-verify coverage）
+
+R-10「可機驗 outcome 必先自驗再交付」的**物理執行層 + KPI 化**。每個 target（包含 meta-harness 自身）落地三件套：
+
+- `experiments/<target>-eval/run-self-verify.sh` — 單一 entry point，跑所有 test-*.sh
+- `experiments/<target>-eval/test-*.sh` — 各 wiring 對應 scorer（依四 Pattern 寫）
+- `experiments/<target>-eval/coverage.json` — 數據面板（scorers / check 總數 / mechanism 覆蓋率）
+- `.claude/hooks/self-verify-on-stop.sh` + settings.json Stop 註冊 — drift 物理擋 session 結束
+
+**四 Pattern 分類**（每支 test-*.sh 必歸屬其一）：
+
+- **A. 單一真實來源 + drift 偵測**（配置 / wiring 跨檔一致性）
+- **B. 觸發 + 斷言**（hook / 中介機制是否被正確 trigger）
+- **C. Scorer + METRICS 行**（行為品質 / agent 輸出）
+- **D. 快照 + Diff**（副作用是否正確）
+
+落地參考：meta-harness 自身 30%（3/10）、atdd-task 47%（7/15）。詳見 `docs/design-axes/13-self-verify-coverage.md`。
 
 ---
 
@@ -182,21 +200,22 @@ Step 4 落地時，顧問會用**絕對路徑**把 wiring 檔案直接寫進你�
 
 ```
 .claude/
-  hooks/                    顧問 wiring 的 hook（cwd 守衛、行數檢查、提問自查）
+  hooks/                    顧問 wiring 的 hook（cwd 守衛、行數檢查、提問自查、self-verify-on-stop）
   skills/consultant/        顧問身分 skill（核心）
   skills/{design,healthcheck,retro,document}/  四個模式前門
   commands/                 slash command 可發現入口
-  settings.json             hook 註冊
+  settings.json             hook 註冊（含軸 13 Stop hook）
 docs/
   getting-started.md        新手入口
   consultant-flow.md        顧問決策邏輯
-  design-axes.md            12 設計軸索引
-  design-axes/              每設計軸深度
-  universal-care-rules.md   R-1~R-11 衛生規則
+  design-axes.md            13 設計軸索引
+  design-axes/              每設計軸深度（含 13-self-verify-coverage.md）
+  universal-care-rules.md   R-1~R-12 衛生規則
   prescription-template.md  設計圖格式
   manual-template.md        說明書格式
   lessons.md                實戰教訓
 experiments/
+  meta-harness-eval/        meta-harness 自身的軸 13 落地（runner / scorer / coverage.json）
   consolidation-loop/       自驗 loop 的 reference 實作（run.sh / eval.sh / prompts / gold）
 targets.yml.example         target 清單範本（cp 成 targets.yml 使用）
 ─── 以下 gitignored（各 fork 自家內容，不上 git）───
