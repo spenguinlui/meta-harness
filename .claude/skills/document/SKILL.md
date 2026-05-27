@@ -15,6 +15,11 @@ description: meta-harness 顧問——為已設計/落地的 target repo 產出�
 
 **雙語**：中英各一版（兩個檔、不交錯）。
 
+**公開發佈面（GitHub Pages 等）= 同一份事實的兩頁交付**，不是兩讀者塞同一頁：
+- `docs/index.html`（或等價入口）= **使用者版**，用 viewer 說明書的語言深度
+- `docs/maintainer.html`（或等價）= **維護者版**，用 CONTRIBUTING 的語言深度
+入口頁互相 link、明示「我是哪一版 / 另一版在這」。**不要把兩種讀者塞單一公開頁**。
+
 ## 開場 checklist
 
 1. `pwd` 確認 `~/meta-harness`（產出寫到 target 用絕對路徑，cwd 不離開 meta-harness）。
@@ -48,7 +53,10 @@ description: meta-harness 顧問——為已設計/落地的 target repo 產出�
 
 ```
 viewer：[誰]（如：PM / RD / 業務，工程非 peer）
-深度策略：[術語直用 or 白話展開]、[給/藏實作細節]
+深度策略：
+  - 業界術語（staging / dry-run / hook 等）：[直用 or 白話展開]
+  - 專案自創詞（taxonomy / coined terms）：首次出現必白話註解或改用功能名（不分 peer）
+  - 實作細節：[給/藏]
 ```
 
 這份宣告決定 10 個段落的每一段要怎麼寫。不輸出就動筆 = 跳過校準，必補。
@@ -114,7 +122,9 @@ viewer：[誰]（如：PM / RD / 業務，工程非 peer）
 | 反模式 | 描述 |
 |---|---|
 | 兩讀者混一份 | Viewer 說明書塞架構細節 / 維護者文件用 viewer 白話（違反設計軸 9/12 分流）|
+| 公開發佈面只給單一版本 | GitHub Pages / 對外 landing page 只生一個 index.html 把兩種讀者塞一起 → 必拆使用者版 + 維護者版兩頁，互相 link |
 | 一套模板套到底 | 不讀 human-profile，peer 與非 peer 給同深度 |
+| 自創詞首次出現未註解 | 專案內部 taxonomy（如「內視 / 外視」「Stage X」「G-N / R-N」）= 不是業界術語，**不分 peer 或非 peer，首次出現必白話註解或乾脆改用功能名**。peer 直用只適用業界詞（staging / dry-run / hook 等）|
 | 雙語交錯 | 中英同段交錯排版，兩種語言都讀不順 |
 | 流暢虛構 | 寫出 repo 沒有的指令 / 參數（違反 R-4）→ 該標 `[需業主補]` |
 | 翻譯識別字 | 把指令 / 路徑 / env 名 / 顏色碼也翻譯 → 複製貼上就壞 |
