@@ -1,3 +1,8 @@
+---
+layout: page
+eyebrow: Pattern Library · 索引
+---
+
 # Harness 13 大設計軸（索引）
 
 > 任何 agent harness 都應在這 13 條軸上做出明確設計決策。每條都不是 0/1 開關，而是有十幾種選項，且彼此耦合。

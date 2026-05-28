@@ -1,3 +1,8 @@
+---
+layout: page
+eyebrow: R-1 ~ R-12 衛生規則
+---
+
 # Universal Rules
 
 跨任何 harness target repo 通用的衛生規則。Domain 無關——不論該 repo 在做 infra 管理 / ATDD / figma 轉 code / google sheet builder / 別的，都該守。

@@ -1,3 +1,8 @@
+---
+layout: page
+eyebrow: Design Axis 13
+---
+
 # 設計軸 13：Self-Verify Coverage（自驗覆蓋率）
 
 target repo 的可機驗 wiring 是否都有對應自驗腳本＋持續被跑。從**事件性的 R-10 紀律**升級成**可量化的飛輪 KPI**。

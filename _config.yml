@@ -1,0 +1,24 @@
+# Minimal Jekyll config for meta-harness GitHub Pages
+# Only renders .md files that explicitly declare `layout: page` in front-matter.
+# index.html / maintainer.html have no front-matter so they pass through unchanged.
+
+theme: null
+markdown: kramdown
+highlighter: rouge
+kramdown:
+  syntax_highlighter_opts:
+    css_class: highlight
+plugins: []
+
+# Don't try to render private / methodology source that shouldn't be on the public site.
+# (these are also gitignored, but list explicitly so future additions don't auto-leak)
+exclude:
+  - BACKLOG.md
+  - sessions/
+  - prescriptions/
+  - cases/
+  - experiments/*/runs/
+  - targets.yml
+  - .claude/
+  - CONTRIBUTING.en.md  # 暫不上 EN 維護者頁；之後想上時加 front-matter 即可
+  - README.en.md        # 同上

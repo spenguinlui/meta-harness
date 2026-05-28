@@ -1,3 +1,8 @@
+---
+layout: page
+eyebrow: Maintainer Guide
+---
+
 > 🌐 **繁體中文** | [English](CONTRIBUTING.en.md)
 
 # 擴充 meta-harness 方法學

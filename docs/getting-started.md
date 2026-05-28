@@ -1,3 +1,8 @@
+---
+layout: page
+eyebrow: 新手入口
+---
+
 # Getting Started with meta-harness
 
 > 讀完這份文件你應該能在 30 分鐘內跑完第一次顧問 session 的 Step 1（需求訪談）。

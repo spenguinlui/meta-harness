@@ -1,3 +1,8 @@
+---
+layout: page
+eyebrow: 顧問決策邏輯
+---
+
 # Consultant Flow：Phase 0 → Phase 1 重排機制
 
 > 這份文件記錄顧問腦中的決策邏輯——訪談結論怎麼轉成設計圖，哪些軸要深設計、哪些略過。SKILL.md 說「做什麼步驟」，這裡說「怎麼判斷」。
