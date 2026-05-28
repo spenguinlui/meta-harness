@@ -253,15 +253,12 @@ main section + section { padding-top: 0; }
 }
 .kb-list li::before {
   content: '';
-  position: absolute; left: 0; top: 11px;
-  width: 12px; height: 14px;
-  background-image: linear-gradient(var(--ink-light), var(--ink-light));
+  position: absolute; left: 0; top: 9px;
+  width: 13px; height: 15px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 13 15' fill='none' stroke='%239AA5B1' stroke-width='1.1' stroke-linejoin='round'><path d='M1.5 1.5h6.5l3.5 3.5v8.5h-10z'/><path d='M8 1.5v3.5h3.5'/></svg>");
   background-repeat: no-repeat;
-  background-size: 10px 12px;
-  background-position: 0 0;
-  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 14'><path fill='black' d='M1 1h7l3 3v9H1z' fill-opacity='.0' stroke='black' stroke-width='1'/></svg>") no-repeat center;
-          mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 14'><path fill='black' d='M1 1h7l3 3v9H1z' fill-opacity='.0' stroke='black' stroke-width='1'/></svg>") no-repeat center;
-  opacity: .55;
+  background-size: 13px 15px;
+  opacity: .85;
 }
 .kb-list a {
   color: var(--ink-soft);
