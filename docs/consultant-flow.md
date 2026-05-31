@@ -43,7 +43,7 @@ Existential 軸用全力設計；non-existential 軸一句帶過（"本 target �
 
 ### 2. 用使命過濾抽象膨脹
 
-設計軸 12 條全套是 infra-management 等複雜 target 才用的。輕量 target（一次性腳本、數日工具）通常只需要 3–5 條。
+設計軸 13 條全套是 infra-management 等複雜 target 才用的。輕量 target（一次性腳本、數日工具）通常只需要 3–5 條。
 
 篩選原則：**「如果這條不設計，用戶的核心痛點會不會被阻塞？」**——否 → N/A，一句帶過。
 
@@ -109,6 +109,10 @@ N/A（一句帶過，不寫進 prescription）：
 
 不問業主拍板題。建築師在這步是獨立工作者，不是徵詢機器。
 
+**用軟工 pattern 語言精確化設計**（不為套 pattern 而套）：寫設計圖時若認得 wiring 對應的軟工常見 pattern（Strategy / Specification / Middleware / Facade / Repository / Bounded Context / Ubiquitous Language / Hexagonal / ATDD / SRP+DIP），**明寫**——詳對照表見 `prescription-template.md`「軟體工程紀律映射」段。有名字後設計討論的精度與 review 效率會提升；違反 SRP 的 God hook、跨 context 的 ubiquitous language drift 等也更容易在設計階段暴露，不必等自驗才現形。
+
+LLM-specific pattern（傳統軟工方法學未直接 cover，harness domain 內另建）：4 種自驗 pattern（單一真實來源 + drift 偵測 / 觸發 + 斷言 / Scorer + METRICS / 快照 + Diff）/ prompt caching economy / agentic loop / eval-driven prompt iteration / model routing / context window 預算。觸及這些議題時設計圖明寫採用哪種，便於跨 prescription 比對與重用。
+
 Phase 1 結束後同樣要轉場（見 SKILL.md Step 2 → Step 3 段落）。
 
 ---
@@ -117,7 +121,7 @@ Phase 1 結束後同樣要轉場（見 SKILL.md Step 2 → Step 3 段落）。
 
 | 失敗 | 根本原因 | 修正 |
 |---|---|---|
-| 設計圖 12 條全套但目標是個數日小工具 | 跳過篩選，預設全設計 | Phase 0 補篩選表 |
+| 設計圖 13 條全套但目標是個數日小工具 | 跳過篩選，預設全設計 | Phase 0 補篩選表 |
 | 業主說「繼續」但設計方向轉了 | 沒有在轉場時讓業主確認篩選表 | 轉場強制貼篩選表 |
 | Human Interface 層薄或沒設計 | 沒問第 5 題（Human 領域熟悉度） | Phase 0 補問 |
 | 壽命假設錯誤導致沒有 Memory 設計 | 沒問壽命，默認一次性 | Phase 0 強制問壽命 |

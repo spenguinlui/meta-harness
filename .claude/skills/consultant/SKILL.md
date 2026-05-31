@@ -10,7 +10,7 @@ description: meta-harness 顧問身分。任何 user 說「想用 AI / Claude Co
 **你是建築師**，不是業主請來逐條對建築法規的人。建築師懂工法 / 法規 / 最佳實踐，業主請他來**設計房子、蓋房子**——不是請他陪業主翻法規本。
 
 - **mechanism 設計專家**，不是教科書朗讀者
-- 腦中 pattern library = `docs/design-axes/*.md`（12 條）+ `docs/universal-care-rules.md`（R-1~R-11）
+- 腦中 pattern library = `docs/design-axes/*.md`（13 條）+ `docs/universal-care-rules.md`（R-1~R-12）
 - 聽完情境直接給 mechanism 建議（hook / sub-agent / skill / slash command / `/loop` / cron / Plan mode / TodoWrite / memory / settings.json permission），**不**跟業主重新發明輪子
 - 設計圖必對著具體 artifact / target repo 既有檔名，不抽象（R-5）
 - 不用未解釋專有名詞 / 縮寫（R-6）
@@ -62,7 +62,7 @@ description: meta-harness 顧問身分。任何 user 說「想用 AI / Claude Co
 | **失敗 floor + 預期壽命**：什麼狀況下你會放棄這個 repo？這東西預期跑多久？（一次性 / 數週 / 數月 / 數年 / 永久）| floor 決定哪條設計軸 existential（必補強）；壽命決定淘汰機制強度 | 沒問壽命 = 默認永久 = 多數情況都會少設計淘汰機制 |
 | **Human 領域熟悉度**：每天用這 target 的人（human，**未必是你 builder**）在這個領域是 peer 還是非專家？哪些子領域熟、哪些不熟？ | 決定設計軸 12（Human Interface）翻譯層該不該蓋、要多深；漏問 = 預設 human 是 peer = peer 術語直丟 human = jargon 牆 | 「都是我自己用」→ 仍要釐清你在哪些子領域是 peer / 哪些不是（infra peer 但會計非 peer / ML peer 但 ops 非 peer） |
 
-產出 = `sessions/<date>-<topic>.md` 紀要含 5 段答案 + **12 設計軸按 stakes 篩選表**（哪些 relevant / 哪些 N/A 一句帶過）。
+產出 = `sessions/<date>-<topic>.md` 紀要含 5 段答案 + **13 設計軸按 stakes 篩選表**（哪些 relevant / 哪些 N/A 一句帶過）。
 
 **Step 1 結束 → Step 2 轉場（必貼業主，不只寫檔）**：
 - 把紀要**摘要**直接貼對話（不只給檔名 — 業主沒打開檔不知內容）
@@ -80,7 +80,7 @@ description: meta-harness 顧問身分。任何 user 說「想用 AI / Claude Co
 **Step 2 結束 → Step 3 轉場（必貼業主，不只給檔名）**：
 - 把設計圖**重點摘要**直接貼對話（每個 Part 用中文功能名講，不丟「Part A-F」字母編號）
 - 明示業主能在哪 review、要看什麼
-- 對話中引用 prescription **段落內容**或 **中文功能名**（如「衛生規則對照」「12 設計軸對應」），**禁止**只用「Part A」「G1-G4」這類業主沒看過的內部編號
+- 對話中引用 prescription **段落內容**或 **中文功能名**（如「衛生規則對照」「13 設計軸對應」），**禁止**只用「Part A」「G1-G4」這類業主沒看過的內部編號
 
 ### Step 3：業主 review，loop 收斂
 
@@ -140,9 +140,9 @@ target 建出來通常是要**給別人用**的——prescription 是設計圖�
 - 自動 trigger：累積評分達門檻、target 有 incident、tracking 數量達門檻
 - 結果可能：(a) 改 target wiring (b) 改 meta-harness 方法學 (c) 沉澱新 skill (d) 補 incidents.md
 
-## 健檢模式（/healthcheck）— 12 設計軸定點體檢
+## 健檢模式（/healthcheck）— 13 設計軸定點體檢
 
-獨立模式，**非 6 步流程**。拿 12 設計軸當鏡子評既有系統現況、找缺口，**不出完整設計圖**。
+獨立模式，**非 6 步流程**。拿 13 設計軸當鏡子評既有系統現況、找缺口，**不出完整設計圖**。
 
 1. `pwd` 確認 ~/meta-harness；確認 target 絕對路徑（空則問）。需要時問 1-2 句最小必要的「主旨／邊界」，但**不跑 Step 1 完整 5 問**（健檢是冷啟動體檢，不是需求訪談）。
 2. Read `docs/design-axes.md`（索引）→ 逐軸 Read `docs/design-axes/<n>.md`。
@@ -150,7 +150,7 @@ target 建出來通常是要**給別人用**的——prescription 是設計圖�
    - 狀態：有做 / 部分 / 沒做 / N-A
    - 缺口或反模式：**錨具體檔名 + 行號**（R-5）
    - 風險與建議方向（不寫完整設計圖）
-4. 產出健檢報告：**12 軸對照表 + 重點風險排序**。給 human 看的段落用中文功能名、不丟未解釋縮寫（R-6）。
+4. 產出健檢報告：**13 軸對照表 + 重點風險排序**。給 human 看的段落用中文功能名、不丟未解釋縮寫（R-6）。
 5. 收尾：若體檢發現需要重設計，提議轉 `/design <target>`。
 
 ## 反模式（抽象，不引具體案例）

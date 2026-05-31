@@ -15,6 +15,11 @@
 
 混在一份 = builder 嫌囉嗦 + viewer 看不懂（設計軸 9/12 邊界反模式）。
 
+**公開發佈面（GitHub Pages 等）也拆兩頁**——同一個 9/12 分流只是換到對外面：
+- `docs/index.html`（或等價入口）= **使用者版**，用 viewer 說明書的語言深度
+- `docs/maintainer.html`（或等價）= **維護者版**，用 CONTRIBUTING 的語言深度
+- 入口頁互相 link、明示「我是哪一版 / 另一版在這」。**把兩種讀者塞單一公開頁 = 9/12 反模式只是換場地**。
+
 ---
 
 ## Viewer 說明書結構（README.md 為入口，深的下沉 docs/）
@@ -28,7 +33,7 @@
 | 3 | **存取與參數** | `.env` 要哪些值 **+ 怎麼拿到**（帳號 / token / 權限申請步驟） | `.env.example` + Part A persona |
 | 4 | **怎麼用 / 常見任務** | 「我想做 X → 這樣下指令」具體範例（viewer 最常讀的一段） | Part A 使命 + Part E user intent |
 | 5 | **工作流程迴圈（人 vs AI 分工）**（條件性） | 畫出 agent 自動循環的迴圈 + 人在哪交棒 / 何時拿回控制驗收（ASCII 圖最清楚）。和 #4「常見任務」不同:#4 是「能叫它做什麼」,#5 是「叫了之後 AI 自己在迴圈裡自動做什麼、你何時不用管」 | **target 有 AI 自動 loop 時必寫**（設計軸 5 execution loop + 12 human interface） |
-| 6 | **可用指令 / skill 清單** | 有哪些 `/command`、各自何時用（一句白話用途） | `.claude/skills/` + `.claude/commands/` |
+| 6 | **可用指令 / skill 清單** | 有哪些 `/command`、各自何時用（一句白話）。**每個 command 列齊所有 invocation 叫法**（grep `## Modes` / `Parse $ARGUMENTS` / `Stage 0` 段，不只抄 front-matter description——viewer 否則以為只能用嚴格 grammar）。**互動詢問**（`AskUserQuestion` 跳出問什麼、選項是什麼、想跳過該帶哪個 flag）必獨立段呈現 | `.claude/skills/` + `.claude/commands/`（**逐 command 讀內文，不只 front-matter**） |
 | 7 | **產出什麼 + 怎麼確認做對了** | 會生出哪些檔 / 結果 + viewer 怎麼驗證成功 | Part D 產出 + Part E 驗收 |
 | 8 | **邊界:不做什麼 + 已知限制** | 明確排除的能力 + known limitations（防誤用、防錯誤期待） | Part A anti-scope + Part F |
 | 9 | **出錯怎麼辦** | 常見失敗 → 怎麼救（含 error message 對照） | Part F + 實測踩過的坑 |
@@ -74,6 +79,11 @@
 | 多角色 | 分層輸出（老闆視角 / 執行者視角折疊） | 每角色預設一層 |
 
 只蓋翻譯不蓋粒度 = 資深嫌囉嗦 + 初級卡關（設計軸 12 反模式）。
+
+**自創詞 vs 業界術語（不分 peer/非 peer，校準維度不同）**：
+
+- **業界術語**（staging / dry-run / hook / CI / regression / fan-out）：上表 peer 規則適用——peer 直用、非 peer 白話 + 括號。
+- **自創詞 / 專案 taxonomy**（專案內部創的詞，如「內視 / 外視」「Stage X」「G-N / R-N」這類）：**不分 peer 或非 peer，首次出現必白話註解或改用功能名**。peer 也不該被迫去學你內部分類詞——他懂業界詞、不懂你公司專案內部創的名字。
 
 ---
 

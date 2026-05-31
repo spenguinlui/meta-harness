@@ -1,12 +1,12 @@
 # Lessons
 
-> 跑過 meta-harness 後沉澱的教訓。和 `universal-care-rules.md`（R-1~R-11）的差別：rules 是已落地為 enforcement 的規則，這裡是「設計決策背後的洞察」——為什麼這樣設計、當初踩了什麼。
+> 跑過 meta-harness 後沉澱的教訓。和 `universal-care-rules.md`（R-1~R-12）的差別：rules 是已落地為 enforcement 的規則，這裡是「設計決策背後的洞察」——為什麼這樣設計、當初踩了什麼。
 
 ---
 
 ## Prescription 預設偏向 bash / Claude Code artifact
 
-meta-harness 的 12 設計軸本身是介質中性的——Tool 執行、Memory、Planning loop、Eval 對任何 AI agent harness 都成立，不論它是 bash script、web app、SaaS 還是 hybrid 產品（如 OpenClaw、Hermes agent 這類本體是 SaaS 的 AI harness）。
+meta-harness 的 13 設計軸本身是介質中性的——Tool 執行、Memory、Planning loop、Eval 對任何 AI agent harness 都成立，不論它是 bash script、web app、SaaS 還是 hybrid 產品（如 OpenClaw、Hermes agent 這類本體是 SaaS 的 AI harness）。
 
 偏差不在設計軸，在 prescription Part D——安裝清單預設寫的是 `.claude/hooks/`、`bin/`、`settings.json`，顧問看到這個格式自然往 bash 套，對著一個需要 API route / DB schema / frontend component 的 target 寫出錯的 artifact。
 
@@ -43,7 +43,7 @@ meta-harness 的 12 設計軸本身是介質中性的——Tool 執行、Memory�
 
 ## 設計軸不是 checklist，是參數空間
 
-第一直覺是「12 條軸逐一填完 = 設計完成」。實際上 12 條是參數空間，大多數 target 只需要設計其中 3–6 條；剩下的是 N/A 或一句帶過。
+第一直覺是「13 條軸逐一填完 = 設計完成」。實際上 13 條是參數空間，大多數 target 只需要設計其中 3–6 條；剩下的是 N/A 或一句帶過。
 
 差別在哪裡：
 - **全填** → 設計圖膨脹，業主 review 30 分鐘沒結論
@@ -176,3 +176,15 @@ manual-template 的 Viewer 段原本只有「我想做 X → 這樣說」(任務
 根因:「常見任務」回答「**能叫它做什麼**」,但沒回答「**叫了之後 control flow 怎麼跑**」。這兩個是不同問題。對位設計軸 5(execution loop)+ 12(human interface 的「可中斷時機 / 控制權交還」)——設計軸有，但說明書模板漏了把它畫給 viewer。
 
 修正:manual-template 加 Viewer #5「工作流程迴圈(人 vs AI 分工)」,agent-loop target 必寫;ASCII loop 圖最清楚(誰在迴圈裡、AI 自動循環什麼、何時回報驗收)。/document checklist 同步加。業主一句「很難理解到 AI 工作流程 Loop」點出的。
+
+---
+
+## 軟工 pattern 語言不是學術裝飾，是設計階段的精度工具
+
+harness wiring 設計常被當成「自由發揮的 prompt + script」,但很多場景其實有現成的軟工 pattern 對應(Strategy / Specification / Middleware / Facade / Repository / Bounded Context / Ubiquitous Language / Hexagonal / ATDD / SRP+DIP)。**明寫採用哪個 pattern,設計討論的精度跟 review 效率都會提升**;違反 SRP 的 God hook、跨 context 的 ubiquitous language drift 等問題,在設計階段就會被名字暴露,不必等 self-verify 才現形。
+
+不是為套 pattern 而套——是 wiring 本來就在跟軟工結構相同的問題對齊(可替換引擎 = Strategy、規則資料化 = Specification、hook 鏈 = Chain of Responsibility),只是沒被叫出名字。叫出來,review 視角就從「這寫對嗎」升級成「這個 pattern 的 trade-off 在這 target 該怎麼選」。
+
+LLM-specific pattern(傳統方法學沒 cover 的)同理:4 種自驗 pattern / agentic loop / prompt caching economy / model routing / context window 預算——也是設計階段就標,跨 prescription 才能比對與重用。
+
+對應 `prescription-template.md` 軟工紀律映射段;Phase 1 設計時 consultant-flow 提示用此語言。

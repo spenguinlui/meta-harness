@@ -67,9 +67,9 @@ prescription_version: <v1, v1.5, v2 ...>
 
 ---
 
-## Part C：12 設計軸對應 + domain 新抽象（mechanism wiring）
+## Part C：13 設計軸對應 + domain 新抽象（mechanism wiring）
 
-對 [12 設計軸](design-axes/) 每條，產出特化 prescription。**每條必含五個欄位**——少了 Mechanism 就走進「**有圖書館但沒人翻、有筆記本但沒人寫**」的反模式：只寫格式（static config）卻沒寫「何時讀／何時寫／lifecycle／validation」，AI 就自由發揮、可能完全不主動寫、或被 Claude Code 內建 memory 取代。
+對 [13 設計軸](design-axes/) 每條，產出特化 prescription。**每條必含五個欄位**——少了 Mechanism 就走進「**有圖書館但沒人翻、有筆記本但沒人寫**」的反模式：只寫格式（static config）卻沒寫「何時讀／何時寫／lifecycle／validation」，AI 就自由發揮、可能完全不主動寫、或被 Claude Code 內建 memory 取代。
 
 ```
 ### Design Axis N: <name>
