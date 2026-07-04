@@ -46,7 +46,10 @@ for item in data:
     # path=None / null 是 concept 階段，跳過
     if not path:
         continue
-    rows.append((name, path, item.get('eval_dir') or ''))
+    # eval_dir：新 schema 在 machine 欄；舊 schema 在 top-level（相容 fallback）
+    machine = item.get('machine') or {}
+    eval_dir = machine.get('eval_dir') or item.get('eval_dir') or ''
+    rows.append((name, path, eval_dir))
 
 if not rows:
     print('SCHEMA_ERROR: 找不到任何 target 條目（需有 name + path）', file=sys.stderr)

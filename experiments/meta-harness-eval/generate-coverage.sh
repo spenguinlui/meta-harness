@@ -60,7 +60,7 @@ def derive_inventory():
     for tpl in ("prescription-template.md", "manual-template.md"):
         if os.path.isfile(os.path.join(hub, "docs", tpl)):
             inv.append("docs:" + tpl)
-    for e in ("run-self-verify.sh", "generate-coverage.sh"):
+    for e in ("run-self-verify.sh", "generate-coverage.sh", "derive-targets.sh"):
         if os.path.isfile(os.path.join(hub, eval_dir, e)):
             inv.append("eval:" + e)
     seen, out = set(), []
@@ -207,7 +207,7 @@ def derive_inventory():
     for tpl in ("prescription-template.md", "manual-template.md"):
         if os.path.isfile(os.path.join(hub, "docs", tpl)):
             inv.append("docs:" + tpl)
-    for e in ("run-self-verify.sh", "generate-coverage.sh"):
+    for e in ("run-self-verify.sh", "generate-coverage.sh", "derive-targets.sh"):
         if os.path.isfile(os.path.join(hub, eval_dir, e)):
             inv.append("eval:" + e)
     seen, out = set(), []

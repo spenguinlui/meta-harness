@@ -1,8 +1,15 @@
 {
   "target": "meta-harness",
-  "generated_at": "2026-07-04T09:25:14Z",
+  "generated_at": "2026-07-04T11:58:42Z",
   "runner": "experiments/meta-harness-eval/run-self-verify.sh",
   "scorers": [
+    {
+      "name": "test-backlog-aging.sh",
+      "pattern": "A",
+      "checks": 8,
+      "last_pass": true,
+      "covers": []
+    },
     {
       "name": "test-consultant-skill-structure.sh",
       "pattern": "A",
@@ -77,6 +84,15 @@
       ]
     },
     {
+      "name": "test-registry-freshness.sh",
+      "pattern": "A",
+      "checks": 1,
+      "last_pass": true,
+      "covers": [
+        "eval:derive-targets.sh"
+      ]
+    },
+    {
       "name": "test-run-self-verify-runner-integrity.sh",
       "pattern": "B",
       "checks": 4,
@@ -132,16 +148,16 @@
     }
   ],
   "totals": {
-    "scorers": 15,
-    "checks_total": 518,
-    "checks_passed": 518,
-    "format_checks": 518,
+    "scorers": 17,
+    "checks_total": 527,
+    "checks_passed": 527,
+    "format_checks": 527,
     "semantic_checks": 0
   },
   "mechanisms_inventory": {
-    "total": 15,
-    "covered": 10,
-    "coverage_pct": 67,
+    "total": 16,
+    "covered": 11,
+    "coverage_pct": 69,
     "uncovered": [
       "bin:r12-gate.sh",
       "docs:manual-template.md",
@@ -158,6 +174,7 @@
       "command:retro.md",
       "docs:manual-template.md",
       "docs:prescription-template.md",
+      "eval:derive-targets.sh",
       "eval:generate-coverage.sh",
       "eval:run-self-verify.sh",
       "hook:cwd-guard.sh",
@@ -170,7 +187,7 @@
     "_note": "machine-derived by generate-coverage.sh（掃 settings.json hooks × commands × skills × bin × docs 模板 × eval 基建）。人工不可直接改 total / inventory；只能在 coverage-exclusions.json 加排除項（附 reason）。手改本區塊 → `generate-coverage.sh --check` 會抓。"
   },
   "last_run": {
-    "timestamp": "2026-07-04T09:25:14Z",
+    "timestamp": "2026-07-04T11:58:42Z",
     "rc": 0
   }
 }

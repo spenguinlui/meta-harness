@@ -30,7 +30,8 @@ for item in data:
     if not isinstance(item, dict): continue
     name = item.get('name'); path = item.get('path')
     if not name or not path: continue
-    eval_dir = item.get('eval_dir') or f"experiments/{name}-eval"
+    machine = item.get('machine') or {}
+    eval_dir = machine.get('eval_dir') or item.get('eval_dir') or f"experiments/{name}-eval"
     cov = f"{path}/{eval_dir}/coverage.json"
     if os.path.isfile(cov):
         print(f"{name}\t{cov}")
