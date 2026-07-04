@@ -14,7 +14,7 @@
   domain: 個人 AWS infra 管理
   last_audited: 2026-05-03
   notes: |
-    Phase 0 已跑（2026-05-03），9 支柱 audit 完成。
+    Phase 0 已跑（2026-05-03），13 設計軸 audit 完成。
     下次重跑觸發：新增 cross-account 操作 / 半年到期。
 
 - name: my-ai-automation

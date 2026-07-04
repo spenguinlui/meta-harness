@@ -135,11 +135,8 @@ eyebrow: R-1 ~ R-12 衛生規則
   - (a) **設計依據用 target 自己的話講**：不是「因為 R-10」，而是把該原則翻成 target 語境的一句白話（「可機驗的改動先自己跑過再交付」）。
   - (b) **provenance 最多一行可選 attribution**：業主想 credit 才加「Built with meta-harness（連結）」（如 ai-infra-management README）；預設不提。
   - (c) prescription / 設計軸 / R-N 留在 **meta-harness 本機**（它們本來就 gitignored），不進 target。
-- **落地自檢**（顧問落地 / 跑 `/document` 後必跑）：
-  ```
-  grep -rn "meta-harness\|prescription\|設計軸\|universal-care\|consultant\|顧問\|Stage [0-9]\|R-[0-9]" <target> --include=*.md --include=*.mjs --include=*.ts | grep -v node_modules
-  ```
-  **這是 blocking gate、不是裝飾**：有命中（非 target 自身文案）→ 先清乾淨 → 再跑一次 grep 確認零命中 → **才能 commit**。把 grep 跑成「印出來看看」就形同沒做（2026-05-24 顧問就是只看不擋，帶著 docs 網站洩漏 commit + push 出去才被抓）。
+- **落地自檢**（顧問落地 / 跑 `/document` 後必跑）：跑 `bin/r12-gate.sh <target>`（**單一出處，勿再手抄 grep**）。退出碼 0 = 零命中過關；1 = 有命中並把命中行印出。關鍵字集合 / include 副檔名 / node_modules 排除都封在該 script 裡，改檢查語意改那支。
+  **這是 blocking gate、不是裝飾**：有命中（非 target 自身文案）→ 先清乾淨 → 再跑一次 `bin/r12-gate.sh` 確認零命中 → **才能 commit**。把 gate 跑成「印出來看看」就形同沒做（2026-05-24 顧問就是只看不擋，帶著 docs 網站洩漏 commit + push 出去才被抓）。
 - **不適用**：target 自身內容剛好含這些字（如綠電網站文案「專業顧問服務」）——看語境，非框架行話不算。
 
 ---

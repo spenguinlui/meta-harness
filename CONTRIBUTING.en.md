@@ -23,8 +23,8 @@ Knowledge layer docs/design-axes/ (13 axes)            Design parameter space (i
                 docs/manual-template.md                Manual format
                 docs/lessons.md                        Insights accumulated (not necessarily elevated to R-N)
 
-Front-door     .claude/commands/                       design / healthcheck / retro three slash commands
-                .claude/hooks/                          cwd guard, R-1/R-3/R-5/R-6 enforce, self-verify-on-stop
+Front-door     .claude/commands/                       design / healthcheck / retro / document four slash commands
+                .claude/hooks/                          cwd guard + line/question reminders (3 advisory) + self-verify-on-stop (1 blocking)
 
 Self-verify    experiments/meta-harness-eval/          meta-harness's own axis 13 landing
                 ├── run-self-verify.sh                  Single entry point (13 scorers / 216 checks)
@@ -34,7 +34,7 @@ Self-verify    experiments/meta-harness-eval/          meta-harness's own axis 1
 ```
 
 - **13 design axes** = design **parameter space** (not a checklist), coupled to each other.
-- **R-1~R-12** = cross-target hygiene floor (rules that have landed as enforcement).
+- **R-1~R-12** = cross-target hygiene floor (written rules; landing is mostly hook reminders — only the Stop hook can block).
 - **`docs/lessons.md`** = insights (the why), distinct from rules: rules are mandatory, lessons are experience.
 
 ### Dog food three-layer closed loop (meta-harness proves its own methodology)
@@ -59,11 +59,12 @@ This CONTRIBUTING (meta-harness's maintainer doc to itself)
 |---|---|
 | `.claude/skills/consultant/` | Consultant identity + complete 6-step flow (core; loads on any mode entry) |
 | `.claude/skills/document/` | `/document` mode logic (bilingual README + CONTRIBUTING auto-production) |
-| `.claude/commands/{design,healthcheck,retro}.md` | Three front-door slash commands |
-| `.claude/hooks/cwd-guard.sh` | Guards cwd from leaving meta-harness (landing writes target via absolute path) |
-| `.claude/hooks/check-rules-*.sh` | Enforce R-1 (CLAUDE.md line count) / R-3 (hook line count) / R-5 (questions anchor artifacts) / R-6 (no unexplained jargon) |
-| `.claude/hooks/self-verify-on-stop.sh` | **Axis 13 physical gate**: runs full self-verify at session end; drift exit 2 blocks |
-| `.claude/settings.json` | Hook registration (PreToolUse / UserPromptSubmit / Stop) |
+| `.claude/commands/{design,healthcheck,retro,document}.md` | Four front-door slash commands |
+| `.claude/hooks/cwd-guard.sh` | SessionStart: guards cwd from leaving meta-harness (**advisory**, prints a warning, does not block) |
+| `.claude/hooks/post-write-line-check.sh` | PostToolUse(Write/Edit): reminds when R-1 (CLAUDE.md line count) / R-3 (hook line count) exceed the threshold (**advisory**, no block) |
+| `.claude/hooks/pre-askquestion-reminder.sh` | PreToolUse(AskUserQuestion): R-5 (questions anchor artifacts) / R-6 (no unexplained jargon) self-audit reminder (**advisory**, no block) |
+| `.claude/hooks/self-verify-on-stop.sh` | Stop: **the only blocking hook** — runs full self-verify at session end; drift exit 2 blocks (axis 13 physical gate) |
+| `.claude/settings.json` | Hook registration (SessionStart / PreToolUse / PostToolUse / Stop) — **1 blocking (Stop) + 3 advisory (remind but don't block)** |
 | `docs/*-template.md` | Prescription (blueprint) + manual format |
 | `experiments/<topic>/` | Reference implementation (e.g., `consolidation-loop/`) |
 | `experiments/meta-harness-eval/` | **meta-harness's own axis 13 landing** — dog food evidence |

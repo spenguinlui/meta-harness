@@ -28,8 +28,8 @@ meta-harness 不是 framework，是「**顧問身分 + pattern library + 對話�
             docs/manual-template.md                說明書格式
             docs/lessons.md                        洞察累積（未必升 R-N）
 
-前門層    .claude/commands/                      design / healthcheck / retro 三個 slash command
-            .claude/hooks/                         cwd 守衛、R-1/R-3/R-5/R-6 enforce、self-verify-on-stop
+前門層    .claude/commands/                      design / healthcheck / retro / document 四個 slash command
+            .claude/hooks/                         cwd 守衛 + 行數 / 提問自查提醒（3 advisory）+ self-verify-on-stop（1 blocking）
 
 自驗層    experiments/meta-harness-eval/         meta-harness 自身軸 13 落地
             ├── run-self-verify.sh                 單一 entry point（13 scorer / 216 check）
@@ -39,7 +39,7 @@ meta-harness 不是 framework，是「**顧問身分 + pattern library + 對話�
 ```
 
 - **13 設計軸** = 設計**參數空間**（不是 checklist），彼此耦合。
-- **R-1~R-12** = 跨 target 的衛生 floor（已落地為 enforcement 的規則）。
+- **R-1~R-12** = 跨 target 的衛生 floor（成文規則；落地機制以 hook 提醒為主，僅 Stop hook 具 blocking 能力）。
 - **`docs/lessons.md`** = 洞察（為什麼這樣設計），和 rules 區別：rules 是強制、lessons 是經驗。
 
 ### dog food 三層閉環（meta-harness 自己證明方法學成立）
@@ -64,11 +64,12 @@ meta-harness 過自己自驗（13 scorer / 216 check / 100% 覆蓋）
 |---|---|
 | `.claude/skills/consultant/` | 顧問身分 + 完整 6 步流程（核心，所有模式進去都載入）|
 | `.claude/skills/document/` | `/document` 模式邏輯（雙語 README + CONTRIBUTING 自動產出）|
-| `.claude/commands/{design,healthcheck,retro}.md` | 三個前門 slash command |
-| `.claude/hooks/cwd-guard.sh` | 守住 cwd 不離開 meta-harness（落地寫絕對路徑進 target）|
-| `.claude/hooks/check-rules-*.sh` | R-1（CLAUDE.md 行數）/ R-3（hook 行數）/ R-5（提問錨 artifact）/ R-6（不用未解釋專有名詞）的 enforce |
-| `.claude/hooks/self-verify-on-stop.sh` | **軸 13 物理閘門**：session 結束時跑全棧自驗，drift exit 2 擋住 |
-| `.claude/settings.json` | hook 註冊（PreToolUse / UserPromptSubmit / Stop）|
+| `.claude/commands/{design,healthcheck,retro,document}.md` | 四個前門 slash command |
+| `.claude/hooks/cwd-guard.sh` | SessionStart：守住 cwd 不離開 meta-harness（**advisory**，只印警告、不擋）|
+| `.claude/hooks/post-write-line-check.sh` | PostToolUse(Write/Edit)：R-1（CLAUDE.md 行數）/ R-3（hook 行數）超標時提醒（**advisory**，不擋）|
+| `.claude/hooks/pre-askquestion-reminder.sh` | PreToolUse(AskUserQuestion)：R-5（提問錨 artifact）/ R-6（不用未解釋專有名詞）自查提醒（**advisory**，不擋）|
+| `.claude/hooks/self-verify-on-stop.sh` | Stop：**唯一 blocking hook**——session 結束跑全棧自驗，drift exit 2 擋住（軸 13 物理閘門）|
+| `.claude/settings.json` | hook 註冊（SessionStart / PreToolUse / PostToolUse / Stop）——**1 blocking（Stop）+ 3 advisory（提醒但不擋）** |
 | `docs/*-template.md` | prescription（設計圖）+ manual（說明書）格式 |
 | `experiments/<topic>/` | reference 實作（如 `consolidation-loop/`）|
 | `experiments/meta-harness-eval/` | **meta-harness 自身的軸 13 落地**——dog food 證據 |

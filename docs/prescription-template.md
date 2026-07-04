@@ -19,7 +19,7 @@ implementation_medium: claude-code-harness | web-app | api-service | saas | hybr
   # → Part D 的 artifact 語言跟著切換，不預設 bash/Claude Code
 source_sessions:
   - <link to Phase 0 session>
-  - <link to 12 design axes audit session>
+  - <link to 13 design axes audit session>
   - <other relevant sessions>
 universal_care_rules_baseline: <commit hash of universal-care-rules.md>
 prescription_version: <v1, v1.5, v2 ...>

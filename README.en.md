@@ -232,8 +232,10 @@ Landing reference numbers:
 
 | Target | Scorers | Checks | Coverage |
 |---|---|---|---|
-| meta-harness itself | 13 | 216 | **100% (15/15)** |
+| meta-harness itself | 13 | 492 | **100% (15/15)** |
 | atdd-task | 7 | 58 | 47% (7/15) |
+
+> **What the coverage number means (honest note)**: this 100% / 15-of-15 covers **structural / format plus a few behavioral checks** (Patterns A/B of the four) across every registered mechanism — it is **not** semantic-layer verification. **Semantic coverage (Pattern C — LLM-judge-style content-quality judgment) has not landed yet and is a roadmap item** — consultant skill output quality is currently approximated structurally (`test-consultant-skill-structure.sh`), not truly semantically verified.
 
 See [`docs/design-axes/13-self-verify-coverage.md`](docs/design-axes/13-self-verify-coverage.md).
 
@@ -320,10 +322,10 @@ Industry terms (hook / skill / slash command / CLI / DDD / TDD / Pattern, etc.) 
 
 ```
 .claude/
-  hooks/                    Consultant's own hooks (cwd guard, CLAUDE.md line check, question self-audit, self-verify-on-stop)
+  hooks/                    Consultant's own hooks (cwd guard, CLAUDE.md line check, question self-audit are advisory; self-verify-on-stop is the only blocking one)
   skills/consultant/        Consultant identity skill (core, loads on any command entry)
   skills/document/          /document skill
-  commands/                 design / healthcheck / retro three front doors (document triggered by commands, main logic in skill)
+  commands/                 design / healthcheck / retro / document four front doors (document is a thin front door; main logic in skill)
   settings.json             Hook registration (including axis 13 Stop hook)
 docs/
   getting-started.md        New-user entry
@@ -358,7 +360,7 @@ BACKLOG.md                  Undigested failures / gaps list
 - ✅ Consultant skill locks architect identity + 6-step flow
 - ✅ `/document` skill (bilingual README + CONTRIBUTING auto-produced)
 - ✅ Memory multi-axis taxonomy + Plan-as-memory + Outcome-as-skill bidirectional flywheel
-- ✅ meta-harness self-landing of axis 13: 13 scorers / 216 checks / **100% coverage (15/15)**
+- ✅ meta-harness self-landing of axis 13: 13 scorers / 492 checks / **100% coverage (15/15)**
 - ✅ atdd-task first external target landing axis 13: 7 scorers / 58 checks / 47% coverage (7/15)
 - 🔄 Cross-target rollout in progress (ai-infra-management / figma2code / self-profile / google_sheet_builder pending)
 

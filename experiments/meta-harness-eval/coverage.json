@@ -18,7 +18,7 @@
     {
       "name": "test-cross-references.sh",
       "pattern": "A",
-      "checks": 147,
+      "checks": 423,
       "last_pass": true
     },
     {
@@ -84,8 +84,8 @@
   ],
   "totals": {
     "scorers": 13,
-    "checks_total": 216,
-    "checks_passed": 216
+    "checks_total": 492,
+    "checks_passed": 492
   },
   "mechanisms_inventory": {
     "total": 15,

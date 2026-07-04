@@ -114,7 +114,7 @@ viewer：[誰]（如：PM / RD / 業務，工程非 peer）
 
 1. 逐檔 Write 到 target（絕對路徑）：Viewer 說明書（README 雙語 + 必要的 docs 雙語）+ 維護者文件（CONTRIBUTING 雙語）。
 2. 收尾跟業主說：產了哪些檔、主語言是什麼、哪些段標了 `[需業主補]`。
-3. **落地後 self-containment 自檢（R-12，blocking gate）**：`grep -rn "meta-harness\|prescription\|設計軸\|consultant\|顧問\|Stage [0-9]\|R-[0-9]" <target> --include=*.md` → 有命中（非 target 自身文案）= 洩漏，**先清乾淨 + 再 grep 確認零命中才能 commit**。grep 跑成「印出來看看」不算做（會帶著洩漏 push 出去）。
+3. **落地後 self-containment 自檢（R-12，blocking gate）**：跑 `bin/r12-gate.sh <target>`（**單一出處，勿手抄 grep**）→ 退出碼 1（有命中，非 target 自身文案）= 洩漏；0 = 過關；2 = 用法錯 / 路徑不存在（不是洩漏，先修參數），**先清乾淨 + 再跑 `bin/r12-gate.sh` 確認零命中才能 commit**。把 gate 跑成「印出來看看」不算做（會帶著洩漏 push 出去）。
 4. 文件是 target 的**任務內容介面層**——framework 結構由顧問落地（R-9）；commit 與否照業主 target 慣例。
 
 ## 反模式
