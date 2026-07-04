@@ -126,3 +126,86 @@ Phase 1 結束後同樣要轉場（見 SKILL.md Step 2 → Step 3 段落）。
 | Human Interface 層薄或沒設計 | 沒問第 5 題（Human 領域熟悉度） | Phase 0 補問 |
 | 壽命假設錯誤導致沒有 Memory 設計 | 沒問壽命，默認一次性 | Phase 0 強制問壽命 |
 | Prescription 只有文字，沒有骨架 | 顧問跳過「關鍵檔案骨架」 | Existential 軸每條附骨架 |
+
+---
+
+## 建議路徑（為弱模型鋪的路，可偏離）
+
+> 本章是**操作建議**，合約在 `.claude/skills/consultant/SKILL.md`。強模型可用自己的方式達成合約（產出物 / 證據 / 閘門）；弱模型照抄本章最穩。以下內容原本住在 SKILL.md，Stage 5 鬆綁時搬來——SKILL 只留合約，做法搬到這裡，方便強模型偏離、弱模型照抄。
+
+### 開場：先開放問，再選擇題
+
+跑 AskUserQuestion 5 問之前，顧問先 inline 問一句開放題：
+
+> 「請先介紹一下這個專案——它現在在做什麼、你怎麼用它？」
+
+等業主自由回覆後，帶著這份背景去設計選擇題選項，才能讓選項貼近業主語境。若業主第一句已含足夠背景（如「我想設計一個做 X / Y / Z 的工具」），可直接進 5 問，不必重複要求介紹。
+
+### Step 1 五問表格（進場必弄清楚的 5 件事）
+
+顧問用 AskUserQuestion 釐清這 5 件事。每題附「為什麼問」與「答太虛時的失敗回應」：
+
+| 問題 | 為什麼問 | 失敗回應 |
+|---|---|---|
+| **使命**：親身痛點是什麼？一年後做到哪三件事會說「值了」？這 repo 是目的還是手段？ | 設計圖必須對著痛點、不對著想像 | 答太虛 → 重問「**今天哪件事讓你想找這個工具**」 |
+| **形狀**：現有的核心概念 / 模組 / 抽象對位嗎？哪些是 intentional 設計、哪些是被現實逼出來的？ | 顧問不能默認既有抽象正確 | 「就照現在的架構」→ 重問「**哪個概念你最不確定該不該存在**」 |
+| **邊界（anti-scope）**：這 repo **不該**做什麼？（必逼，最易被忽略） | 不問 anti-scope = scope 自然擴張 = 設計圖過度膨脹 | 「都可以做」→ 警告寬 scope 反模式，逼挑 3 條 |
+| **失敗 floor + 預期壽命**：什麼狀況下你會放棄這個 repo？這東西預期跑多久？（一次性 / 數週 / 數月 / 數年 / 永久）| floor 決定哪條設計軸 existential（必補強）；壽命決定淘汰機制強度 | 沒問壽命 = 默認永久 = 多數情況都會少設計淘汰機制 |
+| **Human 領域熟悉度**：每天用這 target 的人（human，**未必是你 builder**）在這個領域是 peer 還是非專家？哪些子領域熟、哪些不熟？ | 決定設計軸 12（Human Interface）翻譯層該不該蓋、要多深；漏問 = 預設 human 是 peer = jargon 牆 | 「都是我自己用」→ 仍要釐清你在哪些子領域是 peer / 哪些不是（infra peer 但會計非 peer / ML peer 但 ops 非 peer） |
+
+### AskUserQuestion 使用細則
+
+**選擇題預設用 AskUserQuestion 工具**（不 inline markdown N 選 1）：
+
+- **為什麼**：業主要一直複製貼上 / 自己打字 (a)/(b)/(c) 答覆很煩；AskUserQuestion 是 UI 按鈕點選 + Other 自填，效率高很多。
+- **適用**：Phase 0 各層、設計軸拍板、anti-scope、SC2 失敗條件等「N 選 1 / N 選 M」場合，預設改用工具。
+- **工具限制**：每題 **≤ 4 options**、**≤ 4 questions per call**。超過 4 options 就拆「主要 4 + 其餘寫在 Other」或拆兩題。
+- **例外**：純開放題（「半年後你怎麼判斷變好了」這種要 user 自由回的）仍 inline；給 representative 選項 + Other 也 OK。
+- **混合用**：inline markdown 描述問題本身（背景 / 推薦 / tradeoff）仍可，但**選項本身用工具**。
+
+### Step 2 操作：篩軸與 cases 參考時機
+
+建築師獨自出設計圖時的操作順序：
+
+1. Read `docs/design-axes/<篩選 relevant 的幾條>.md`（**不全 read**）+ `docs/prescription-template.md`。
+2. 需要先例對照時**才**查 `cases/`（業主可指定哪份；不預設 Read）——讀了哪份要照污染警示在紀要註明。
+3. Read target repo 現況（檔案結構、現有 wiring）。
+4. 寫 `prescriptions/<date>-<target>.md`：**文字描述 + 關鍵檔案骨架**（檔名 / 職責 / 性能要點，不寫完整內容）。
+
+篩軸的判斷邏輯（哪些 existential、哪些 N/A）見本文件上方「重排機制」段。
+
+### Step 4.5 操作：自驗 loop 五步驟
+
+落地完任一可機驗 outcome，交付前跑這五步（合約只要求「gold + ≥3 次 + 機評紀錄」，這裡是最穩的做法）：
+
+1. **寫 gold scenario**：在 `experiments/<target>-<topic>/gold.md` 寫期待輸出的關鍵特徵（關鍵字 / 結構 / 通過門檻）；prescription Part E 已有就引用，不重寫。
+2. **headless 跑 ≥ 3 次**：`claude -p "<test prompt>" --output-format json --permission-mode bypassPermissions`（在 target cwd 內跑）。穩定度本身就是訊號——三次答案漂得很開 = 紀律未生效。
+3. **機器評分**：關鍵字覆蓋 / structural check（`jq` 拆 JSON）/ LLM-judge；**禁止顧問肉眼瞄一次說 ok**。
+4. **不通過 → 迭代**：改 prompt / wiring / persona brief / skill 說明，再跑。直到通過 **或** 顯式 commit 一條「未驗 known limitation」進 prescription。
+5. **撞 API limit / 工具不可用** → 不假裝驗過。標 ⚠️ + 補跑機制（ScheduleWakeup / cron / 下次 session 開頭）。
+
+reference 實作：`experiments/consolidation-loop/`（`run.sh` / `eval.sh` / `prompts/v*.md` / `gold.md` / `runs/*.json`）。新 target 仿這結構建 `experiments/<target>-<topic>/`。
+
+### Step 6 操作：retro 四項檢視的具體判準
+
+合約只定四個維度與觸發條件（SKILL Step 6），這裡是各維度的可操作門檻：
+
+- **outcome → skill 沉澱**：builder 落地後反覆手做同類動作 **≥ 2 次**（例：advise 完手寫 ad-hoc bash 跑 baseline）→ 抽象成 `skills/<name>/<action>.sh` / sub-command / hook，不當一次性 outcome（對位設計軸 4）。
+- **訊號累積看反饋**：tracking jsonl / human 評分達門檻——參考值 **累積 10 筆評分、或 < 4 分超過 3 次** → 跑 retrospective 看哪類常被拒、哪 persona prompt 該調（對位設計軸 8 outer eval + 設計軸 12 回饋通道）。
+- **memory artifact 形狀檢視**：auto-memory 有沒有塞錯類型（**procedural / episodic 該往 git 移**）、debate 全文有沒有持久化、是否還落 `/tmp/`（對位設計軸 3）。
+- **方法學缺口升級**：本次 target 暴露的反覆失誤——**universal 的升 `docs/design-axes/` / `docs/universal-care-rules.md`；target-specific 的留 target 自己 doc**。
+
+### 反模式（抽象，不引具體案例）
+
+| 反模式 | 抽象描述 |
+|---|---|
+| **教科書模式** | 把每設計軸當章節跟業主重新設計 target 內部資料 schema / 算法門檻 |
+| **Checklist 對照員** | 把跑壞的對話固化成 SOP 形 slash command / 流程 wiring |
+| **抽象問題** | 拋業主答不出 / 不熟術語的問題（違反 R-5）|
+| **未解釋 jargon** | 動名詞 / 縮寫不解釋直接用（違反 R-6）|
+| **Pattern lib 不查就動手** | 設計前不 Read 對應 design axis 文件，重新發明輪子 |
+| **規則無分層** | 跨流程通則 / 設計流程 / 設計圖格式 / 反模式 全塞同一檔 = 等於沒分層 |
+| **疊規則不刪源頭** | 看到失敗加新規則 / 反模式段，不 grep 找 root cause（違反 R-7）|
+| **跨層越權** | 自家 X 生硬對比「所以對方 Y 該」二分 table，越權替別 session / 別 repo / 別業主表態（違反 R-8）|
+| **Auto-memory 變終點** | 寫進 user-scope auto-memory 就放著，不 review 升 universal rule / `~/.claude/CLAUDE.md` / git docs；該當「孵化中介層」而非「永久終點」 |
+| **方法學只進 docs** | 反覆失誤的紀律該升級成 hook / skill / slash command，不只加文字規則 |

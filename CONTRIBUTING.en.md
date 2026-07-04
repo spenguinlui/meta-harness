@@ -27,9 +27,9 @@ Front-door     .claude/commands/                       design / healthcheck / re
                 .claude/hooks/                          cwd guard + line/question reminders (3 advisory) + self-verify-on-stop (1 blocking)
 
 Self-verify    experiments/meta-harness-eval/          meta-harness's own axis 13 landing
-                ├── run-self-verify.sh                  Single entry point (13 scorers / 216 checks)
+                ├── run-self-verify.sh                  Single entry point (runs every test-*.sh scorer)
                 ├── test-*.sh                           Pattern A/B scorers
-                ├── coverage.json                       KPI dashboard (100% coverage)
+                ├── coverage.json                       KPI dashboard (live scorer/check/coverage source of truth)
                 └── generate-coverage.sh                Generates coverage.json from test results
 ```
 
@@ -40,11 +40,11 @@ Self-verify    experiments/meta-harness-eval/          meta-harness's own axis 1
 ### Dog food three-layer closed loop (meta-harness proves its own methodology)
 
 ```
-atdd-task passes its own self-verify (7 scorers / 58 checks)
+atdd-task passes its own self-verify (ships its own scorer set; live numbers in its coverage.json)
     ↑ Required by
 meta-harness (requires targets to self-verify)
     ↑ Requires itself too
-meta-harness passes its own self-verify (13 scorers / 216 checks / 100% coverage)
+meta-harness passes its own self-verify (scorer/check/coverage live in coverage.json, maintained by generate-coverage.sh)
     ↑ Requires prescription structure
 This CONTRIBUTING (meta-harness's maintainer doc to itself)
 ```
@@ -130,11 +130,11 @@ Edit `docs/prescription-template.md` or `docs/manual-template.md` directly. Run 
 
 ### Axis 13 self-verify (OS-level gate)
 
-Run `bash experiments/meta-harness-eval/run-self-verify.sh` → **must be 13/13 all green**.
+Run `bash experiments/meta-harness-eval/run-self-verify.sh` → **must be all green (every scorer passes)**.
 
 Any scorer red = drift. Stop hook will block session end (unless drift is fixed).
 
-The 13 scorers' covered mechanisms:
+Representative scorers and the mechanisms they cover (full list + live numbers in `coverage.json`; table below is a subset):
 
 | Scorer | Covers |
 |---|---|

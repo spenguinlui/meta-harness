@@ -102,3 +102,58 @@ Step 6   飛輪 retrospective（數週後回看）
 | `docs/consultant-flow.md` | 顧問重排機制（顧問怎麼做判斷） |
 | `prescriptions/` | 每次 session 的設計圖留痕（gitignored） |
 | `sessions/` | 訪談紀要（gitignored） |
+
+> `sessions/` 裡的舊紀要是**當時的快照**，其中的路徑 / 檔名連結可能已隨 repo 演化而失效——當歷史看，別當現況。
+
+---
+
+## 從零複製這套方法（不 clone 本 repo）
+
+你不需要 clone meta-harness 才能用這套方法。它不是一個要安裝的框架，而是**一組可以照抄進你自己 repo 的紀律**。最小可行版只要五樣東西：
+
+### (a) 拿 13 設計軸當設計 checklist
+
+設計任何 AI harness 前，把 [`docs/design-axes.md`](design-axes.md) 的 13 條當「設計參數空間」逐條問「這條對我的 target 是 existential / 要設計 / N/A？」。不是全套都要做——多數輕量工具只需 3–5 條（篩選邏輯見 [`consultant-flow.md`](consultant-flow.md)）。這一步就足以避開「想到哪做到哪」的漏設計。
+
+### (b) 抄這三條衛生規則（最小集）
+
+完整 12 條見 [`docs/universal-care-rules.md`](universal-care-rules.md)，但外部採用先守這三條就有八成價值：
+
+- **R-4 不編造**：找不到 / 做不到就直說 + 列出試過什麼，不要用流暢的猜測填補。
+- **R-10 先自驗再交付**：任何「機器能驗」的產出（腳本 / command / agent），交給人之前自己先跑通、留證據，不要「改完 = 完成」。
+- **R-12 不洩漏框架**：寫進 target 的檔案要能獨立看懂，不引用你設計時用的內部術語 / 編號 / 這套方法本身的行話。
+
+### (c) 六步流程合約（骨架摘要）
+
+不管誰來執行，這六步的**產出物 + 閘門**是合約，做法可自由：
+
+```
+1  五件事訪談   → 紀要（使命 / 形狀 / 邊界 / 失敗 floor+壽命 / human 熟悉度）+ 設計軸篩選表
+2  設計圖       → 一份 prescription（文字 + 關鍵檔案骨架）
+3  review 收斂  → 業主自由文字回饋，改到定案（不是選擇題）
+4  分期落地     → 逐 Stage 把檔案寫進 target
+4.5 自驗 loop   → 可機驗產出 headless 跑 ≥ 3 次 + 機器評分通過才交付（R-10）
+5  驗收         → 靜態檢查 + 跨 session 實際試用
+```
+
+### (d) 最小自驗起步（三個檔就能開跑）
+
+R-10「先自驗」怎麼物理化？最小基建只有三塊，都可以照抄本 repo 的對應檔案當範例：
+
+| 你要建的 | 抄哪個當範例 | 作用 |
+|---|---|---|
+| 一支 `test-<feature>.sh` | [`test-prescription-template-structure.sh`](../experiments/meta-harness-eval/test-prescription-template-structure.sh)（簡單 Pattern A：grep 關鍵結構在不在）| 驗某條 wiring 沒漂走 |
+| `run-self-verify.sh` | [`run-self-verify.sh`](../experiments/meta-harness-eval/run-self-verify.sh) | 單一 entry point，跑所有 `test-*.sh`，回 0 / 1 |
+| Stop hook | [`self-verify-on-stop.sh`](../.claude/hooks/self-verify-on-stop.sh) + [`settings.json`](../.claude/settings.json) 的 `Stop` 註冊 | drift 時擋住 session 結束，讓「沒自驗就收工」變成不可能 |
+
+先做後兩塊基建（一次性），之後每加一條 wiring，只多寫一支 `test-*.sh`。
+
+### (e) 什麼時候才需要完整 meta-harness
+
+上面的最小集適合**一個人、一個 target**。當你遇到以下情況，才值得把整套 meta-harness 搬來（顧問 skill + prescription 模板 + 13 軸深度文件 + 陰性樣本庫）：
+
+- 你要**反覆**設計多個 target，需要可重用的 pattern library 而非每次重想；
+- target 要**交給不是你**的人用 / 維護，需要正式的說明書與維護者文件（R-11）；
+- 你想要 prescription 的**語義合約機器閘門**（防掏空）與跨 target 的登記簿追蹤。
+
+只做一個小工具？留在最小集就好——提前搬整套框架 = 沒有證據的疊層。

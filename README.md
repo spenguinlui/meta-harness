@@ -228,14 +228,12 @@ Tool / Context / Memory / Planning / Execution / Safety / Hooks / Eval / Observa
 - **C. Scorer + METRICS 行**（行為品質／agent 輸出）
 - **D. 快照 + Diff**（副作用是否正確）
 
-落地參考數據：
+落地現況（**即時數字**——scorer 數、check 數、覆蓋率百分比——一律見 [`experiments/meta-harness-eval/coverage.json`](experiments/meta-harness-eval/coverage.json)，由 `generate-coverage.sh` 維護；此處不手抄，手抄會漂）：
 
-| Target | Scorer 數 | Check 數 | 覆蓋率 |
-|---|---|---|---|
-| meta-harness 自身 | 15 | 518 | **67%（10/15）** |
-| atdd-task | 7 | 58 | 47%（7/15）|
+- **meta-harness 自身**：以自己的軸 13 自驗自身——runner 跑一整組 `test-*.sh` scorer，覆蓋率分母由掃描 hooks / commands / skills / bin / 模板**機器推導**，人工只能附理由排除，未覆蓋的 mechanism 逐條列在 `coverage.json`。
+- **atdd-task**：首個外部 target 落地軸 13，自帶一組 scorer 與自己的 `coverage.json`。
 
-> **覆蓋率口徑（誠實說明）**：67%（10/15）為**分母機器推導**後的結構 / 行為層覆蓋（四 Pattern 的 A/B）——分母由掃描 hooks / commands / skills / bin / 模板自動產生，人工只能附理由排除，未覆蓋的 5 個 mechanism 列在 coverage.json。**語義覆蓋率（Pattern C，LLM-judge 式的內容品質判斷）尚未落地、列為 roadmap 待做項**——目前 consultant skill 的輸出品質是用結構近似（`test-consultant-skill-structure.sh`）暫代，不是真正的語義驗證。
+> **覆蓋率口徑（誠實說明）**：報的是**結構 / 行為層**覆蓋（四 Pattern 的 A/B），分母機器推導、防人工灌水。**語義覆蓋率（Pattern C，LLM-judge 式的內容品質判斷）尚未完全落地、列為 roadmap 待做項**——目前 consultant skill 的輸出品質是用結構近似（`test-consultant-skill-structure.sh`）暫代，不是真正的語義驗證。
 
 詳見 [`docs/design-axes/13-self-verify-coverage.md`](docs/design-axes/13-self-verify-coverage.md)。
 
@@ -337,7 +335,7 @@ docs/
   manual-template.md        說明書格式
   lessons.md                實戰教訓
 experiments/
-  meta-harness-eval/        meta-harness 自身的軸 13 落地（runner / 13 scorer / coverage.json）
+  meta-harness-eval/        meta-harness 自身的軸 13 落地（runner / test-*.sh scorer 組 / coverage.json）
   consolidation-loop/       自驗 loop 的 reference 實作
 targets.yml.example         target 清單範本（cp 成 targets.yml）
 ─── 以下 gitignored（各 fork 自家內容，不上 git）───
@@ -360,8 +358,8 @@ BACKLOG.md                  未消化的失敗 / 缺口清單
 - ✅ Consultant skill 鎖建築師身分 + 6 步流程
 - ✅ `/document` skill（雙語 README + CONTRIBUTING 自動產出）
 - ✅ Memory 多軸分類 + Plan-as-memory + Outcome-as-skill 雙向飛輪
-- ✅ meta-harness 自身落地軸 13：15 scorer / 518 check / **67% 覆蓋（10/15，分母機器推導）**
-- ✅ atdd-task 首個外部 target 落地軸 13：7 scorer / 58 check / 47% 覆蓋（7/15）
+- ✅ meta-harness 自身落地軸 13（以自身 scorer 組自驗、分母機器推導；即時數字見 `coverage.json`）
+- ✅ atdd-task 首個外部 target 落地軸 13（自帶 scorer 組與 coverage.json）
 - 🔄 跨 target 推廣中（ai-infra-management / figma2code / self-profile / google_sheet_builder 待補軸 13）
 
 ---

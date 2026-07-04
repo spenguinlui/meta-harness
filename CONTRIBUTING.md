@@ -32,9 +32,9 @@ meta-harness 不是 framework，是「**顧問身分 + pattern library + 對話�
             .claude/hooks/                         cwd 守衛 + 行數 / 提問自查提醒（3 advisory）+ self-verify-on-stop（1 blocking）
 
 自驗層    experiments/meta-harness-eval/         meta-harness 自身軸 13 落地
-            ├── run-self-verify.sh                 單一 entry point（13 scorer / 216 check）
+            ├── run-self-verify.sh                 單一 entry point（跑全部 test-*.sh scorer）
             ├── test-*.sh                          各 Pattern A/B 的 scorer
-            ├── coverage.json                      KPI 面板（覆蓋率 100%）
+            ├── coverage.json                      KPI 面板（即時 scorer/check/覆蓋率以此檔為準）
             └── generate-coverage.sh               從 test 結果生成 coverage.json
 ```
 
@@ -45,11 +45,11 @@ meta-harness 不是 framework，是「**顧問身分 + pattern library + 對話�
 ### dog food 三層閉環（meta-harness 自己證明方法學成立）
 
 ```
-atdd-task 過自己自驗（7 scorer / 58 check）
+atdd-task 過自己自驗（自帶 scorer 組；即時數字見其 coverage.json）
     ↑ 規定
 meta-harness（規定 target 自驗）
     ↑ 規定自己也得自驗
-meta-harness 過自己自驗（13 scorer / 216 check / 100% 覆蓋）
+meta-harness 過自己自驗（scorer/check/覆蓋率即時見 coverage.json，由 generate-coverage.sh 維護）
     ↑ 規定 prescription 結構
 本份 CONTRIBUTING（meta-harness 寫給自己的維護者文件）
 ```
@@ -135,11 +135,11 @@ meta-harness 過自己自驗（13 scorer / 216 check / 100% 覆蓋）
 
 ### 軸 13 自驗（OS 級閘門）
 
-跑 `bash experiments/meta-harness-eval/run-self-verify.sh` → **必須 13/13 全綠**。
+跑 `bash experiments/meta-harness-eval/run-self-verify.sh` → **必須全綠（每支 scorer 都 pass）**。
 
 任一支紅 = drift。Stop hook 會擋住 session 結束（除非 drift 修掉）。
 
-13 支 scorer 涵蓋的 mechanism：
+代表性 scorer 涵蓋的 mechanism（完整清單與即時數字見 `coverage.json`，下表為子集）：
 
 | Scorer | 覆蓋 |
 |---|---|

@@ -12,6 +12,7 @@
 target_repo: <name + URL>
 generated_at: <ISO timestamp>
 status: draft | active | superseded
+template: full | lite    # 分級鍵；缺省 = full。判準與結構見下方「Prescription Lite（輕量分級）」節
 implementation_medium: claude-code-harness | web-app | api-service | saas | hybrid | other
   # claude-code-harness：主要 artifact 是 hook / skill / settings.json / bash script
   # web-app / api-service / saas：主要 artifact 是 route / DB schema / component / infra config
@@ -307,9 +308,42 @@ top-level 新目錄（含入版控的空檔確保結構存在）。
 
 ---
 
+## Prescription Lite（輕量分級）
+
+上面 Part A–F 是 **full 版**——複雜 target（有 agent loop、涉及多條設計軸）該用。但不是每個任務都值得一份 full prescription：小改動硬套 full 格式，誘因是把 Part A–F 標題留著、語義掏空（2026-06 掏空事故的根因 = **沒有合法的輕量出口**）。Lite 是那個合法出口。
+
+**適用判準**（frontmatter 標 `template: lite`）：
+
+- **無 agent loop**（純 wiring 調整、文件修正、單一 hook / command 增修），**或**
+- **涉及設計軸 ≤ 4 條**。
+
+有 agent loop 或涉及軸 > 4 → 回 full。拿不準 → 用 full（保守）。
+
+**Lite 結構 = 一頁合約**（表格重量縮放，證據紀律不縮放）：
+
+1. **形狀摘要**：一兩句話講這次要改什麼、對著哪個痛點。
+2. **涉及軸 3–6 條**：每條一句 Required + Status；其餘軸**一行帶過**（`軸 N N/A — <理由>`），不逐條展開五欄位。
+3. **`### V<n>` 驗收表**：**證據欄位與 full 完全同規格，一格不減**——`Verify level` / `Status` / `Live-fired at` / `Self-verify runs`（欄位語意見 Part E）。這是不變量。
+4. **不動清單**：明列這次**不該動**的檔案 / 介面 / 行為（保留邊界宣告）。
+
+```
+### V1: <test name>
+- **Verify level**: script | trace-observation | human-only
+- **Status**: ✅ passing / ❌ failing / 🚧 not testable yet
+- **Live-fired at**: <ISO timestamp>   ← ✅ passing 必填
+- **Self-verify runs**: N/A | <count>×pass / <count>×total   ← Verify level=script 必填
+```
+
+**表格重量隨任務縮放、證據紀律不縮放**：full 用五欄位 Design Axis 塊逼你想清楚每條軸；lite 省掉那層重量，但 V 表與四個證據欄位（Verify level / Status / Live-fired at / Self-verify runs）**一格都不能少**——沒有這些欄位，「輕量」就退化成「掏空」。
+
+**機器閘門**：lite 版由 `test-prescription-contract.sh` 的 **lite 分支**驗（依 frontmatter `template: lite` 分流）——檢查 (1) 至少一個 `### V` 區塊存在、(2) 含「不動」字樣的清單段存在、(3) 證據紀律 (b)(c)（✅ passing 的 V 條目有真 `Live-fired at` 時間戳；`Verify level: script` + ✅ 有非空 `Self-verify runs`）與 full 同規格適用。缺 V 表或缺「不動」段 → fail。
+
+---
+
 ## 模板使用守則
 
 1. 一份 prescription = 對一個 target repo + 一個時間點。其他 target repo 開新檔。
 2. 升版（v1 → v1.5）開新檔，舊檔狀態改 `superseded` 保留作歷史 reference。
 3. Part B 對 universal rules 的 compliance check 必跑，這是「衛生 floor」；Part C 才是 domain 客製。
 4. Part E 是 prescription 的「合約」——若 Part E 全 pass，使用者該感受到 Part A 的 mission 真的被滿足。
+5. **每份新 prescription 一律顯式標 `template: full | lite` 鍵**（缺省視為 full，但不要靠缺省——顯式標讓 review 與機器閘門一眼分流）。判準見「Prescription Lite」節。

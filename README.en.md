@@ -228,14 +228,12 @@ Every target repo (meta-harness itself included) lands a three-piece kit:
 - **C. Scorer + METRICS line** (behavioral quality / agent output)
 - **D. Snapshot + diff** (are side effects correct)
 
-Landing reference numbers:
+Landing status (**live numbers** — scorer count, check count, coverage percentage — always live in [`experiments/meta-harness-eval/coverage.json`](experiments/meta-harness-eval/coverage.json), maintained by `generate-coverage.sh`; not transcribed here, because transcribed numbers drift):
 
-| Target | Scorers | Checks | Coverage |
-|---|---|---|---|
-| meta-harness itself | 15 | 518 | **67% (10/15)** |
-| atdd-task | 7 | 58 | 47% (7/15) |
+- **meta-harness itself**: self-verifies using its own axis 13 — the runner runs a whole set of `test-*.sh` scorers; the coverage denominator is **machine-derived** by scanning hooks / commands / skills / bin / templates, humans may only exclude items with a stated reason, and uncovered mechanisms are itemized in `coverage.json`.
+- **atdd-task**: first external target landing axis 13, with its own scorer set and its own `coverage.json`.
 
-> **What the coverage number means (honest note)**: 67% (10/15) is structural / behavioral coverage (Patterns A/B of the four) over a **machine-derived denominator** — the inventory is auto-scanned from hooks / commands / skills / bin / templates; humans may only exclude items with a stated reason, and the 5 uncovered mechanisms are listed in coverage.json. **Semantic coverage (Pattern C — LLM-judge-style content-quality judgment) has not landed yet and is a roadmap item** — consultant skill output quality is currently approximated structurally (`test-consultant-skill-structure.sh`), not truly semantically verified.
+> **What the coverage number means (honest note)**: it reports **structural / behavioral** coverage (Patterns A/B of the four) over a **machine-derived denominator** that resists human padding. **Semantic coverage (Pattern C — LLM-judge-style content-quality judgment) has not fully landed yet and is a roadmap item** — consultant skill output quality is currently approximated structurally (`test-consultant-skill-structure.sh`), not truly semantically verified.
 
 See [`docs/design-axes/13-self-verify-coverage.md`](docs/design-axes/13-self-verify-coverage.md).
 
@@ -309,7 +307,7 @@ meta-harness internal coinages. Even peers should glance through:
 | **wiring** | The whole connection of hook / skill / command / settings etc. wired into behavior. |
 | **mechanism** | In consultant context = the concrete approach of a wiring (not a file, a behavior). |
 | **anti-scope** | The explicit "don't do" list. Mandatory in Step 1 interview. |
-| **flywheel (retrospective)** | Retrospect after target has been running — 4 checks: outcome→skill distillation, signal accumulation feedback, memory shape, methodology gap. |
+| **flywheel (retrospective)** | Retrospect after target has been running — four checks: outcome→skill distillation, signal accumulation feedback, memory shape, methodology gap. |
 | **dog food** | Using your own methodology on yourself (e.g., meta-harness using its own axis 13 to self-verify). |
 | **headless (self-verify)** | `claude -p` non-interactive mode, run ≥ 3 times + machine scoring, mandatory in Step 4.5. |
 | **drift** | Wiring inconsistent with blueprint / source of truth. The detection target of axis 13 self-verify. |
@@ -337,7 +335,7 @@ docs/
   manual-template.md        Manual format
   lessons.md                Field lessons
 experiments/
-  meta-harness-eval/        meta-harness's own axis 13 landing (runner / 13 scorers / coverage.json)
+  meta-harness-eval/        meta-harness's own axis 13 landing (runner / test-*.sh scorer set / coverage.json)
   consolidation-loop/       Reference implementation of self-verify loop
 targets.yml.example         Target list template (cp to targets.yml to use)
 ─── Below gitignored (per-fork private content, not in git) ───
@@ -360,8 +358,8 @@ BACKLOG.md                  Undigested failures / gaps list
 - ✅ Consultant skill locks architect identity + 6-step flow
 - ✅ `/document` skill (bilingual README + CONTRIBUTING auto-produced)
 - ✅ Memory multi-axis taxonomy + Plan-as-memory + Outcome-as-skill bidirectional flywheel
-- ✅ meta-harness self-landing of axis 13: 15 scorers / 518 checks / **67% coverage (10/15, machine-derived denominator)**
-- ✅ atdd-task first external target landing axis 13: 7 scorers / 58 checks / 47% coverage (7/15)
+- ✅ meta-harness self-landing of axis 13 (self-verifies with its own scorer set, machine-derived denominator; live numbers in `coverage.json`)
+- ✅ atdd-task first external target landing axis 13 (ships its own scorer set and coverage.json)
 - 🔄 Cross-target rollout in progress (ai-infra-management / figma2code / self-profile / google_sheet_builder pending)
 
 ---
