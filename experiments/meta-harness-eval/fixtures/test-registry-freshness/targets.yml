@@ -1,0 +1,15 @@
+# seeded-bad fixture（軸 3 / --negative）：machine.status 與證據矛盾。
+# prescriptions/2026-07-01-foo.md 無「✅ installed」→ 推導止於 designed；
+# 本檔 machine.status 卻謊稱 verified → derive-targets.sh --check 必抓 drift（exit 1）。
+# path: . 解析成 fixture HUB 自身（存在）→ 不會降級成 unknown。
+- name: foo
+  path: .
+  machine:
+    status: verified
+    dormant: false
+    last_evidence: 2026-07-01
+    prescriptions:
+      - 2026-07-01-foo.md
+  human:
+    notes: |
+      seeded-bad：status 應為 designed，此處故意寫 verified。

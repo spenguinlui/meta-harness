@@ -1,5 +1,5 @@
-# 本機 target repo 清單（路徑、domain 描述等）— 不上 git
-targets.yml
+# 本機 target repo 清單（路徑、domain 描述等）— 不上 git（錨定根目錄：fixtures/ 內同名測試資料要入版控）
+/targets.yml
 
 # 顧問動筆前的 audit trail（「打算改什麼／為什麼」）— 不上 git
 prescriptions/*
@@ -13,8 +13,8 @@ sessions/*
 cases/*
 !cases/README.md
 
-# 自家未消化失敗清單（各 fork 自有自的）— 不上 git
-BACKLOG.md
+# 自家未消化失敗清單（各 fork 自有自的）— 不上 git（錨定根目錄：fixtures/ 內同名測試資料要入版控）
+/BACKLOG.md
 
 # experiments/ 自驗 loop 的 raw runs 含 target 真實 infra ID / 專案名 — 不上 git
 # 結構檔（README / gold / prompts / run.sh / eval.sh）入版控，runs/ 只是本機跑出來的證據
