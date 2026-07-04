@@ -36,38 +36,11 @@ if [ "$MODE" = "check" ]; then
   python3 - "$HUB" "$EVAL_DIR" "$COV" "$EXCL" <<'PY'
 import sys, os, json, re, glob
 hub, eval_dir, cov_path, excl_path = sys.argv[1:5]
+sys.path.insert(0, os.path.join(hub, eval_dir, "lib"))
+from inventory import derive_inventory as _derive  # 單一推導來源：lib/inventory.py
 
 def derive_inventory():
-    inv = []
-    sj = os.path.join(hub, ".claude/settings.json")
-    if os.path.isfile(sj):
-        try:
-            data = json.load(open(sj))
-        except Exception as e:
-            print(f"ERROR\t無法解析 settings.json：{e}"); sys.exit(2)
-        for event, arr in (data.get("hooks") or {}).items():
-            for group in (arr or []):
-                for h in (group.get("hooks") or []):
-                    m = re.search(r"([A-Za-z0-9_.-]+\.sh)", h.get("command", ""))
-                    if m:
-                        inv.append("hook:" + m.group(1))
-    for f in sorted(glob.glob(os.path.join(hub, ".claude/commands/*.md"))):
-        inv.append("command:" + os.path.basename(f))
-    for f in sorted(glob.glob(os.path.join(hub, ".claude/skills/*/SKILL.md"))):
-        inv.append("skill:" + os.path.basename(os.path.dirname(f)))
-    for f in sorted(glob.glob(os.path.join(hub, "bin/*.sh"))):
-        inv.append("bin:" + os.path.basename(f))
-    for tpl in ("prescription-template.md", "manual-template.md"):
-        if os.path.isfile(os.path.join(hub, "docs", tpl)):
-            inv.append("docs:" + tpl)
-    for e in ("run-self-verify.sh", "generate-coverage.sh", "derive-targets.sh"):
-        if os.path.isfile(os.path.join(hub, eval_dir, e)):
-            inv.append("eval:" + e)
-    seen, out = set(), []
-    for x in inv:
-        if x not in seen:
-            seen.add(x); out.append(x)
-    return sorted(out)
+    return _derive(hub, eval_dir)
 
 def read_covers():
     covered = set()
@@ -186,38 +159,11 @@ python3 - "$COV" "$EXCL" "$HUB" "$EVAL_DIR" "$TARGET_NAME" "$NOW" \
 import json, sys, os, re, glob
 (cov_path, excl_path, hub, eval_dir, target, now, runner,
  ns, nc, np_, rc, scorers_raw) = sys.argv[1:13]
-
-def derive_inventory():
-    inv = []
-    sj = os.path.join(hub, ".claude/settings.json")
-    if os.path.isfile(sj):
-        data = json.load(open(sj))
-        for event, arr in (data.get("hooks") or {}).items():
-            for group in (arr or []):
-                for h in (group.get("hooks") or []):
-                    m = re.search(r"([A-Za-z0-9_.-]+\.sh)", h.get("command", ""))
-                    if m:
-                        inv.append("hook:" + m.group(1))
-    for f in sorted(glob.glob(os.path.join(hub, ".claude/commands/*.md"))):
-        inv.append("command:" + os.path.basename(f))
-    for f in sorted(glob.glob(os.path.join(hub, ".claude/skills/*/SKILL.md"))):
-        inv.append("skill:" + os.path.basename(os.path.dirname(f)))
-    for f in sorted(glob.glob(os.path.join(hub, "bin/*.sh"))):
-        inv.append("bin:" + os.path.basename(f))
-    for tpl in ("prescription-template.md", "manual-template.md"):
-        if os.path.isfile(os.path.join(hub, "docs", tpl)):
-            inv.append("docs:" + tpl)
-    for e in ("run-self-verify.sh", "generate-coverage.sh", "derive-targets.sh"):
-        if os.path.isfile(os.path.join(hub, eval_dir, e)):
-            inv.append("eval:" + e)
-    seen, out = set(), []
-    for x in inv:
-        if x not in seen:
-            seen.add(x); out.append(x)
-    return sorted(out)
+sys.path.insert(0, os.path.join(hub, eval_dir, "lib"))
+from inventory import derive_inventory as _derive  # 單一推導來源：lib/inventory.py
 
 scorers = json.loads("[" + scorers_raw + "]")
-inventory = derive_inventory()
+inventory = _derive(hub, eval_dir)
 
 # covered = union(scorers[].covers) ∩ inventory
 covered_set = set()
@@ -244,7 +190,18 @@ in_scope = len(inventory) - len(excl_set)
 pct = round(len(covered_set) / in_scope * 100) if in_scope else 0
 
 format_checks = sum(int(s.get("checks", 0)) for s in scorers if s.get("pattern") in ("A", "B"))
+# semantic = 套件內 Pattern C scorer（目前無）+ 最近一次深驗（run-deep-verify.sh，LLM-judge）的判定數
 semantic_checks = sum(int(s.get("checks", 0)) for s in scorers if s.get("pattern") == "C")
+last_deep_run = None
+_rp = os.path.join(eval_dir, "deep-verify-report.md")
+if os.path.isfile(_rp):
+    _entries = [e for e in re.split(r"(?m)^(?=## )", open(_rp, encoding="utf-8").read()) if e.startswith("## ")]
+    if _entries:
+        _m = re.match(r"## (\S+ \S+) · model=\S+ · runs=(\d+)", _entries[-1])
+        _files = len(re.findall(r"(?m)^- ", _entries[-1]))
+        if _m:
+            last_deep_run = _m.group(1)
+            semantic_checks += _files * int(_m.group(2))
 
 out = {
     "target": target,
@@ -254,6 +211,7 @@ out = {
     "totals": {
         "scorers": int(ns), "checks_total": int(nc), "checks_passed": int(np_),
         "format_checks": format_checks, "semantic_checks": semantic_checks,
+        "last_deep_run": last_deep_run,
     },
     "mechanisms_inventory": {
         "total": len(inventory),

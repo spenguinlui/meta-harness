@@ -25,3 +25,6 @@ experiments/*/runs/
 
 # /upkeep 每週維生產出的健康時序 log（含本機路徑 / 執行結果）— 本機 runtime，不上 git
 /experiments/meta-harness-eval/upkeep-log.md
+
+# 深驗（LLM-judge）滾動報告（含本機 prescription 分析）— 本機 runtime，不上 git
+/experiments/meta-harness-eval/deep-verify-report.md

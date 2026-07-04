@@ -1,6 +1,6 @@
 {
   "target": "meta-harness",
-  "generated_at": "2026-07-04T12:25:32Z",
+  "generated_at": "2026-07-04T21:28:46Z",
   "runner": "experiments/meta-harness-eval/run-self-verify.sh",
   "scorers": [
     {
@@ -40,9 +40,18 @@
     {
       "name": "test-cross-references.sh",
       "pattern": "A",
-      "checks": 424,
+      "checks": 418,
       "last_pass": true,
       "covers": []
+    },
+    {
+      "name": "test-deep-verify-integrity.sh",
+      "pattern": "B",
+      "checks": 8,
+      "last_pass": true,
+      "covers": [
+        "eval:run-deep-verify.sh"
+      ]
     },
     {
       "name": "test-design-axes-doc-completeness.sh",
@@ -203,15 +212,16 @@
     }
   ],
   "totals": {
-    "scorers": 23,
-    "checks_total": 547,
-    "checks_passed": 547,
-    "format_checks": 547,
-    "semantic_checks": 0
+    "scorers": 24,
+    "checks_total": 549,
+    "checks_passed": 549,
+    "format_checks": 549,
+    "semantic_checks": 1,
+    "last_deep_run": "2026-07-05 05:27"
   },
   "mechanisms_inventory": {
-    "total": 18,
-    "covered": 18,
+    "total": 19,
+    "covered": 19,
     "coverage_pct": 100,
     "uncovered": [],
     "excluded": [],
@@ -226,6 +236,7 @@
       "docs:prescription-template.md",
       "eval:derive-targets.sh",
       "eval:generate-coverage.sh",
+      "eval:run-deep-verify.sh",
       "eval:run-self-verify.sh",
       "hook:cwd-guard.sh",
       "hook:post-write-line-check.sh",
@@ -238,7 +249,7 @@
     "_note": "machine-derived by generate-coverage.sh（掃 settings.json hooks × commands × skills × bin × docs 模板 × eval 基建）。人工不可直接改 total / inventory；只能在 coverage-exclusions.json 加排除項（附 reason）。手改本區塊 → `generate-coverage.sh --check` 會抓。"
   },
   "last_run": {
-    "timestamp": "2026-07-04T12:25:32Z",
+    "timestamp": "2026-07-04T21:28:46Z",
     "rc": 0
   }
 }
