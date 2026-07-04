@@ -1,6 +1,6 @@
 {
   "target": "meta-harness",
-  "generated_at": "2026-07-04T11:58:42Z",
+  "generated_at": "2026-07-04T12:25:32Z",
   "runner": "experiments/meta-harness-eval/run-self-verify.sh",
   "scorers": [
     {
@@ -40,7 +40,7 @@
     {
       "name": "test-cross-references.sh",
       "pattern": "A",
-      "checks": 423,
+      "checks": 424,
       "last_pass": true,
       "covers": []
     },
@@ -58,6 +58,51 @@
       "last_pass": true,
       "covers": [
         "command:healthcheck.md"
+      ]
+    },
+    {
+      "name": "test-hook-cwd-guard.sh",
+      "pattern": "B",
+      "checks": 2,
+      "last_pass": true,
+      "covers": [
+        "hook:cwd-guard.sh"
+      ]
+    },
+    {
+      "name": "test-hook-post-write-line-check.sh",
+      "pattern": "B",
+      "checks": 2,
+      "last_pass": true,
+      "covers": [
+        "hook:post-write-line-check.sh"
+      ]
+    },
+    {
+      "name": "test-hook-pre-askquestion.sh",
+      "pattern": "B",
+      "checks": 3,
+      "last_pass": true,
+      "covers": [
+        "hook:pre-askquestion-reminder.sh"
+      ]
+    },
+    {
+      "name": "test-hook-staleness-nudge.sh",
+      "pattern": "B",
+      "checks": 3,
+      "last_pass": true,
+      "covers": [
+        "hook:staleness-nudge.sh"
+      ]
+    },
+    {
+      "name": "test-manual-template-structure.sh",
+      "pattern": "A",
+      "checks": 4,
+      "last_pass": true,
+      "covers": [
+        "docs:manual-template.md"
       ]
     },
     {
@@ -81,6 +126,15 @@
       "last_pass": true,
       "covers": [
         "docs:prescription-template.md"
+      ]
+    },
+    {
+      "name": "test-r12-gate.sh",
+      "pattern": "B",
+      "checks": 3,
+      "last_pass": true,
+      "covers": [
+        "bin:r12-gate.sh"
       ]
     },
     {
@@ -123,13 +177,14 @@
     {
       "name": "test-slash-command-flow-integrity.sh",
       "pattern": "A",
-      "checks": 8,
+      "checks": 10,
       "last_pass": true,
       "covers": [
         "command:design.md",
         "command:document.md",
         "command:healthcheck.md",
-        "command:retro.md"
+        "command:retro.md",
+        "command:upkeep.md"
       ]
     },
     {
@@ -148,23 +203,17 @@
     }
   ],
   "totals": {
-    "scorers": 17,
-    "checks_total": 527,
-    "checks_passed": 527,
-    "format_checks": 527,
+    "scorers": 23,
+    "checks_total": 547,
+    "checks_passed": 547,
+    "format_checks": 547,
     "semantic_checks": 0
   },
   "mechanisms_inventory": {
-    "total": 16,
-    "covered": 11,
-    "coverage_pct": 69,
-    "uncovered": [
-      "bin:r12-gate.sh",
-      "docs:manual-template.md",
-      "hook:cwd-guard.sh",
-      "hook:post-write-line-check.sh",
-      "hook:pre-askquestion-reminder.sh"
-    ],
+    "total": 18,
+    "covered": 18,
+    "coverage_pct": 100,
+    "uncovered": [],
     "excluded": [],
     "inventory": [
       "bin:r12-gate.sh",
@@ -172,6 +221,7 @@
       "command:document.md",
       "command:healthcheck.md",
       "command:retro.md",
+      "command:upkeep.md",
       "docs:manual-template.md",
       "docs:prescription-template.md",
       "eval:derive-targets.sh",
@@ -181,13 +231,14 @@
       "hook:post-write-line-check.sh",
       "hook:pre-askquestion-reminder.sh",
       "hook:self-verify-on-stop.sh",
+      "hook:staleness-nudge.sh",
       "skill:consultant",
       "skill:document"
     ],
     "_note": "machine-derived by generate-coverage.sh（掃 settings.json hooks × commands × skills × bin × docs 模板 × eval 基建）。人工不可直接改 total / inventory；只能在 coverage-exclusions.json 加排除項（附 reason）。手改本區塊 → `generate-coverage.sh --check` 會抓。"
   },
   "last_run": {
-    "timestamp": "2026-07-04T11:58:42Z",
+    "timestamp": "2026-07-04T12:25:32Z",
     "rc": 0
   }
 }

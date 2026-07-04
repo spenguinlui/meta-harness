@@ -2,7 +2,8 @@
   "autoMemoryEnabled": false,
   "hooks": {
     "SessionStart": [
-      { "hooks": [{ "type": "command", "command": ".claude/hooks/cwd-guard.sh" }] }
+      { "hooks": [{ "type": "command", "command": ".claude/hooks/cwd-guard.sh" }] },
+      { "hooks": [{ "type": "command", "command": ".claude/hooks/staleness-nudge.sh" }] }
     ],
     "PreToolUse": [
       {
