@@ -1,5 +1,6 @@
 #!/bin/bash
 # pattern: B
+# covers: eval:run-self-verify.sh
 # 驗 run-self-verify.sh runner：無 test→0、全綠→0、任一紅→1、summary 對
 # 沙箱 HUB：複製 runner、放不同 test-*.sh 組合
 set -u

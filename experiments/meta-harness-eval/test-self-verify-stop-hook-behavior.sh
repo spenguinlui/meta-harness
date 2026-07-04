@@ -1,5 +1,6 @@
 #!/bin/bash
 # pattern: B
+# covers: hook:self-verify-on-stop.sh
 # 驗 self-verify-on-stop.sh hook：無 runner→放行、runner 綠→放行、runner 紅→exit 2 擋下
 # 沙箱 HUB：複製 hook 到 tmp，給不同 runner 行為，斷 hook 的 rc 與訊息
 set -u

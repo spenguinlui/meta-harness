@@ -1,5 +1,6 @@
 #!/bin/bash
 # pattern: A
+# covers: eval:generate-coverage.sh
 # 驗各 coverage.json 符合軸 13 spec（docs/design-axes/13-self-verify-coverage.md）的 schema
 # 來源：meta-harness 自身 + targets.yml 列出且已落地的 target
 set -u

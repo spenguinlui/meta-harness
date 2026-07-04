@@ -1,5 +1,6 @@
 #!/bin/bash
 # pattern: A
+# covers: skill:consultant
 # 驗 consultant skill 內含關鍵概念（Phase 0 / 設計軸 / prescription / R-10）
 # 這是 Pattern A 結構近似——真實 Pattern C（LLM-judge 輸出品質）待 eval 基建擴充
 set -u

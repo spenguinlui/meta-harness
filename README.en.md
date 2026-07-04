@@ -232,10 +232,10 @@ Landing reference numbers:
 
 | Target | Scorers | Checks | Coverage |
 |---|---|---|---|
-| meta-harness itself | 13 | 492 | **100% (15/15)** |
+| meta-harness itself | 15 | 518 | **67% (10/15)** |
 | atdd-task | 7 | 58 | 47% (7/15) |
 
-> **What the coverage number means (honest note)**: this 100% / 15-of-15 covers **structural / format plus a few behavioral checks** (Patterns A/B of the four) across every registered mechanism — it is **not** semantic-layer verification. **Semantic coverage (Pattern C — LLM-judge-style content-quality judgment) has not landed yet and is a roadmap item** — consultant skill output quality is currently approximated structurally (`test-consultant-skill-structure.sh`), not truly semantically verified.
+> **What the coverage number means (honest note)**: 67% (10/15) is structural / behavioral coverage (Patterns A/B of the four) over a **machine-derived denominator** — the inventory is auto-scanned from hooks / commands / skills / bin / templates; humans may only exclude items with a stated reason, and the 5 uncovered mechanisms are listed in coverage.json. **Semantic coverage (Pattern C — LLM-judge-style content-quality judgment) has not landed yet and is a roadmap item** — consultant skill output quality is currently approximated structurally (`test-consultant-skill-structure.sh`), not truly semantically verified.
 
 See [`docs/design-axes/13-self-verify-coverage.md`](docs/design-axes/13-self-verify-coverage.md).
 
@@ -360,7 +360,7 @@ BACKLOG.md                  Undigested failures / gaps list
 - ✅ Consultant skill locks architect identity + 6-step flow
 - ✅ `/document` skill (bilingual README + CONTRIBUTING auto-produced)
 - ✅ Memory multi-axis taxonomy + Plan-as-memory + Outcome-as-skill bidirectional flywheel
-- ✅ meta-harness self-landing of axis 13: 13 scorers / 492 checks / **100% coverage (15/15)**
+- ✅ meta-harness self-landing of axis 13: 15 scorers / 518 checks / **67% coverage (10/15, machine-derived denominator)**
 - ✅ atdd-task first external target landing axis 13: 7 scorers / 58 checks / 47% coverage (7/15)
 - 🔄 Cross-target rollout in progress (ai-infra-management / figma2code / self-profile / google_sheet_builder pending)
 

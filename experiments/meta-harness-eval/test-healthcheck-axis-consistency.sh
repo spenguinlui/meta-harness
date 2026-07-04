@@ -1,5 +1,6 @@
 #!/bin/bash
 # pattern: A
+# covers: command:healthcheck.md
 # 驗 healthcheck command 引用的軸數與實際 design-axes/ 檔案數一致
 set -u
 HUB="${CLAUDE_PROJECT_DIR:-$(cd "$(dirname "$0")/../.." && pwd)}"

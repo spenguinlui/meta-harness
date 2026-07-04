@@ -1,5 +1,6 @@
 #!/bin/bash
 # pattern: A
+# covers: command:design.md, command:document.md, command:healthcheck.md, command:retro.md
 # 驗 .claude/commands/*.md 結構：frontmatter 完整、引用的檔案實存
 # 覆蓋 mechanism: slash-command-{design,retro,document,healthcheck}-flow-integrity
 set -u

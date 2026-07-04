@@ -1,5 +1,6 @@
 #!/bin/bash
 # pattern: A
+# covers: skill:consultant, skill:document
 # 驗 .claude/skills/*/SKILL.md 都有 YAML frontmatter + name + description
 set -u
 HUB="${CLAUDE_PROJECT_DIR:-$(cd "$(dirname "$0")/../.." && pwd)}"

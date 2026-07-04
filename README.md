@@ -232,10 +232,10 @@ Tool / Context / Memory / Planning / Execution / Safety / Hooks / Eval / Observa
 
 | Target | Scorer 數 | Check 數 | 覆蓋率 |
 |---|---|---|---|
-| meta-harness 自身 | 13 | 492 | **100%（15/15）** |
+| meta-harness 自身 | 15 | 518 | **67%（10/15）** |
 | atdd-task | 7 | 58 | 47%（7/15）|
 
-> **覆蓋率口徑（誠實說明）**：這個 100%／15-15 指的是**結構 / 格式與少量行為檢查**（四 Pattern 的 A/B）已覆蓋所有已登錄 mechanism，**不等於語義層已驗**。**語義覆蓋率（Pattern C，LLM-judge 式的內容品質判斷）尚未落地、列為 roadmap 待做項**——目前 consultant skill 的輸出品質是用結構近似（`test-consultant-skill-structure.sh`）暫代，不是真正的語義驗證。
+> **覆蓋率口徑（誠實說明）**：67%（10/15）為**分母機器推導**後的結構 / 行為層覆蓋（四 Pattern 的 A/B）——分母由掃描 hooks / commands / skills / bin / 模板自動產生，人工只能附理由排除，未覆蓋的 5 個 mechanism 列在 coverage.json。**語義覆蓋率（Pattern C，LLM-judge 式的內容品質判斷）尚未落地、列為 roadmap 待做項**——目前 consultant skill 的輸出品質是用結構近似（`test-consultant-skill-structure.sh`）暫代，不是真正的語義驗證。
 
 詳見 [`docs/design-axes/13-self-verify-coverage.md`](docs/design-axes/13-self-verify-coverage.md)。
 
@@ -360,7 +360,7 @@ BACKLOG.md                  未消化的失敗 / 缺口清單
 - ✅ Consultant skill 鎖建築師身分 + 6 步流程
 - ✅ `/document` skill（雙語 README + CONTRIBUTING 自動產出）
 - ✅ Memory 多軸分類 + Plan-as-memory + Outcome-as-skill 雙向飛輪
-- ✅ meta-harness 自身落地軸 13：13 scorer / 492 check / **100% 覆蓋（15/15）**
+- ✅ meta-harness 自身落地軸 13：15 scorer / 518 check / **67% 覆蓋（10/15，分母機器推導）**
 - ✅ atdd-task 首個外部 target 落地軸 13：7 scorer / 58 check / 47% 覆蓋（7/15）
 - 🔄 跨 target 推廣中（ai-infra-management / figma2code / self-profile / google_sheet_builder 待補軸 13）
 

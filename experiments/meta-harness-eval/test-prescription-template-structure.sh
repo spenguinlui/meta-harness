@@ -1,5 +1,6 @@
 #!/bin/bash
 # pattern: A
+# covers: docs:prescription-template.md
 # 驗 prescription-template.md 自身有教模板規定的 Header + Part A-F section
 # （test-prescription-format 驗的是 prescriptions 用法；本支驗的是 template 自身）
 set -u
