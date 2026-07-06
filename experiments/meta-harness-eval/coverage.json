@@ -1,6 +1,6 @@
 {
   "target": "meta-harness",
-  "generated_at": "2026-07-04T21:28:46Z",
+  "generated_at": "2026-07-04T21:44:38Z",
   "runner": "experiments/meta-harness-eval/run-self-verify.sh",
   "scorers": [
     {
@@ -249,7 +249,7 @@
     "_note": "machine-derived by generate-coverage.sh（掃 settings.json hooks × commands × skills × bin × docs 模板 × eval 基建）。人工不可直接改 total / inventory；只能在 coverage-exclusions.json 加排除項（附 reason）。手改本區塊 → `generate-coverage.sh --check` 會抓。"
   },
   "last_run": {
-    "timestamp": "2026-07-04T21:28:46Z",
+    "timestamp": "2026-07-04T21:44:38Z",
     "rc": 0
   }
 }
