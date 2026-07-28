@@ -155,10 +155,12 @@ eyebrow: Pattern Library · 索引
 - 拆分顆粒（one-shot / long-running / pipeline）
 - Context 邊界（完全隔離 / 父給摘要 / 雙向 streaming）
 - 結果整合（子回主拍板 / 子直接寫檔 / vote）
-- Hand-off pattern（單向 / 雙向 / DAG）
+- Hand-off pattern（單向 / 雙向 / DAG / 結構化循環——生產 graph 通常不是 DAG，回邊要 contract + loop budget）
 - 並行失敗（all-or-nothing / best-effort / quorum）
+- 控制流落點（routing 放 code 還是放 model：路徑可預定 → code，開放式 → model）
+- 圖的兩層（Org Graph 編制持久化 vs Work Graph 執行期變形）
 
-Claude Code 對應：`Agent` tool（subagent_type）/ `.claude/agents/` 自訂 / `run_in_background`
+Claude Code 對應：`Agent` tool（subagent_type，控制流在 model）/ `Workflow` tool（腳本編排，控制流在 code）/ `.claude/agents/` 自訂（org graph 持久化）/ `run_in_background`
 
 ## 11. Triggers / Schedule
 
