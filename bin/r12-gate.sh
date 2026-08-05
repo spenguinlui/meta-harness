@@ -23,8 +23,11 @@ if [ ! -d "${target}" ]; then
 fi
 
 # R-12 洩漏關鍵字（大小寫敏感，同 universal-care-rules.md 原文）：
-#   meta-harness / prescription / 設計軸 / universal-care / consultant / 顧問 / Stage [0-9] / R-[0-9]
-pattern='meta-harness\|prescription\|設計軸\|universal-care\|consultant\|顧問\|Stage [0-9]\|R-[0-9]'
+#   meta-harness / prescription / 設計軸 / 設計面向 / 設計方案 / universal-care / consultant / 顧問
+#   / Stage [0-9] / R-[0-9]
+# 「設計面向」「設計方案」是 2026-08-05 文件白話化後的新講法，跟舊詞 一併擋——
+# 否則新詞散進 target 時這道關卡會失效。命中不等於洩漏，仍需看語境（target 自身文案不算）。
+pattern='meta-harness\|prescription\|設計軸\|設計面向\|設計方案\|universal-care\|consultant\|顧問\|Stage [0-9]\|R-[0-9]'
 
 hits=$(grep -rn "${pattern}" "${target}" \
   --include='*.md' --include='*.mjs' --include='*.ts' \

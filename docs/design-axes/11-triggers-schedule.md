@@ -1,77 +1,89 @@
-# 設計軸 11：Triggers / Schedule
+# 設計面向 11：觸發時機
 
-主動觸發 agent 工作的機制 — 跟設計軸 7 Hooks（被動 reactive）相對。
+主動叫 agent 起來做事的機制。它跟設計面向 7 的 hook 是相對的。
 
-- **設計軸 7 Hooks**：reactive，外部事件（user 動作 / tool 呼叫）發生時觸發
-- **設計軸 11 Triggers**：active，agent 自我 schedule（時間到 / cron / loop / 條件達成）觸發
+hook 是被動的，外部事件發生時（使用者的動作、工具呼叫）才觸發。觸發時機是主動的，agent 自己排程，時間到了、定時迴圈到了、或條件成立了就觸發。
 
-業界 2026 主流架構（如 Zylon 五層）explicitly 把 triggers 列獨立層，跟 hooks 拆開。
+2026 年業界主流的架構（例如 Zylon 的五層架構）都明確把觸發列成獨立的一層，跟 hook 分開。
 
 ---
 
-## 為什麼獨立成設計軸（不併入 Hooks）
+## 為什麼它是獨立的一條，不併進 hook
 
-- Hooks 精神是「**有事我攔下**」（PreToolUse / PostToolUse / UserPromptSubmit）— 沒事不出現
-- Triggers 精神是「**沒事我自己跑**」（cron / loop / scheduled wake-up）— agent 主動行動
-- 兩者觸發語意完全不同；混在一條設計軸會讓設計者搞不清「reactive vs active」邊界
+hook 的精神是「有事我攔下來」，沒事的時候它不出現。
 
-## 設計決策
+觸發的精神是「沒事我自己跑」，是 agent 主動行動。
 
-### 1. 觸發類型
-- **時間觸發**：cron 每日 / 每週 / 每月 / 一次性 schedule
-- **間隔觸發**：每 N 分鐘 / N 秒 poll 狀態
-- **動態自我節奏**：agent 自己決定下次什麼時候醒（如 `ScheduleWakeup`）
-- **條件觸發**：某狀態達成才跑（檔案出現 / 外部 API 變更 / inbox 收信）
-- **手動觸發**：user 打 slash command / 按鈕（這條跟 hooks 像，但意圖是「啟動」非「攔截」）
+兩者的觸發語意完全不同。混在同一條裡，設計的人會分不清什麼是被動、什麼是主動。
 
-### 2. 觸發頻率上限
-- Anthropic prompt cache TTL 5 分鐘 — schedule < 5 min 維持 cache 熱
-- > 5 min 會付 cache miss cost
-- 「醒來」一次 = 一次 LLM call 成本，要排除「無謂重複」
+## 要決定的事
 
-### 3. 觸發失敗 / 漂移
-- Schedule 過期沒跑（系統休眠 / 程序死掉）→ 補跑 vs skip？
-- 重複觸發（cron 沒做去重）→ 防重機制
-- Trigger fire 但 agent context 還沒準備好 → 排隊？丟棄？
+### 一、怎麼觸發
 
-### 4. 觸發停止條件
-- 達到目標 → 停 loop
-- N 次無進展 → 停 loop
-- 成本 / token 超預算 → 停
-- User 介入 → 停
+- **時間觸發**：每天、每週、每月的排程，或一次性的排程。
+- **間隔觸發**：每隔幾分鐘或幾秒去查一次狀態。
+- **自己抓節奏**：agent 自己決定下次什麼時候醒過來。
+- **條件觸發**：某個狀態成立才跑，例如某個檔案出現、外部 API 有變更、收到信。
+- **手動觸發**：使用者打指令或按按鈕。這一種看起來像 hook，但意圖是「啟動」而不是「攔截」。
 
-### 5. 觸發 visibility
-- 排程哪些 / 下次什麼時候醒 / 上次跑結果 → 在哪可看
-- 失敗 trigger 是否 alert
-- Schedule 改動有無 audit log
+### 二、頻率上限
 
-### 6. 觸發 → 派工
-- Trigger fire 後，agent 自己跑？還是 fan-out 給 sub-agent？（耦合設計軸 10）
-- Trigger 帶什麼 context（純時間 / 帶 last result / 帶外部事件 payload）
+Anthropic 的 prompt 快取存活 5 分鐘。排程間隔小於 5 分鐘，快取還是熱的。超過 5 分鐘就要付快取沒命中的成本。
 
-## 與其他設計軸耦合
+每醒來一次就是一次 LLM 呼叫的成本，所以要避免無意義的重複。
 
-- **設計軸 10 Multi-agent**：trigger fire → 常見組合是 spawn sub-agent 跑批
-- **設計軸 5 Execution loop**：trigger 是 execution loop 的「啟動 source」之一
-- **設計軸 7 Hooks**：trigger fire 後仍受 hooks 攔截（如 PreToolUse 還是會跑）
-- **設計軸 8 Eval**：scheduled eval（每週跑 outer eval benchmark）是典型用例
-- **設計軸 9 觀測**：trigger 自身要被 trace（不然「為什麼這時候跑」debug 不出來）
+### 三、觸發失敗或時間飄掉
 
-## Claude Code 對應機制
+排程過期沒跑到（系統休眠、程序死掉），要補跑還是跳過？
 
-- **`/loop` slash command**：固定間隔 / 動態節奏跑同一 prompt 或 slash command
-- **`ScheduleWakeup` tool**：dynamic mode（agent 自選下次喚醒時間）
-- **`CronCreate` / `CronDelete` / `CronList`**：cron 排程遠端 agent
-- **`Monitor` tool**：背景跑 + 每行 stdout 通知（非嚴格 schedule，是事件流）
-- **無內建 file watcher**：條件觸發要自己用 hook 模擬
+重複觸發（排程沒做去重）要怎麼防？
 
-## 反模式
+觸發了但 agent 的上下文還沒準備好，要排隊還是丟棄？
 
-- **無上限 polling**：每 5 秒打外部 API 查狀態 → 浪費 + rate limit
-- **Cache miss 浪費**：選 300 秒 schedule（剛過 5 min cache TTL，最差選擇 — 詳 ScheduleWakeup tool 描述）
-- **Trigger 沒去重**：cron 重複跑、agent 處理一半被新 trigger 中斷
-- **無停止條件的 loop**：跑到地老天荒 → token / cost 失控
-- **Schedule 不可見**：user 不知道排了什麼、下次什麼時候會冒出 alert
-- **Trigger 帶不夠 context**：醒來不知道為什麼醒、要查上一次結果才能繼續
+### 四、什麼時候停
 
-具體案例見 `cases/<target>-design axis-cases.md`。
+達到目標就停、連續 N 次沒進展就停、成本或 token 超出預算就停、使用者介入就停。
+
+### 五、使用者看不看得到
+
+排了哪些？下次什麼時候醒？上次跑的結果是什麼？這些要在哪裡看得到？
+
+觸發失敗要不要發告警？排程的改動有沒有稽核紀錄？
+
+### 六、觸發之後派給誰
+
+觸發之後是 agent 自己跑，還是分派給多個 sub-agent？這跟設計面向 10 有牽連。
+
+觸發時要帶什麼上下文？只帶時間、還是帶上次的結果、還是帶外部事件的內容？
+
+## 跟其他面向的牽連
+
+- **多 agent 協作**：觸發之後常見的組合是開一批 sub-agent 去跑。
+- **執行迴圈**：觸發是執行迴圈的啟動來源之一。
+- **Hook**：觸發之後仍然會被 hook 攔截，工具執行前的 hook 照樣會跑。
+- **成效評估**：排程跑整體評估（例如每週跑一次評測集）是典型的用法。
+- **可觀測性**：觸發本身也要被記錄下來，不然「為什麼這時候跑」根本查不出來。
+
+## 在 Claude Code 裡對應什麼
+
+- `/loop` 指令：用固定間隔或動態節奏，重複跑同一個 prompt 或指令。
+- `ScheduleWakeup` 工具：讓 agent 自己選下次醒來的時間。
+- `CronCreate`、`CronDelete`、`CronList`：排程遠端的 agent。
+- `Monitor` 工具：在背景跑，每有一行輸出就通知。這不算嚴格的排程，比較像事件流。
+- 沒有內建的檔案監看功能。條件觸發要自己用 hook 模擬。
+
+## 常見的錯誤做法
+
+**沒有上限的輪詢。** 每 5 秒打一次外部 API 查狀態，浪費資源，還會撞到頻率限制。
+
+**選了最差的間隔。** 排 300 秒，剛好超過 5 分鐘的快取存活時間，這是最糟的選擇。
+
+**觸發沒有去重。** 排程重複跑，agent 處理到一半被新的觸發打斷。
+
+**迴圈沒有停止條件。** 跑到天荒地老，token 和成本失控。
+
+**排程看不見。** 使用者不知道排了什麼，也不知道下次什麼時候會冒出一則告警。
+
+**觸發帶的上下文不夠。** 醒來之後不知道自己為什麼醒，還要回去查上一次的結果才能繼續。
+
+具體案例見 `cases/` 底下對應的檔案。

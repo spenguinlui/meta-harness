@@ -1,61 +1,63 @@
 ---
 layout: page
-eyebrow: Design Axis 13
+eyebrow: 設計面向 13
 ---
 
-# 設計軸 13：Self-Verify Coverage（自驗覆蓋率）
+# 設計面向 13：自我驗證覆蓋率
 
-target repo 的可機驗 wiring 是否都有對應自驗腳本＋持續被跑。從**事件性的 R-10 紀律**升級成**可量化的飛輪 KPI**。
+目標專案裡那些機器驗得了的設定，是不是每一項都有對應的驗證腳本，而且真的持續在跑。
 
-## 為什麼獨立成設計軸（vs R-10）
+這條是把 R-10 從一條看情況才想起來的紀律，升級成可以量化的指標。
 
-| | R-10 | 設計軸 13 |
+## 為什麼它是獨立的一條，而不只是 R-10
+
+| | R-10 | 這個面向 |
 |---|---|---|
-| 顆粒 | 行為紀律（小） | 機制設計（大）|
-| 問題 | 「該不該自驗」 | 「自驗系統怎麼蓋、覆蓋率怎麼量、誰拉曲線」|
-| 形態 | floor（最低標準）| dashboard + accountability |
-| 落地 | prescription 條文 | 基建 + 數據 + 看板 |
+| 顆粒度 | 行為紀律，小 | 機制設計，大 |
+| 回答的問題 | 該不該自驗 | 自驗系統怎麼蓋、覆蓋率怎麼量、誰負責把它拉高 |
+| 形態 | 最低標準 | 數據面板加上責任歸屬 |
+| 落在哪 | 設計方案的條文 | 基礎建設加上數據加上看板 |
 
-R-10 講「禁止把可機驗 outcome 丟過牆給業主」；軸 13 講「**把這條紀律物理化、量化、可比較**」。
+R-10 講的是「不准把機器驗得了的東西丟過牆給對方驗」。這個面向講的是「把這條紀律變成擋得住的機制、量得出來、比得了」。
 
-## 設計決策
+## 要決定的事
 
-### 1. 自驗基建（必裝三件）
+### 一、要裝的三樣東西
 
-每個 target repo 必有：
+每個目標專案都要有：
 
 ```
-experiments/<target>-eval/
-  ├── run-self-verify.sh       # runner：單一 entry point，跑所有 test-*.sh
-  ├── test-*.sh                # scorers：每支對應一個 wiring / mechanism
-  └── coverage.json            # 數據面板（schema 見 §3）
+experiments/<目標專案>-eval/
+  ├── run-self-verify.sh       # 單一入口，跑完所有 test-*.sh
+  ├── test-*.sh                # 各項驗證腳本，每支對應一項設定
+  └── coverage.json            # 數據面板，格式見下面
 
-.claude/hooks/self-verify-on-stop.sh   # Stop hook：動過架構才驗；drift → exit 2 擋 session 結束
-.claude/settings.json                  # 註冊 Stop hook
+.claude/hooks/self-verify-on-stop.sh   # 動過架構才驗；發現對不上就 exit 2 擋住 session 結束
+.claude/settings.json                  # 註冊上面那個 hook
 ```
 
-參考實作：`atdd-task`、`meta-harness` 自身。
+參考實作可以看 `atdd-task`，以及 meta-harness 自己。
 
-### 2. 四 Pattern 分類（每支 test-*.sh 必歸屬其一）
+### 二、四種驗法，每支腳本都要歸到其中一種
 
-| Pattern | 適用 | 招式 |
+| 驗法 | 適合什麼 | 怎麼做 |
 |---|---|---|
-| **A. 單一真實來源 + drift 偵測** | 配置 / wiring 跨檔一致性 | hardcode 推薦表，parse N 個檔比對 |
-| **B. 觸發 + 斷言** | hook / 中介機制是否被吃到 | 構造 stdin / env，呼叫 hook，斷 stdout/exit |
-| **C. Scorer + METRICS 行** | 行為品質（agent 輸出）| 受控實例 + ground truth + 量化 |
-| **D. 快照 + Diff** | 副作用是否正確 | 跑前 snapshot、跑後比 |
+| A. 比對設定是否一致 | 同一份設定散在多個檔案時 | 在腳本裡寫死正確的來源，解析各個檔案來比對 |
+| B. 觸發後看有沒有反應 | hook 或中介機制有沒有被叫到 | 構造標準輸入和環境，呼叫 hook，檢查輸出和退出碼 |
+| C. 跑分評輸出品質 | agent 產出的內容對不對 | 受控的實例加上標準答案，量化評分 |
+| D. 比對前後差異 | 副作用對不對 | 跑之前拍快照，跑完再比 |
 
-寫新 test 前先選 Pattern；不要硬發明新招式。新 Pattern 若真有需要，回寫本軸文件擴充。
+寫新的驗證腳本之前先選一種，不要硬發明新招。如果真的有需要新的驗法，回頭把這份文件補上。
 
-### 3. coverage.json schema
+### 三、coverage.json 的格式
 
-每個 target 在 `experiments/<target>-eval/coverage.json` 維護：
+每個專案在 `experiments/<目標專案>-eval/coverage.json` 維護這份：
 
 ```json
 {
-  "target": "<name>",
+  "target": "<名稱>",
   "generated_at": "<ISO8601>",
-  "runner": "experiments/<target>-eval/run-self-verify.sh",
+  "runner": "experiments/<目標專案>-eval/run-self-verify.sh",
   "scorers": [
     {
       "name": "test-XX.sh",
@@ -83,49 +85,60 @@ experiments/<target>-eval/
 }
 ```
 
-**`coverage_pct = (covered / total) * 100`**——不到 100% 不是錯，但**飛輪上不能停**。
+覆蓋率就是「有覆蓋的除以總數再乘以一百」。沒到 100% 不是錯，但不能停在原地。
 
-### 4. 自動 vs 手動
+### 四、哪些自動、哪些手動
 
 | 欄位 | 誰維護 |
 |---|---|
-| `scorers[*]`、`totals.*`、`last_run.*` | runner 跑完自動 patch |
-| `scorers[*].covers`、`mechanisms_inventory.total / uncovered` | **target builder 手動維護**——誰知道 target 全部 wiring |
-| `mechanisms_inventory.covered` | union(scorers[*].covers) 自動算 |
+| `scorers[*]`、`totals.*`、`last_run.*` | 入口腳本跑完自動更新 |
+| `scorers[*].covers`、`mechanisms_inventory.total` 和 `uncovered` | 專案的設計者手動維護。只有他知道這個專案總共有哪些設定 |
+| `mechanisms_inventory.covered` | 自動算，把所有腳本涵蓋的項目取聯集 |
 | `coverage_pct` | 自動算 |
 
-Builder 維護 `mechanisms_inventory.total` 是要付出的紀律，**換得的是「覆蓋率不會作弊」的可信度**——若 builder 設 total=1、covered=1，誰都看得出來在唬人。
+要設計者自己維護總數，這是一種紀律成本。換來的是「覆蓋率不會被灌水」的可信度——如果有人把總數設成 1、覆蓋數也是 1，誰都看得出來在唬人。
 
-### 5. /healthcheck 整合
+### 五、跟健檢的整合
 
-`/healthcheck <target>` 跑時讀 target 的 `coverage.json` → 印「軸 13：自驗覆蓋 X%、N 支 scorer、未覆蓋 [...]」。沒檔 → 警示「軸 13 未落地」。詳見 `.claude/commands/healthcheck.md` Step 3.5。
+跑 `/healthcheck <目標專案>` 的時候，會去讀那個專案的 `coverage.json`，然後印出「自驗覆蓋率百分之幾、有幾支腳本、還沒覆蓋的有哪些」。
 
-## Mechanism
+找不到那個檔案就警示「這個專案還沒做自驗」。細節見 `.claude/commands/healthcheck.md`。
 
-- **Write triggers**：每次 `run-self-verify.sh` 跑完自動 patch；builder 加新 test-*.sh 或更新 mechanism 清單時手動編輯
-- **Read mechanism**：`/healthcheck` 在逐軸盤點時讀 target coverage.json；可選擇 session-start auto-load 摘要
-- **Lifecycle**：runner 跑寫 → /healthcheck 讀 → `last_run.timestamp` 超過 30 天標 stale 提示重跑
-- **Validation**：對應 Part E 的 V<n>（target 端的 `test-self-verify-coverage.sh`）驗 coverage.json schema 合法 + `mechanisms_inventory` 內部一致
+## 這套機制怎麼運作
 
-## Anti-patterns
+**什麼時候寫入。** 每次跑完入口腳本會自動更新。設計者加了新的驗證腳本、或更新了項目清單的時候，手動編輯。
 
-1. **「文件講了沒落地」**：prescription 寫 V<n>=script 但 target 沒對應 `test-*.sh` → R-10 違反、軸 13 暴露
-2. **「自驗工具放著沒人跑」**：test-*.sh 存在但 `last_run.timestamp` 超過 30 天 → 自驗變蚊子館
-3. **「覆蓋率永遠 0%」**：`mechanisms_inventory.total>0` 但 `covered=0` → 跟「沒裝自驗」沒差
-4. **「靠 builder 自覺」**：沒 Stop hook 擋住 → 回到事件性紀律，R-10 軟規則化
-5. **「100% 但 total=1」**：覆蓋率作弊；total 要老實列出 target 的全部 wiring 數
-6. **「scorer 寫好但沒進 runner」**：test-*.sh 在 disk 但 `run-self-verify.sh` 沒撿到（命名不對 / 沒 +x）→ 覆蓋率假象
+**什麼時候讀取。** 健檢在逐條盤點的時候讀。也可以選擇在 session 開始時自動載入摘要。
 
-## 與其他軸的耦合
+**生命週期。** 入口腳本跑完寫入，健檢時讀取。上次執行的時間超過 30 天，就標記成過期、提示重跑。
 
-- **軸 7 Hooks**：Stop hook 是軸 13 的物理執行層
-- **軸 8 Evaluation**：軸 13 是 outer eval 的元覆蓋指標（「eval 自己有沒有覆蓋到」）
-- **軸 9 觀測**：coverage.json 是觀測介面之一
-- **R-10**：軸 13 把 R-10 從紀律升級成 KPI
+**怎麼驗證它自己。** 對應設計方案 Part E 的一條驗收測試，在目標專案端寫一支 `test-self-verify-coverage.sh`，驗 coverage.json 的格式合法，而且裡面的數字互相一致。
 
-## 落地參考（依時間順序）
+## 常見的錯誤做法
 
-- **meta-harness 自身**（2026-05-27）：3 scorer / Pattern A / 14 checks ──「鞋匠的孩子有鞋穿」首落地
-- **atdd-task**（2026-05-26）：7 scorer / Pattern A + B + C / 58 checks ──首個 target 完整落地
+**文件講了但沒實作。** 設計方案裡寫了某條驗收測試是 script 層級的，但目標專案裡根本沒有對應的腳本。這違反 R-10，會被這個面向抓出來。
 
-跨 target 比對由 `/healthcheck` 或未來的 `/coverage` 統計命令處理。
+**驗證工具放著沒人跑。** 腳本存在，但上次執行是 30 天以前。自驗變成蚊子館。
+
+**覆蓋率永遠是 0%。** 項目總數大於 0，但覆蓋數是 0。那跟沒裝自驗沒有差別。
+
+**靠設計者自覺。** 沒有 Stop hook 擋住的話，就回到了「想到才做」的狀態，R-10 又變回一條軟規則。
+
+**100% 但總數是 1。** 這是在灌水。總數要老實列出這個專案全部的設定項目。
+
+**腳本寫好了但沒被入口撿到。** 檔案在磁碟上，但 `run-self-verify.sh` 沒撿到它，可能是命名不對、或者忘了給執行權限。這會造成覆蓋率的假象。
+
+## 跟其他面向的牽連
+
+- **Hook（面向 7）**：Stop hook 是這個面向真正擋得住的執行層。
+- **成效評估（面向 8）**：這個面向是整體評估的元指標，也就是「評估自己有沒有覆蓋到」。
+- **可觀測性（面向 9）**：coverage.json 也是一種觀測介面。
+- **R-10**：這個面向把 R-10 從紀律升級成可量化的指標。
+
+## 誰已經做起來了
+
+meta-harness 自己是在 2026-05-27 做起來的，第一版是三支腳本、全部用驗法 A、14 項檢查。這是「自己用自己的方法」的第一次落實。
+
+atdd-task 是 2026-05-26，七支腳本、用了驗法 A、B、C，58 項檢查。這是第一個完整做起來的外部專案。
+
+跨專案的比對由 `/healthcheck` 處理，未來也可能加一個專門統計覆蓋率的指令。

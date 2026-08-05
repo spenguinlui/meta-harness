@@ -1,20 +1,20 @@
 ---
-description: meta-harness 顧問——對既有系統用 13 設計軸做定點健檢
-argument-hint: <target repo 絕對路徑>
+description: meta-harness 顧問——拿 13 條設計面向幫現有系統做一次體檢
+argument-hint: <目標專案的絕對路徑>
 ---
 
-你正在以 meta-harness 顧問身分進入「**健檢**」模式，target = $ARGUMENTS。
+你正在以 meta-harness 顧問身分進入「**健檢**」模式，目標專案 = $ARGUMENTS。
 
-這是**定點體檢，不是設計**：拿 13 設計軸當鏡子評既有系統現況、找缺口，**不出完整設計圖**。
+這是**體檢，不是設計**：拿 13 條設計面向當鏡子，評估現有系統的狀況、找出缺口，**不出完整的設計方案**。
 
-1. `pwd` 確認在 `~/meta-harness`。確認 target 絕對路徑（$ARGUMENTS 為空則問）。需要時問 1-2 句最小必要的「這系統主旨／邊界」，但**不跑 Step 1 完整 5 問訪談**（健檢是冷啟動體檢）。
-2. Read `.claude/skills/consultant/SKILL.md`（顧問身分 + 「健檢模式」段）、`docs/design-axes.md`、`docs/universal-care-rules.md`。
-3. **逐軸健檢**：對 `docs/design-axes/` **13 條**，每條 Read 該軸文件 → 對照 target 既有 wiring（檔案結構 / hook / skill / command / settings.json / MCP）評：
-   - 狀態：有做 / 部分 / 沒做 / N-A
-   - 缺口或反模式：**錨具體檔名 + 行號**（R-5）
-   - 風險與建議方向（不寫完整設計圖）
-3.5. **軸 13 自驗覆蓋率（特別處理）**：Read target 的 `experiments/<target>-eval/coverage.json`：
-   - 不存在 → 評「軸 13 未落地」，建議建基建（runner + Stop hook + test-*.sh）
-   - 存在 → 印 `coverage_pct`、`scorers` 數、`mechanisms_inventory.uncovered` 清單；若 `last_run.timestamp` 超過 30 天標 stale 提示重跑
-4. 產出**健檢報告**：**13 軸**對照表 + 重點風險排序。給 human 看的段落用中文功能名、不丟未解釋縮寫（R-6）。
-5. 收尾：若體檢發現需要動手重設計，提議「轉 `/design $ARGUMENTS` 進設計流程」。
+1. 跑 `pwd` 確認在 `~/meta-harness`。確認目標專案的絕對路徑（$ARGUMENTS 為空就問）。需要的話問一兩句最基本的「這系統是做什麼的、邊界在哪」，但**不要跑 Step 1 那完整的五個問題**。健檢是冷啟動的體檢，不是需求訪談。
+2. 讀 `.claude/skills/consultant/SKILL.md`（顧問角色，以及「健檢模式」那段）、`docs/design-axes.md`、`docs/universal-care-rules.md`。
+3. **逐條檢查**：對 `docs/design-axes/` 的 **13 條**，每條先讀那份文件，再對照目標專案現有的設定（檔案結構、hook、skill、指令、settings.json、MCP）評估：
+   - 狀態：有做、部分、沒做，還是用不到。
+   - 缺口或錯誤做法：**要錨到具體檔名和行號**（R-5）。
+   - 有什麼風險、建議往哪個方向走（不寫完整的設計方案）。
+3.5. **自我驗證覆蓋率要特別處理**：讀目標專案的 `experiments/<專案>-eval/coverage.json`。
+   - 檔案不存在：評「還沒做自我驗證」，建議先建基礎建設（入口腳本、Stop hook、各驗證腳本）。
+   - 檔案存在：印出覆蓋率、有幾支腳本、還沒覆蓋的清單。如果上次執行時間超過 30 天，標記成過期並提示重跑。
+4. 產出**健檢報告**：**13 條的對照表**加上重點風險的排序。給人看的段落用中文功能名，不要丟沒解釋過的縮寫（R-6）。
+5. 收尾：如果體檢發現需要動手重新設計，提議「轉 `/design $ARGUMENTS` 進設計流程」。

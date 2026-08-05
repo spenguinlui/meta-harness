@@ -1,349 +1,375 @@
-# Prescription Package Template
+# 設計方案的格式
 
-`meta-harness` 顧問對特定 target repo 輸出的格式。Prescription package 是「**請在你的 target repo 安裝這些**」清單，不是「我幫你做完了」。
+這是顧問針對某個目標專案輸出的文件格式。
 
-每份 prescription 是某時點的 snapshot——隨 target repo 演化、universal rules 演化、lessons 累積，會出 v1.5 / v2 / ...。
+先講清楚它是什麼：設計方案是一份「請在你的專案裡裝這些東西」的清單，不是「我幫你做完了」的報告。
+
+每一份方案都是某個時間點的快照。隨著目標專案演化、通用規則演化、教訓累積，會出 v1.5、v2 等等新版本。
 
 ---
 
 ## Header
 
 ```yaml
-target_repo: <name + URL>
-generated_at: <ISO timestamp>
+target_repo: <名稱 + 網址>
+generated_at: <ISO 時間戳>
 status: draft | active | superseded
-template: full | lite    # 分級鍵；缺省 = full。判準與結構見下方「Prescription Lite（輕量分級）」節
+template: full | lite    # 分級用；沒寫就當 full。判斷標準見下方「輕量版」那節
 implementation_medium: claude-code-harness | web-app | api-service | saas | hybrid | other
-  # claude-code-harness：主要 artifact 是 hook / skill / settings.json / bash script
-  # web-app / api-service / saas：主要 artifact 是 route / DB schema / component / infra config
-  # hybrid：AI harness 嵌在 web/SaaS 產品內（如 OpenClaw、Hermes agent 類）
-  # → Part D 的 artifact 語言跟著切換，不預設 bash/Claude Code
+  # claude-code-harness：主要產出是 hook、skill、settings.json、bash 腳本
+  # web-app / api-service / saas：主要產出是路由、資料庫結構、元件、基礎設施設定
+  # hybrid：AI harness 嵌在網頁或 SaaS 產品裡，像 OpenClaw、Hermes agent 那類
+  # 這個值會決定 Part D 用什麼語言寫，不要預設是 bash 或 Claude Code
 source_sessions:
-  - <link to Phase 0 session>
-  - <link to 13 design axes audit session>
-  - <other relevant sessions>
-universal_care_rules_baseline: <commit hash of universal-care-rules.md>
+  - <訪談那次 session 的連結>
+  - <設計面向盤點那次 session 的連結>
+  - <其他相關 session>
+universal_care_rules_baseline: <universal-care-rules.md 的 commit hash>
 prescription_version: <v1, v1.5, v2 ...>
 ```
 
 ---
 
-## Part A：需求摘要（Step 1 5 件事訪談結論）
+## Part A：需求摘要
 
-從對應 Phase 0 session 抽到的關鍵結論。所有後續 prescription 都 trace 回這裡：
+從訪談那次 session 抽出來的關鍵結論。後面所有內容都要能追溯回這裡。
 
-- **Mission statement**：一兩句話
-- **Persona**：誰會用、互動模式（**必含 builder vs human 區分**——builder = 設計這 target 的工程師；human = 每天跑指令看結果的人；可能同人可能不同人）
-- **Human 領域熟悉度**：human 在這 target 的領域是 peer 還是非專家？哪些子領域 peer / 哪些非 peer？決定設計軸 12 翻譯層深度
-- **Key Success criteria**：尤其 SC2 failure floor（決定哪條設計軸是 existential）
-- **Domain shape**：例如 `many_independent_projects` / `sequential_workflow` / `transform_pipeline`
-- **Anti-scope**：明確列出「不做」清單
+- **要解決什麼問題**：一兩句話講完。
+- **誰會用、怎麼互動**：一定要分清楚設計者和使用者。設計者是設計這個專案的工程師，使用者是每天跑指令看結果的人。可能是同一個人，也可能不是。
+- **使用者懂不懂這個領域**：他在這個領域是內行還是外行？哪些子領域熟、哪些不熟？這決定人的介面（面向 12）那層翻譯要做多深。
+- **成功的標準**：尤其是第二條，什麼情況算失敗。這決定哪個設計面向是非做不可的。
+- **這個領域的形狀**：例如很多互相獨立的專案、有先後順序的流程、還是一條轉換的流水線。
+- **不該做什麼**：明確列出來。
 
 ---
 
-## Part B：衛生規則對照（R-1~R-12 Compliance）
+## Part B：12 條基本規則的對照表
 
-對 [universal-care-rules.md](universal-care-rules.md) 每條規則的 compliance status：
+逐條對照 [universal-care-rules.md](universal-care-rules.md)，看目前的狀態：
 
-| Rule | Status | Note |
+| 規則 | 狀態 | 備註 |
 |---|---|---|
-| R-1 CLAUDE.md ≤ 50 行 | ✅ / ⚠️ / ❌ / N/A | 若 ⚠️ 列缺什麼 |
-| R-2 settings 入版控 | ... | ... |
-| R-3 hook ≤ 100 行 | ... | ... |
-| R-4 不流暢編造 | ... | ... |
-| R-5 提問錨具體 artifact | ... | ... |
-| R-6 不用未解釋專有名詞 / 縮寫 | ... | ... |
-| R-7 wiring 不固化壞流程 / fix 先 root cause | ... | ... |
-| R-8 跨層越權禁止 | ... | ... |
-| R-9 framework vs 任務內容分流 | ... | ... |
-| R-10 可機驗 outcome 先自驗再交付 | ... | ... |
-| R-11 可被他人使用必交付說明書 | ... | 走 Step 5.5 `/document`；不交接的自用腳本 N/A |
-| R-12 target 落地檔 self-contained | ... | 落地後 grep target 無 meta-harness 行話 |
+| R-1 CLAUDE.md 不超過 50 行 | ✅ / ⚠️ / ❌ / N/A | 是 ⚠️ 就列出缺什麼 |
+| R-2 設定放進版控 | ... | ... |
+| R-3 hook 不超過 100 行 | ... | ... |
+| R-4 不編造 | ... | ... |
+| R-5 提問要指向具體的東西 | ... | ... |
+| R-6 不用沒解釋過的術語和縮寫 | ... | ... |
+| R-7 不固化壞流程，先找根本原因 | ... | ... |
+| R-8 不跨層越權 | ... | ... |
+| R-9 框架和任務內容分開 | ... | ... |
+| R-10 交付前先自己驗過 | ... | ... |
+| R-11 給別人用的要附說明書 | ... | 走 `/document`；不會交接的自用腳本填 N/A |
+| R-12 寫進專案的檔案要能獨立看懂 | ... | 實作完 grep 一次，確認沒有框架行話 |
 
-**狀態語意**：
-- ✅ comply
-- ⚠️ partial（列具體差異）
-- ❌ not yet（會進 Part D 安裝清單）
-- N/A（含理由——例如該 repo 沒有對應概念）
+狀態的意思：✅ 是符合；⚠️ 是部分符合，要列出具體差在哪；❌ 是還沒做，會進 Part D 的安裝清單；N/A 是不適用，要附理由，例如這個 repo 沒有對應的概念。
 
 ---
 
-## Part C：13 設計軸對應 + domain 新抽象（mechanism wiring）
+## Part C：13 個設計面向的對應，加上這個領域自己的新概念
 
-對 [13 設計軸](design-axes/) 每條，產出特化 prescription。**每條必含五個欄位**——少了 Mechanism 就走進「**有圖書館但沒人翻、有筆記本但沒人寫**」的反模式：只寫格式（static config）卻沒寫「何時讀／何時寫／lifecycle／validation」，AI 就自由發揮、可能完全不主動寫、或被 Claude Code 內建 memory 取代。
+對 [13 個設計面向](design-axes/) 逐條產出針對這個專案的內容。
+
+**每一條都必須包含五個欄位。** 少了「做法」這一欄，就會走進一個典型的錯誤：有圖書館但沒人翻，有筆記本但沒人寫。只寫了格式（靜態設定）卻沒寫「什麼時候讀、什麼時候寫、東西的生命週期、怎麼驗證」，AI 就會自由發揮，可能完全不主動寫，或者被 Claude Code 內建的記憶功能取代掉。
 
 ```
-### Design Axis N: <name>
+### 設計面向 N：<名稱>
 
-**Required**: 該 repo 在這條設計軸該長什麼樣（基於 Part A）
-**Status**: already-installed | partial | not-installed | deprecated
-**Trace**: 對應 Phase 0 哪條 mission / persona / SC
+**該長什麼樣**：這個專案在這條面向上該長什麼樣，依據是 Part A
+**目前狀態**：已裝好 | 部分 | 還沒裝 | 已淘汰
+**追溯**：對應訪談裡的哪一條需求、哪個使用者、哪條成功標準
 
-**Static config (what to install)**: 指向 Part D 的具體檔案 / 結構
+**靜態設定（要裝什麼）**：指向 Part D 裡的具體檔案或結構
 
-**Mechanism (behavioral contract)**:
-  - **Write triggers**: 何時該寫入？列具體觸發條件（事件 / 命令 / hook / 使用者意圖）
-  - **Read mechanism**: 何時 Claude 該查詢這份資料？（session-start auto-load / on-demand grep / 條件觸發）
-  - **Lifecycle**: 條目怎麼從 created → active → superseded / archived？誰負責 transition？
-  - **Validation**: 對應 Part E 的 V<n> test，驗證 mechanism 真的有 work
+**做法（行為上的約定）**：
+  - **什麼時候寫入**：列出具體的觸發條件，可能是事件、指令、hook，或使用者的意圖
+  - **什麼時候讀取**：Claude 什麼時候該去查這份資料？session 開始就自動載入、用到才 grep、還是條件觸發？
+  - **生命週期**：一個條目怎麼從建立、到生效、到被取代或封存？誰負責推動這些轉換？
+  - **怎麼驗證**：對應 Part E 的哪一條測試，確認這個做法真的有在運作
 
-**Implementation freedom**: 標明哪些是 contract（必須做到的行為），哪些是實作自由（bash / python / 應用、皆可）。
+**哪些可以自由發揮**：標明哪些是必須做到的行為，哪些是實作自由，bash、python、應用層都行。
 ```
 
-### 為什麼 Mechanism 不可缺
+### 為什麼「做法」這一欄不能少
 
-只寫格式（Static config）不寫機制 = 「**有圖書館但沒人翻、有筆記本但沒人寫**」。  
-AI 在當下會自己決定何時讀寫，缺乏一致性，半年後新人 / 新 session 接手沒共同預期。
+只寫格式不寫做法，就是有圖書館但沒人翻、有筆記本但沒人寫。
 
-例如「memory layer」：
-- ❌ 只說「建 decisions/ 目錄、用此格式寫 ADR」 → AI 可能完全不主動寫，或用 Claude Code 內建 memory 取代，繞過你的設計
-- ✅ 加 Mechanism：「destructive op 完成後 hook prompt 寫 ADR；session-start 注入 decisions/INDEX.md；架構類 commit message 觸發 ADR prompt；ADR 衝突時 pre-commit hook 偵測 supersede」 → 行為可預期、可驗
+AI 會在當下自己決定什麼時候讀寫，缺乏一致性。半年後新人或新 session 接手時，沒有共同的預期。
 
-### N/A 處理
+拿記憶層舉例。
 
-某條 design axis 對該 domain 真不需要時，五個欄位仍要填，Mechanism 寫 `N/A — <reason>`。**不允許整段省略**——強制 reviewer 看見「有意決定不做」vs「忘了想」。
+只說「建一個 decisions/ 目錄，用這個格式寫決策紀錄」，結果 AI 可能完全不主動寫，或者用 Claude Code 內建的記憶取代，繞過你的設計。
 
-### 新抽象（domain-specific extension）
+加上做法就不一樣了：「做完有破壞性的操作之後，hook 提示寫決策紀錄；session 開始時注入 decisions/INDEX.md；架構類的 commit message 觸發寫紀錄的提示；紀錄互相衝突時，commit 前的 hook 偵測出誰取代了誰。」這樣行為就可預期、可驗證。
 
-domain 自己的新抽象（target 業主的核心概念，如 Watcher / Recommendation / Pipeline / Workspace 等）一併列在 Part C，遵守同一格式（Required / Status / Trace / Static config / Mechanism）。
+### 用不到的面向怎麼處理
 
-### 必答題（特定設計軸）
+某條面向對這個領域真的不需要時，五個欄位還是要填，「做法」那欄寫 `N/A — 理由`。
 
-某些設計軸不問會踩典型反模式，本 template 強制要求 prescription 答：
+不允許整段省略。這是為了強迫 review 的人看見「有意識地決定不做」，而不是「忘了想」。
 
-- **設計軸 8 Evaluation loop 必答**：「**做完任務的結果，能不能回連到當初的計畫 / 決策？怎麼連？**」
-  - 沒連 = outer eval 飛輪斷一截，系統只能憑 human 主觀回報、無法客觀學習
-  - 常見實作：commit message reference / cloud-state tag / transaction log / audit trail 編號 / 多重綁定
-  - 答 N/A 必附理由（如「純 read-only target、沒 mutating outcome」）
+### 這個領域自己的新概念
 
-- **設計軸 3 Memory 必答**：「**user-scope auto-memory 寫入紀律是什麼？什麼時候該升 git（universal rule / project CLAUDE.md / docs/）？**」
-  - 沒紀律 = Claude Code 預設「都往那塞」→ user memory 變垃圾場、規則永遠不升 git、team 接手斷層
-  - 對位設計軸 3 反模式 #10「Auto-memory 變終點」+ #9「過度依賴 user-scope auto-memory」
-  - 答 N/A 必附理由（如「solo project 沒接手考量」）
+專案負責人自己的核心概念，例如 Watcher、Recommendation、Pipeline、Workspace 這類，一併列在 Part C，格式跟上面一樣。
 
-- **設計軸 12 Human Interface 必答**：「**human 是不是這 target 領域 peer？非 peer 時翻譯層怎麼蓋？回饋通道怎麼設計？builder 還在嗎？**」
-  - human 非 peer 沒蓋翻譯層 = jargon 牆 = 等於沒輸出
-  - 沒回饋通道 = 訊號流失 = 系統無法迭代
-  - builder 不存在 = 結構問題，mechanism 救不了
+### 有幾個面向一定要回答的問題
 
-### 軟體工程紀律映射
+有些面向不問就會踩到典型的錯誤，所以這裡強制要求方案裡必須回答。
 
-Wiring 設計可（也應該）用軟體工程方法學的語言來精確描述。常見對應：
+**成效評估（面向 8）必答：** 做完任務的結果，能不能回連到當初的計畫和決策？怎麼連？
 
-| 概念 | harness 對應例 | 出處 |
+沒連的話，整個循環就斷了一截，系統只能靠人主觀回報，沒辦法客觀學習。常見的做法有：在 commit message 裡引用、幫雲端資源打標籤、交易紀錄、稽核軌跡編號、多重綁定。
+
+答 N/A 一定要附理由，例如「這是純唯讀的專案，沒有會改動狀態的結果」。
+
+**記憶（面向 3）必答：** 自動寫入個人記憶的紀律是什麼？什麼時候該把它升級進 git，變成通用規則、專案的 CLAUDE.md、或 docs/？
+
+沒有紀律的話，Claude Code 預設就是「什麼都往那裡塞」。結果個人記憶變成垃圾場、規則永遠不升級進 git、團隊接手時斷層。
+
+答 N/A 一定要附理由，例如「這是一個人的專案，沒有接手的考量」。
+
+**人的介面（面向 12）必答：** 使用者是這個領域的內行嗎？如果是外行，翻譯層怎麼做？意見回流的管道怎麼設計？設計者還在嗎？
+
+使用者是外行卻沒做翻譯層，就是架起一面術語牆，等於沒有輸出。沒有意見回流管道，訊號就流失了，系統沒辦法迭代。設計者已經不在的話，那是結構問題，做法救不了。
+
+### 對應到軟體工程的既有做法
+
+設定的設計可以、也應該用軟體工程的語言來精確描述。常見的對應：
+
+| 概念 | 在 harness 裡的對應 | 出處 |
 |---|---|---|
-| **Strategy Pattern** | engine pluggable（agent-engines.yml + dispatch；claude vs codex 是同介面兩實作）| Design Patterns |
-| **Specification Pattern** | 規則資料化（如 atdd-task `tool-safety.yml` 的 destructive 清單）| Domain-Driven Design |
-| **Middleware / Chain of Responsibility** | hook 鏈（PreToolUse → Tool → PostToolUse → SubagentStop）| Design Patterns |
-| **Facade** | slash command（`/continue` 把底下 pipeline 包成單一入口）| Design Patterns |
-| **Repository** | MCP（`atdd_task_*` 封裝 task 持久化、與 client 解耦）| DDD |
-| **Bounded Context** | agent scope 紀律（risk-reviewer 不做 spec-gap，那是 gatekeeper 的）| DDD |
-| **Ubiquitous Language** | 「信心度」「e2eDecision」「reviewFindings」這類 domain 詞彙必須跨 prescription/skill/agent 一致 | DDD |
-| **Hexagonal / Ports-and-Adapters** | `ports/` 目錄結構（atdd-task `ports/mcp`/`ports/api`/`ports/worker`）| Clean Architecture |
-| **ATDD（Acceptance Test-Driven Development）** | 本 template Part E 必須先寫、Part D wiring 後落、`run-self-verify` 綠才算完 | XP / ATDD |
-| **SRP / DIP（SOLID）** | 單一責任：一個 hook 一個 gate；依賴反轉：agent prompt 不該依賴具體引擎（dispatch 層抽掉）| SOLID |
+| Strategy | 引擎可抽換（agent-engines.yml 加上分派；claude 和 codex 是同一個介面的兩種實作） | Design Patterns |
+| Specification | 把規則變成資料（例如 atdd-task 的 `tool-safety.yml` 裡那份破壞性操作清單） | 領域驅動設計 |
+| Middleware / Chain of Responsibility | hook 串成一串（工具執行前 → 工具 → 工具執行後 → 子 agent 結束） | Design Patterns |
+| Facade | 指令（`/continue` 把底下一整條流程包成單一入口） | Design Patterns |
+| Repository | MCP（`atdd_task_*` 把任務的持久化封起來，跟客戶端解耦） | 領域驅動設計 |
+| Bounded Context | agent 的職責邊界（風險審查那個不做規格缺口，那是把關者的事） | 領域驅動設計 |
+| Ubiquitous Language | 「信心度」「e2eDecision」「reviewFindings」這類領域詞彙，必須跨方案、skill、agent 都一致 | 領域驅動設計 |
+| Hexagonal / Ports and Adapters | `ports/` 的目錄結構（atdd-task 的 `ports/mcp`、`ports/api`、`ports/worker`） | Clean Architecture |
+| ATDD（先寫驗收測試） | 本格式的 Part E 必須先寫，Part D 的設定後做，`run-self-verify` 全過才算完成 | XP / ATDD |
+| 單一職責、依賴反轉 | 一個 hook 只擋一件事；agent 的 prompt 不該依賴具體的引擎，那要抽到分派層 | SOLID |
 
-**為什麼明寫**：違反 SRP 的 God hook、洩漏實作的 prompt、跨 context 的 ubiquitous language drift——這些在自驗 / hook 接口層會自然暴露。**有名字之後，設計討論的精度與 review 效率會提升**；不是為套 pattern 而套。
+**為什麼要明寫。** 違反單一職責的肥大 hook、洩漏實作細節的 prompt、跨情境的共通語言逐漸走鐘，這些問題在自我驗證和 hook 的接口層會自然暴露。但有名字之後，設計討論的精度和 review 的效率都會提升。這不是為了套名詞而套。
 
-**LLM-specific patterns**（傳統方法學未直接 cover、要在 harness domain 另建）：
+**LLM 領域特有的做法**（傳統方法沒有直接涵蓋，要在 harness 這個領域另外建立的）：
 
-- 4 種自驗 pattern（單一真實來源+drift 偵測 / 觸發+斷言 / Scorer+METRICS / 快照+Diff）—— 對應傳統 unit test pattern 的 LLM-aware 演化版
-- prompt caching economy、agentic loop、eval-driven prompt iteration、model routing、context window 預算
+- 四種自我驗證的驗法（比對設定是否一致、觸發後看有沒有反應、跑分評輸出品質、比對前後差異）。這是傳統單元測試做法的 LLM 版演化。
+- prompt 快取的成本考量、agent 迴圈、用評估結果驅動 prompt 迭代、model 路由、上下文視窗預算。
 
-Prescription Part D 設計 wiring 時，若觸及這些 LLM-specific 議題（如 dispatch、cost-correct 量測），需明確標示採用的 pattern，便於跨 prescription 比對與重用。
+設計 Part D 的時候，如果碰到這些議題（例如分派、成本正確的量測），要明確標示採用哪一種做法，方便跨方案比對和重用。
 
 ---
 
-## Part D：實作清單（要寫進 target 的具體 artifact）
+## Part D：實作清單
 
-具體可執行的實作清單，按類別分組。**artifact 語言跟著 Header `implementation_medium` 切換**——不預設 bash / Claude Code 結構。
+具體可執行的實作清單，按類別分組。
 
-### D.0 實作介質宣告
+**寫法要跟著 Header 的 `implementation_medium` 切換**，不要預設是 bash 或 Claude Code 的結構。
 
-在此明確本 prescription 的 artifact 類型，讓 Part D.1–D.5 的讀者知道用什麼語言看：
+### D.0 先宣告實作介質
+
+在這裡明確講清楚這份方案的產出是什麼類型，讓讀 D.1 到 D.5 的人知道要用什麼語言去看：
 
 ```
 implementation_medium: <同 Header>
-tech_stack: <主要語言 / 框架 / 平台，如 Next.js + PostgreSQL / FastAPI + Redis / bash + Claude Code>
+tech_stack: <主要語言、框架、平台。例如 Next.js + PostgreSQL、FastAPI + Redis、bash + Claude Code>
 artifact_language:
-  - claude-code-harness  → D.1 = CLAUDE.md / docs；D.2 = hooks；D.3 = bin/ skills；D.4 = settings.json
-  - web-app / api-service → D.1 = 路由 / 元件 / DB schema；D.2 = middleware / webhook；D.3 = service / module；D.4 = env / config
-  - saas / hybrid        → 混合以上，每條 artifact 標明所在層（harness 層 / 應用層）
+  - claude-code-harness  → D.1 是 CLAUDE.md 和 docs；D.2 是 hooks；D.3 是 bin/ 和 skills；D.4 是 settings.json
+  - web-app / api-service → D.1 是路由、元件、資料庫結構；D.2 是 middleware 和 webhook；D.3 是 service 和 module；D.4 是環境變數和設定
+  - saas / hybrid        → 上面兩種混合，每一項都要標明在哪一層（harness 層還是應用層）
 ```
 
-### D.1 核心檔案 / 結構
-依介質而定：
-- **claude-code-harness**：CLAUDE.md 段落、文件結構、docs/ 規則類文件
-- **web-app / api-service**：路由定義、DB schema、元件骨架
-- **saas / hybrid**：依所在層分開列（harness 層 / 應用層標清楚）
+### D.1 核心檔案和結構
 
-### D.2 事件攔截 / Middleware
-依介質而定：
-- **claude-code-harness**：`.claude/hooks/` 下的 script + `.claude/settings.json` 註冊
+- **claude-code-harness**：CLAUDE.md 的段落、文件結構、docs/ 底下的規則類文件。
+- **web-app / api-service**：路由定義、資料庫結構、元件骨架。
+- **saas / hybrid**：依所在的層分開列，harness 層和應用層要標清楚。
 
-  **每個 hook 必含 Matcher Precision 三項**（防 hook matcher 過寬 → false positive）：
+### D.2 事件攔截
+
+- **claude-code-harness**：`.claude/hooks/` 底下的腳本，加上 `.claude/settings.json` 的註冊。
+
+  **每個 hook 都必須寫清楚三件事，防止匹配條件太寬造成誤觸發：**
 
   ```
-  - Hook ID: <name>
-  - Trigger event: PreToolUse | PostToolUse | UserPromptSubmit | SessionStart | Stop ...
-  - Tool matcher: <Bash | Edit | Write | * 等>
-  - Matcher precision (必填三項):
-    1. Harness prefix anchor:
-       <命令必含 target 自家 CLI prefix；不允許高頻字面（如 'inventory' / 'force'）為觸發>
-    2. Exclusion list:
-       <已知該排除的 path / command / context 清單>
-    3. False-positive scan checklist:
-       - <5 個「應該不觸發」的命令 / message 範例>
-       - <3 個「應該觸發」的命令 / message 範例>
-  - Spec: <script 邏輯>
-  - Validates: V<n>
+  - Hook ID: <名稱>
+  - 觸發事件: PreToolUse | PostToolUse | UserPromptSubmit | SessionStart | Stop ...
+  - 匹配哪個工具: <Bash | Edit | Write | * 等>
+  - 匹配精準度（三項都要填）:
+    1. 指令前綴的錨點:
+       <指令必須含目標專案自己的 CLI 前綴。不允許拿高頻的普通字當觸發條件，
+        像是 'inventory'、'force' 這種>
+    2. 排除清單:
+       <已知該排除的路徑、指令、情境>
+    3. 誤觸發的檢查清單:
+       - <5 個「不該觸發」的指令或訊息範例>
+       - <3 個「該觸發」的指令或訊息範例>
+  - 邏輯: <腳本要做什麼>
+  - 對應的驗收測試: V<n>
   ```
 
-  **反模式**：❌ matcher 只用裸字面/全域 regex；❌ 沒 exclusion list；❌ 安裝後才發現誤擋
+  **常見的錯誤做法：** 匹配條件只用裸字串或全域 regex；沒有排除清單；裝上去之後才發現誤擋。
 
-- **web-app / api-service**：middleware、webhook handler、event listener
-- **saas / hybrid**：標明 harness 層 hook vs 應用層 middleware
+- **web-app / api-service**：middleware、webhook handler、事件監聽。
+- **saas / hybrid**：標明是 harness 層的 hook 還是應用層的 middleware。
 
-### D.3 指令 / 服務模組
-依介質而定：
-- **claude-code-harness**：新 `bin/` 子命令、新 skill 目錄
-- **web-app / api-service**：新 service、新 API module、新 worker
-- **saas / hybrid**：標明所在層
+### D.3 指令和服務模組
 
-### D.4 設定 / 環境
-依介質而定：
-- **claude-code-harness**：permissions、env vars、`.claude/settings.json` 條目
-- **web-app / api-service**：`.env`、feature flags、infra config、CI/CD 設定
+- **claude-code-harness**：新的 `bin/` 子指令、新的 skill 目錄。
+- **web-app / api-service**：新的 service、API module、worker。
+- **saas / hybrid**：標明在哪一層。
+
+### D.4 設定和環境
+
+- **claude-code-harness**：權限、環境變數、`.claude/settings.json` 的條目。
+- **web-app / api-service**：`.env`、功能開關、基礎設施設定、CI/CD 設定。
 
 ### D.5 目錄結構
-top-level 新目錄（含入版控的空檔確保結構存在）。
 
-每項格式：
+新增的頂層目錄。記得放一個進版控的空檔，確保結構真的存在。
+
+每一項的格式：
 
 ```
-- Status: ✅ installed (commit hash) / 📋 to install / ❌ deprecated (reason)
-- Spec: <足夠 worker 安裝不需再諮詢的細節>
-- Runtime verified: <ISO timestamp> via <test method>   ← ✅ installed 必填
-- Validates: <Part E 哪條測試確認生效>
+- 狀態: ✅ 已安裝 (commit hash) / 📋 待安裝 / ❌ 已淘汰 (理由)
+- 規格: <細節要夠清楚，讓執行的人不必再回來問>
+- Runtime verified: <ISO 時間戳> via <驗證方式>   ← 標「已安裝」時必填
+- 對應的驗收測試: <Part E 的哪一條確認它生效>
 ```
 
-**Runtime verified 規則**：
+**關於「Runtime verified」這個欄位。**
 
-- 任何 spec 含 **protocol / schema / API contract 範例**（hook output 格式、JSON schema、deny/allow wrapper、stdout/stderr 約定等），標 `✅ installed` 前**必經 explicit runtime test**——code review 看不出 schema 是否與當前 Claude Code spec 對齊
-- `Runtime verified` 欄位三選一不可省略：
-  - `<ISO timestamp> via <Part E V<n>>` — 走 Part E 對應 live test
-  - `<ISO timestamp> via <ad-hoc test description>` — 例：「手動 trigger Bash 命令觀察 hook 行為，stderr 出現 deny reason」
-  - `🚧 not yet runtime-verified` — **則 Status 不可標 ✅ installed**，須留 `📋 to install` 或新增 `⚠️ code-installed but not runtime-verified` 中間狀態
-- 「stdout 是 valid JSON、exit 0、看起來對」**不算** runtime verified——Claude Code 對 schema mismatch 是**靜默忽略**：hook 邏輯對、stdout 是 valid JSON、exit 0，但若 schema 用舊版 flat 格式（e.g. `{"permissionDecision":"deny"}` 而非 nested `{"hookSpecificOutput": {"hookEventName":"PreToolUse", ...}}`），Claude Code 不擋且不報錯，從 outside 看完全像有 work
-- 第三方權威來源（如 `claude-code-guide` agent / 官方文件版本）查證優於「LLM 腦補 schema」
+任何規格裡含有通訊協定、資料格式、API 約定範例的東西——hook 的輸出格式、JSON 結構、允許或拒絕的包裝格式、標準輸出和錯誤輸出的約定——標「已安裝」之前，一定要經過實際執行的測試。光看程式碼是看不出來格式跟當前 Claude Code 的規格對不對得上的。
+
+這個欄位三選一，不可省略：
+
+- `<ISO 時間戳> via <Part E 的 V<n>>`，走 Part E 對應的實測。
+- `<ISO 時間戳> via <臨時測試的描述>`，例如「手動觸發一個 Bash 指令，觀察 hook 行為，錯誤輸出出現了拒絕的理由」。
+- `🚧 尚未實際驗證`。這種情況下狀態不可以標「已安裝」，要留在「待安裝」，或新增一個「程式碼裝好了但沒實際驗過」的中間狀態。
+
+**「標準輸出是合法的 JSON、exit 0、看起來對」不算驗證過。** Claude Code 對於格式不符是靜默忽略的：hook 邏輯對、輸出是合法 JSON、exit 0，但如果格式用的是舊版的扁平結構（例如 `{"permissionDecision":"deny"}` 而不是巢狀的 `{"hookSpecificOutput": {"hookEventName":"PreToolUse", ...}}`），Claude Code 不會擋、也不會報錯，從外面看完全像是有在運作。
+
+查證的時候，第三方權威來源（例如 `claude-code-guide` agent、官方文件的版本）優於「讓 LLM 憑印象生一個格式出來」。
 
 ---
 
-## Part E：驗收測試（業主跑哪些命令、該看到什麼）
+## Part E：驗收測試
 
-在 target repo 開 Claude session，跑這些命令 / 表達意圖，看行為是否如預期。
+在目標專案裡開一個 Claude session，跑這些指令或表達這些意圖，看行為是不是符合預期。
 
-每條測試：
+每一條測試：
 
 ```
-### V<n>: <test name>
-- **Intent / command**: 使用者輸入什麼
-- **Expected behavior**: Claude 該做什麼
-- **Failure mode**: 怎樣算不對
-- **Verify level**: script | trace-observation | human-only   ← 必填，決定誰跑
+### V<n>: <測試名稱>
+- **意圖或指令**：使用者輸入什麼
+- **預期行為**：Claude 該做什麼
+- **怎樣算失敗**：什麼情況算不對
+- **Verify level**: script | trace-observation | human-only   ← 必填，決定由誰來跑
 - **Status**: ✅ passing / ❌ failing / 🚧 not testable yet
-- **Live-fired at**: <ISO timestamp>   ← ✅ passing 必填
-- **Self-verify runs**: N/A | <count>×pass / <count>×total   ← Verify level=script 必填
-- **Trace**: 對應 Part D 哪些安裝項目
+- **Live-fired at**: <ISO 時間戳>   ← 標 ✅ passing 時必填
+- **Self-verify runs**: N/A | <次數>×pass / <次數>×total   ← Verify level 是 script 時必填
+- **追溯**：對應 Part D 的哪些安裝項目
 ```
 
-**Verify level 三類**（消化 2026-05-17 self-profile audit 教訓 + R-10 落地）：
+**驗證層級分三類。**
 
-- **script**：可用 `claude -p` headless / bash 腳本 / `jq` structural check 機驗。**顧問必須自己跑**（R-10 / Step 4.5），跑 ≥ 3 次穩定通過才能標 ✅ passing。`experiments/<target>-<topic>/` 結構承載。
-- **trace-observation**：要在 target session 內 trigger 後**觀察 trace / log / hook 觸發**才能判定。顧問可代跑（如自己起 session 試），但體感判定仍可能涉及業主。
-- **human-only**：需要業主主觀判定品質 / 風格 / 是否切痛點。顧問不該獨自結案。例：「Claude 給的建議讀起來像不像資深架構師」。
+- **script**：可以用 `claude -p` 非互動模式、bash 腳本、或 `jq` 做結構檢查，讓機器驗。顧問必須自己跑，跑至少三次穩定通過才能標 ✅ passing。用 `experiments/<目標專案>-<主題>/` 這個結構承載。
+- **trace-observation**：要在目標專案的 session 裡觸發之後，觀察追蹤紀錄、log、或 hook 有沒有被叫起來，才能判定。顧問可以代跑，例如自己開一個 session 試，但主觀的體感判定可能還是要對方來。
+- **human-only**：需要對方主觀判定品質、風格、有沒有切中痛點。顧問不該自己結案。例如「Claude 給的建議讀起來像不像一個資深架構師」。
 
-**Live-fire 規則**：
+**關於實彈測試。**
 
-- 任何 V<n> 對應的 Part D 項目含 **protocol / schema / API contract 範例**（hook 輸出、JSON wrapper 等），**Status `✅ passing` 必需 live-fire 證據**：在 target repo 真的 trigger 該情境，觀察行為符合 expected
-- `Live-fired at` 三選一：
-  - `<ISO timestamp>` — 已實彈跑過，Status 可標 ✅ passing
-  - `🚧 not testable yet — <reason>` — 例：「需等 destructive op 實際出現才能驗」，Status 必為 🚧 not testable yet
-  - **不允許** Status ✅ 但 Live-fired at 空白——看似 ✅ 實則從沒被 trigger 過是最常見的 prescription 級假象
-- Live-fire 不等於 dry-run / unit test。必須以**真實 user intent / 命令**進入 Claude Code session 觸發
-- **Self-verify gate**：Verify level=script 的 V<n>，prescription 交付前顧問必須跑 Step 4.5 自驗 loop。`Self-verify runs` 欄記錄 pass/total。`Self-verify runs` 空白 + Verify level=script + Status=✅ → 一律視為**假象**（同 Live-fired at 空白）
+任何 V 條目對應的 Part D 項目如果含有通訊協定、資料格式、API 約定的範例（hook 輸出、JSON 包裝等），狀態要標 ✅ passing 就必須有實彈證據：在目標專案裡真的觸發那個情境，觀察行為符合預期。
 
-**通過**：prescription 真的落地到行為層（避免「文件講了沒落地」與「schema 靜默落空」兩種假象）。
-**失敗**：安裝不完整或規則沒被遵守，要修。
+`Live-fired at` 三選一：
 
-### Self-verify 基建（target 級硬規則，與 R-10 配對）
+- `<ISO 時間戳>`：已經實際跑過，狀態可以標 ✅ passing。
+- `🚧 not testable yet — <理由>`：例如「要等真的出現破壞性操作才能驗」。這種情況狀態必須是 🚧 not testable yet。
+- 不允許狀態是 ✅ 但 `Live-fired at` 空白。看起來是 ✅、實際上從來沒被觸發過，這是設計方案層級最常見的假象。
 
-`Verify level=script` 的 V<n> **必須**對應一支 `experiments/<target>-eval/test-<feature>.sh`（target 內收，可機跑、無需 live session）。寫 scorer 走四種 pattern 之一（揀適合的、別硬發明）：
+實彈測試不等於空跑或單元測試。必須用真實的使用者意圖或指令，進到 Claude Code session 裡去觸發。
 
-| Pattern | 適用情境 | 招式 |
+**自驗這一關。** Verify level 是 script 的條目，方案交付前顧問必須跑完整的自驗流程。`Self-verify runs` 欄位記錄通過次數和總次數。如果這欄空白、Verify level 是 script、狀態卻是 ✅，一律視為假象，跟 `Live-fired at` 空白一樣。
+
+**什麼叫通過。** 方案真的落實到行為層了。這是要避開兩種假象：文件講了但沒實作，以及格式不符被靜默忽略。
+
+**什麼叫失敗。** 安裝不完整，或規則沒有被遵守。要修。
+
+### 自我驗證的基礎建設
+
+這是目標專案層級的硬規定，跟 R-10 是一組的。
+
+Verify level 是 script 的每一條，都必須對應一支 `experiments/<目標專案>-eval/test-<功能>.sh`。這支腳本收在目標專案裡，機器就能跑，不需要開互動 session。
+
+寫的時候挑一種驗法，挑合適的，不要硬發明新的：
+
+| 驗法 | 適合什麼情況 | 怎麼做 |
 |---|---|---|
-| **單一真實來源 + drift 偵測** | 配置 / wiring 跨檔一致性 | 在 script 內 hardcode 真實來源，parse N 個檔比對 |
-| **觸發 + 斷言** | hook / 中介機制是否被吃到 | 構造 stdin / 環境，呼叫 hook，斷言 stdout/exit code |
-| **Scorer + METRICS 行** | 行為品質（agent 輸出對不對）| 受控實例 + ground truth + 統一 `METRICS\|` 行供彙整 |
-| **快照 + Diff** | 副作用是否正確 | 跑前 snapshot state，跑後比 |
+| 比對設定是否一致 | 同一份設定散在多個檔案時 | 在腳本裡寫死正確的來源，解析各個檔案來比對 |
+| 觸發後看有沒有反應 | hook 或中介機制有沒有被叫到 | 構造標準輸入和環境，呼叫 hook，檢查輸出和退出碼 |
+| 跑分評輸出品質 | agent 產出的內容對不對 | 受控的實例加上標準答案，統一輸出 `METRICS|` 那一行方便彙整 |
+| 比對前後差異 | 副作用對不對 | 跑之前拍一張快照，跑完再比 |
 
-**串成硬規則**（target 端施作）：
+**串起來的硬規定，在目標專案端施作：**
 
-- `experiments/<target>-eval/run-self-verify.sh` 為**單一 entry point**：跑所有 `test-*.sh`，回 0 / 1。`/done`、Stop hook、CI 都叫同一個。
-- `.claude/hooks/self-verify-on-stop.sh` 註冊到 `settings.json` 的 `Stop`：drift → exit 2 擋住 Claude 結束本輪。**觸發條件**：架構檔（wiring / 文件 / scorer）指紋變了才跑套件；純諮詢、純閱讀的 session 靜默放行——閘門管的是「改了東西沒驗」，不是「每次收工都罰跑一次」。指紋只在通過後才寫入，失敗的改動下輪仍會被抓。
-- target 端先做這兩條基建（一次性），之後每加一個 V<n>=script，只多寫一支 `test-*.sh`。
+- `experiments/<目標專案>-eval/run-self-verify.sh` 是唯一的入口，跑完所有 `test-*.sh`，回傳 0 或 1。`/done`、Stop hook、CI 都叫同一個。
+- `.claude/hooks/self-verify-on-stop.sh` 註冊到 `settings.json` 的 `Stop`。發現對不上就 exit 2，擋住 Claude 結束這一輪。
 
-**參考實作**（首落地 target）：`atdd-task` repo
-- runner：`experiments/atdd-eval/run-self-verify.sh`
-- Stop hook：`.claude/hooks/self-verify-on-stop.sh`
-- 已有的 scorer：`test-model-routing.sh`（Pattern 1）、`test-confidence-gate.sh`（Pattern 2）、`eval-coder.sh` / `eval-reviewer.sh` etc.（Pattern 3）
+  **觸發條件**是架構檔（設定、文件、驗證腳本）的指紋變了才跑整套。純諮詢、純閱讀的 session 靜默放行。這道關卡管的是「改了東西沒驗」，不是「每次收工都罰跑一次」。指紋只在通過之後才寫入，所以改壞了不修，下一輪還是會被抓。
+- 目標專案端先把上面這兩塊做好，這是一次性的。之後每加一條 script 層級的驗收測試，只要多寫一支 `test-*.sh`。
 
----
-
-## Part F：落差與跟進（已知 gap、deprecated、unknown unknowns）
-
-- **Pending**（含具體觸發條件，禁止模糊 TODO——例如 "等下 stage 補"、"後續優化" 都不夠；要寫「合 PR 時順手補」「實際 destructive op 出現時補」這種觸發條件）
-- **Deprecated** items kept as cautionary examples（含失效原因 + 為什麼保留）
-- **Unknown unknowns** 顯式承認
+**參考實作**在第一個落實的目標專案 `atdd-task`：入口是 `experiments/atdd-eval/run-self-verify.sh`，Stop hook 是 `.claude/hooks/self-verify-on-stop.sh`，已有的驗證腳本包含 `test-model-routing.sh`（比對設定）、`test-confidence-gate.sh`（觸發後看反應）、`eval-coder.sh` 和 `eval-reviewer.sh`（跑分評品質）。
 
 ---
 
-## Prescription Lite（輕量分級）
+## Part F：還沒補的洞
 
-上面 Part A–F 是 **full 版**——複雜 target（有 agent loop、涉及多條設計軸）該用。但不是每個任務都值得一份 full prescription：小改動硬套 full 格式，誘因是把 Part A–F 標題留著、語義掏空（2026-06 掏空事故的根因 = **沒有合法的輕量出口**）。Lite 是那個合法出口。
+- **待辦**：每一條都要寫具體的觸發條件。禁止模糊的 TODO——「等下個階段補」「後續優化」都不夠。要寫成「合 PR 的時候順手補」「實際出現破壞性操作時補」這種有觸發條件的。
+- **已淘汰但留著當前車之鑑的項目**：附上失效的原因，以及為什麼要保留。
+- **還不知道自己不知道什麼**：明確承認。
 
-**適用判準**（frontmatter 標 `template: lite`）：
+---
 
-- **無 agent loop**（純 wiring 調整、文件修正、單一 hook / command 增修），**或**
-- **涉及設計軸 ≤ 4 條**。
+## 輕量版
 
-有 agent loop 或涉及軸 > 4 → 回 full。拿不準 → 用 full（保守）。
+上面的 Part A 到 F 是完整版，複雜的專案（有 agent 迴圈、涉及多個設計面向）該用。
 
-**Lite 結構 = 一頁合約**（表格重量縮放，證據紀律不縮放）：
+但不是每個任務都值得一份完整版。小改動硬套完整格式，誘因就是把 Part A 到 F 的標題留著、內容掏空。2026 年 6 月那次掏空事故的根本原因，就是當時沒有一個合法的輕量出口。輕量版就是那個出口。
 
-1. **形狀摘要**：一兩句話講這次要改什麼、對著哪個痛點。
-2. **涉及軸 3–6 條**：每條一句 Required + Status；其餘軸**一行帶過**（`軸 N N/A — <理由>`），不逐條展開五欄位。
-3. **`### V<n>` 驗收表**：**證據欄位與 full 完全同規格，一格不減**——`Verify level` / `Status` / `Live-fired at` / `Self-verify runs`（欄位語意見 Part E）。這是不變量。
-4. **不動清單**：明列這次**不該動**的檔案 / 介面 / 行為（保留邊界宣告）。
+**什麼情況適用**（在開頭標 `template: lite`）：
+
+- 沒有 agent 迴圈，只是調整設定、修文件、增修單一 hook 或指令，或者
+- 涉及的設計面向不超過 4 條。
+
+有 agent 迴圈，或涉及超過 4 條面向，就回去用完整版。拿不準的話用完整版，保守一點。
+
+**輕量版的結構就是一頁的約定。** 表格的重量可以縮，但證據的紀律不能縮。
+
+1. **這次要改什麼**：一兩句話講清楚，對著哪個痛點。
+2. **涉及的三到六條面向**：每條寫一句「該長什麼樣」加上目前狀態。其他面向一行帶過（`面向 N 用不到 — 理由`），不用逐條展開五個欄位。
+3. **`### V<n>` 驗收表**：證據欄位跟完整版完全同規格，一格都不能減——`Verify level`、`Status`、`Live-fired at`、`Self-verify runs`。欄位的意思見 Part E。這是不變的。
+4. **不動清單**：明列這次不該動的檔案、介面、行為。
 
 ```
-### V1: <test name>
+### V1: <測試名稱>
 - **Verify level**: script | trace-observation | human-only
 - **Status**: ✅ passing / ❌ failing / 🚧 not testable yet
-- **Live-fired at**: <ISO timestamp>   ← ✅ passing 必填
-- **Self-verify runs**: N/A | <count>×pass / <count>×total   ← Verify level=script 必填
+- **Live-fired at**: <ISO 時間戳>   ← 標 ✅ passing 時必填
+- **Self-verify runs**: N/A | <次數>×pass / <次數>×total   ← Verify level 是 script 時必填
 ```
 
-**表格重量隨任務縮放、證據紀律不縮放**：full 用五欄位 Design Axis 塊逼你想清楚每條軸；lite 省掉那層重量，但 V 表與四個證據欄位（Verify level / Status / Live-fired at / Self-verify runs）**一格都不能少**——沒有這些欄位，「輕量」就退化成「掏空」。
+再強調一次：表格的重量隨任務縮放，證據的紀律不縮放。
 
-**機器閘門**：lite 版由 `test-prescription-contract.sh` 的 **lite 分支**驗（依 frontmatter `template: lite` 分流）——檢查 (1) 至少一個 `### V` 區塊存在、(2) 含「不動」字樣的清單段存在、(3) 證據紀律 (b)(c)（✅ passing 的 V 條目有真 `Live-fired at` 時間戳；`Verify level: script` + ✅ 有非空 `Self-verify runs`）與 full 同規格適用。缺 V 表或缺「不動」段 → fail。
+完整版用五個欄位的面向區塊逼你想清楚每一條。輕量版省掉那層重量，但驗收表和那四個證據欄位一格都不能少。沒有這些欄位，「輕量」就退化成「掏空」。
+
+**機器擋關。** 輕量版由 `test-prescription-contract.sh` 的輕量分支來驗，依開頭的 `template: lite` 分流。它檢查三件事：至少有一個 `### V` 區塊；有一段含「不動」字樣的清單；證據紀律跟完整版同規格（標 ✅ passing 的條目要有真的 `Live-fired at` 時間戳；`Verify level: script` 加上 ✅ 的要有非空的 `Self-verify runs`）。缺驗收表或缺「不動」那段就算失敗。
 
 ---
 
 ## 模板使用守則
 
-1. 一份 prescription = 對一個 target repo + 一個時間點。其他 target repo 開新檔。
-2. 升版（v1 → v1.5）開新檔，舊檔狀態改 `superseded` 保留作歷史 reference。
-3. Part B 對 universal rules 的 compliance check 必跑，這是「衛生 floor」；Part C 才是 domain 客製。
-4. Part E 是 prescription 的「合約」——若 Part E 全 pass，使用者該感受到 Part A 的 mission 真的被滿足。
-5. **每份新 prescription 一律顯式標 `template: full | lite` 鍵**（缺省視為 full，但不要靠缺省——顯式標讓 review 與機器閘門一眼分流）。判準見「Prescription Lite」節。
+1. 一份設計方案對應一個目標專案、一個時間點。換一個專案就開新檔。
+2. 升版（v1 到 v1.5）開新檔。舊檔狀態改成 `superseded` 保留，當歷史參考。
+3. Part B 對通用規則的檢查一定要跑，那是最低標準。Part C 才是針對這個領域的客製。
+4. Part E 是這份方案的約定。如果 Part E 全部通過，使用者應該要能感受到 Part A 講的那個問題真的被解決了。
+5. 每一份新方案都要明確標 `template: full | lite`。沒寫會被當成完整版，但不要靠預設值——明確標出來，review 和機器擋關才能一眼分流。判斷標準見「輕量版」那節。

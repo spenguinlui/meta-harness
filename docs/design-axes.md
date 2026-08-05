@@ -1,192 +1,144 @@
 ---
 layout: page
-eyebrow: Pattern Library · 索引
+eyebrow: 手法清單 · 索引
 ---
 
-# Harness 13 大設計軸（索引）
+# 13 大設計軸（設計面向索引）
 
-> 任何 agent harness 都應在這 13 條軸上做出明確設計決策。每條都不是 0/1 開關，而是有十幾種選項，且彼此耦合。
-> Stakes 不同的 target 不一定要全跑——小工具可能只需要設計軸 1/3/5，infra 管理類可能要 1-12 全套（業主與顧問共同篩選）。
+設計任何 AI agent harness，都該在這 13 個面向上做出明確的決定。
 
-每條詳細設計決策、與其他設計軸耦合、反模式、案例評析在 `design-axes/` 子目錄：
+每一個面向都不是「要」或「不要」的開關，而是有十幾種選項可挑，而且彼此牽連：這邊選了什麼，會影響那邊該怎麼選。
 
-- [1. Tool 執行](design-axes/1-tool-execution.md)
-- [2. Context 管理](design-axes/2-context-management.md)
-- [3. Memory 管理](design-axes/3-memory.md)
-- [4. Planning loop](design-axes/4-planning-loop.md)
-- [5. Execution loop](design-axes/5-execution-loop.md) — 單一 agent 的「模型↔工具」迴圈
-- [6. 權限 / 安全](design-axes/6-safety.md)
-- [7. Hooks（reactive）](design-axes/7-hooks.md) — **被動**攔截，外部事件發生時觸發
-- [8. Evaluation loop](design-axes/8-evaluation-loop.md)
-- [9. 觀測](design-axes/9-observability.md) — **system-facing IO 邊界**
-- [10. Multi-agent / Sub-agent Orchestration](design-axes/10-multi-agent-orchestration.md) — **2026-05-09 新增**
-- [11. Triggers / Schedule（active）](design-axes/11-triggers-schedule.md) — **主動**自我喚醒；**2026-05-09 新增**
-- [12. Human Interface](design-axes/12-human-interface.md) — **human-facing IO 邊界**（給每天用工具的人看，不是 builder）；**2026-05-11 新增**
-- [13. Self-Verify Coverage](design-axes/13-self-verify-coverage.md) — **自驗覆蓋率**（把 R-10 從紀律升級成 KPI）；**2026-05-27 新增**
+不是每個專案都要全部跑一遍。風險低的小工具可能只需要第 1、3、5 個面向；管理基礎設施那類的可能第 1 到 12 全都要。這由你和顧問一起篩。
 
-## 7 vs 11 邊界
+每個面向的選項、跟其他面向怎麼牽連、有哪些常見的錯誤做法、實際案例，都在 `design-axes/` 底下：
 
-- **設計軸 7 Hooks** 精神是「**有事我攔下**」（PreToolUse / PostToolUse / UserPromptSubmit）
-- **設計軸 11 Triggers** 精神是「**沒事我自己跑**」（cron / `/loop` / `ScheduleWakeup`）
-- 混在一條會讓設計者搞不清 reactive vs active 邊界
+- [1. 工具執行](design-axes/1-tool-execution.md)
+- [2. 上下文管理](design-axes/2-context-management.md)
+- [3. 記憶](design-axes/3-memory.md)
+- [4. 規劃](design-axes/4-planning-loop.md)
+- [5. 執行迴圈](design-axes/5-execution-loop.md)：單一 agent 在模型和工具之間來回的那個迴圈
+- [6. 權限與安全](design-axes/6-safety.md)
+- [7. Hook](design-axes/7-hooks.md)：被動攔截，外部事件發生時才觸發
+- [8. 成效評估](design-axes/8-evaluation-loop.md)
+- [9. 可觀測性](design-axes/9-observability.md)：給工程師和系統看的輸出
+- [10. 多 agent 協作](design-axes/10-multi-agent-orchestration.md)
+- [11. 觸發時機](design-axes/11-triggers-schedule.md)：主動自己醒過來做事
+- [12. 人的介面](design-axes/12-human-interface.md)：給每天用這工具的人看的輸出，不是給設計者看的
+- [13. 自我驗證覆蓋率](design-axes/13-self-verify-coverage.md)：把「交付前先自己驗過」從一條規則升級成可量化的指標
 
-## 5 vs 10 邊界
+---
 
-- **設計軸 5 Execution loop** = 單一 agent 內部的迴圈
-- **設計軸 10 Multi-agent** = 多個 agent 之間的 hand-off / context 邊界 / 結果整合
+## 幾組容易搞混的界線
 
-## 9 vs 12 邊界（兩個 IO 邊界對稱）
+**第 7 和第 11。** 第 7 個面向講的是「有事我攔下來」，像是工具執行前後、使用者送出訊息時。第 11 個講的是「沒事我自己跑」，像是排程、定時迴圈、自我喚醒。混在一起會分不清誰是被動、誰是主動。
 
-- **設計軸 9 觀測** = 給**工程師 / 系統**看的 IO（trace / log / metric / cost）
-- **設計軸 12 Human Interface** = 給**每天用工具的人**看的 IO（翻譯層 / 業主能力模型 / 回饋通道）
-- 沒分清 = 同一輸出對兩種對象說同樣的話，要嘛 builder 嫌囉嗦、要嘛 human 看不懂
+**第 5 和第 10。** 第 5 個是單一 agent 內部的迴圈。第 10 個是多個 agent 之間怎麼交接、各自看得到什麼上下文、結果怎麼整合。
 
-以下為摘要：
+**第 9 和第 12。** 這兩個是對稱的：都在講「輸出給誰看」。第 9 個是給工程師和系統看的，像是追蹤紀錄、log、指標、花費。第 12 個是給每天用這工具的人看的，包含講法怎麼翻譯、對方懂多少、意見怎麼回流。
 
-## 1. Tool 執行
+沒分清楚的話，同一份輸出會用同樣的講法應付兩種讀者。結果就是設計者嫌囉嗦，使用者看不懂。
 
-模型輸出 tool call，harness 解析並執行。
+---
 
-要決策：
-- 顆粒度：一個 tool 做一件事 vs 大而全 composite
-- 輸入 schema（必填、型別、範例）
-- 輸出 schema（成功、失敗、部分成功）
-- 副作用聲明（read-only / mutating / destructive）
-- 冪等性
-- 失敗處理（重試？回報？停止？）
-- 同步 vs 背景
+以下是每個面向的摘要。
 
-## 2. Context 管理
+## 1. 工具執行
 
-單 session 內 token 怎麼配。
+模型輸出一個工具呼叫，harness 負責解析並執行。
 
-要決策：
-- 哪些檔案/狀態自動載入 vs 懶載
-- 壓縮策略（長對話）
-- Cache 邊界（什麼穩定、什麼會變）
-- 用 sub-agent 隔離 vs 主 context
+要決定的事：一個工具做一件事，還是做成大而全的？輸入格式怎麼定（哪些必填、什麼型別、有沒有範例）？輸出格式怎麼定（成功、失敗、部分成功各長什麼樣）？這個工具會不會改動東西（只讀、會改、會刪）？重複呼叫兩次結果一樣嗎？失敗了要重試、回報，還是停下來？同步跑還是丟到背景跑？
 
-## 3. Memory 管理
+## 2. 上下文管理
 
-跨 session 的持續知識。和 context 是兩件事。
+單一 session 裡，token 額度怎麼分配。
 
-層級：
-- Session memory（短期，session 結束就丟）
-- Project memory（CLAUDE.md，跟 repo 走）
-- User memory（個人，跨專案）
-- Shared/world memory（團隊 runbook、ADR、RAG 用）
+要決定的事：哪些檔案和狀態一開始就載入，哪些要用到才載？對話變長之後怎麼壓縮？哪些內容穩定、可以做快取，哪些會一直變？要不要用 sub-agent 把某些內容隔開，不佔主要的上下文？
 
-要決策：
-- 寫入時機（明確 vs 自動）
-- 寫入分類（fact / preference / decision / failure-lesson / reference）
-- 讀取策略（全載 vs 召回）
-- TTL、衝突解決、驗證
-- 與 eval loop 形成飛輪：失敗 → 寫 memory，eval 淘汰沒用的 memory
+## 3. 記憶
 
-## 4. Planning loop
+跨 session 留下來的知識。這跟上下文是兩回事：上下文管的是「這次怎麼塞得下」，記憶管的是「下次還在不在」。
 
-做之前想：拆解、排序、預測風險。和 execution / evaluation 對稱。
+有幾個層級：session 記憶（短期，結束就丟）、專案記憶（CLAUDE.md，跟著 repo 走）、個人記憶（跨專案）、共享記憶（團隊的操作手冊、決策紀錄）。
 
-形態：
-- One-shot plan
-- Plan-Execute-Replan
-- Hierarchical（高層里程碑 → 低層步驟）
-- Speculative（多候選計畫）
+要決定的事：什麼時候寫入（明講才寫，還是自動寫）？寫進去的東西怎麼分類（事實、偏好、決定、失敗教訓、外部參考）？讀的時候全部載入，還是按需要召回？要不要設過期時間？記憶互相矛盾時怎麼辦？怎麼驗證它還是對的？
 
-要決策：
-- 觸發條件（步數門檻？destructive 前？）
-- 計畫格式（步驟、依賴、檢查點、回滾點）
-- 審核流程（dry-run？人工確認？）
-- 重新規劃條件
-- Plan-as-memory：完成的計畫存進 memory
+記憶跟成效評估會形成一個循環：失敗了就寫進記憶，評估則負責淘汰那些沒用的記憶。
 
-## 5. Execution loop（Agent loop）
+## 4. 規劃
 
-模型－工具來回交替的整體迴圈引擎。承載其他 loop 運轉的底層心跳。
+動手之前先想：怎麼拆、先做哪個、哪裡有風險。這跟執行、評估是一組的。
 
-注意：和「Plan→Execute→Evaluate」裡那個 Execute 不同——那是單步動作，這是整個迴圈。
+有幾種形態：一次規劃到底、規劃後執行再重新規劃、分層規劃（先定大里程碑再拆細步驟）、同時準備多個候選計畫。
 
-要決策：
-- 終止條件（完成 / max steps / 偵測迴圈 / 無進展）
-- 步驟/Token/時間/成本預算
-- 並行 vs 序列、並行失敗處理
-- 錯誤重試策略
-- 中斷與恢復
-- 控制權交還時機（destructive 前、模糊指令、超預算）
+要決定的事：什麼情況才需要規劃（步驟超過幾步？要做刪除動作之前？）計畫要寫成什麼格式（步驟、相依關係、檢查點、能退回哪裡）？要不要先空跑一次、要不要人工確認？什麼情況要重新規劃？做完的計畫要不要存進記憶？
 
-## 6. 權限/安全
+## 5. 執行迴圈
 
-- Destructive 操作清單 → 強制人工確認
-- Dry-run 是否預設
-- Prompt injection 防禦
-- 哪些指令可自動跑、哪些要問
+模型和工具一來一往的那個迴圈引擎。它是承載其他所有流程運轉的底層心跳。
 
-## 7. Hooks/事件
+注意這跟「規劃、執行、評估」裡的那個「執行」不是同一件事。那個是單一步動作，這個是整個迴圈。
 
-- 強制 hooks（pre-commit、post-action verify）
-- 可選 hooks
-- 失敗是阻擋還是警告
+要決定的事：什麼時候停（做完了？步數到上限？偵測到在原地繞圈？沒有進展？）步數、token、時間、花費各給多少預算？並行還是照順序跑，並行時有一個失敗怎麼辦？出錯了怎麼重試？中斷之後怎麼接回來？什麼時候該把控制權交還給人（做刪除動作之前、指令模糊、超出預算）？
 
-## 8. Evaluation loop
+## 6. 權限與安全
 
-兩層：
-- **Inner eval**：每步完成後的驗證 hook（test、type check、post-action verify）
-- **Outer eval**：跨任務的 benchmark（金標準集、自動評分、版本比較）
+哪些操作屬於有破壞性的，必須人工確認？預設要不要先空跑一次？怎麼防範 prompt injection？哪些指令可以自動跑，哪些一定要問人？
 
-要決策：
-- 金標準幾個
-- 評分方式（pass/fail / diff / LLM-as-judge）
-- 失敗分類法（model 錯 / harness 錯 / 環境錯 / 規格不清）
-- 失敗案例自動歸檔回 eval set
+## 7. Hook
 
-## 9. 觀測
+哪些 hook 是強制的（例如 commit 前檢查、動作後驗證）？哪些是選用的？失敗的時候要直接擋下來，還是只發個警告？
 
-- Trace 格式
-- Token / cost 紀錄
-- 失敗自動歸檔
-- 跟 eval 是兄弟：eval 給分數，觀測給原因
+## 8. 成效評估
 
-## 10. Multi-agent / Sub-agent Orchestration
+分兩層，性質完全不同。
 
-把任務拆給多個 agent 並行 / 串聯，主 agent 編排。
+**每一步做完就驗。** 測試、型別檢查、動作後的驗證 hook。
 
-要決策：
-- 觸發條件（context 將爆 / 並行可拆 / 隔離 cold-call / 權限分隔）
-- 拆分顆粒（one-shot / long-running / pipeline）
-- Context 邊界（完全隔離 / 父給摘要 / 雙向 streaming）
-- 結果整合（子回主拍板 / 子直接寫檔 / vote）
-- Hand-off pattern（單向 / 雙向 / DAG）
-- 並行失敗（all-or-nothing / best-effort / quorum）
+**跨任務的整體評估。** 準備一組標準答案、自動跑分、比較不同版本。
 
-Claude Code 對應：`Agent` tool（subagent_type）/ `.claude/agents/` 自訂 / `run_in_background`
+要決定的事：標準答案要準備幾組？怎麼評分（過或不過、比對差異、還是讓 LLM 當評審）？失敗要怎麼分類（是模型錯、harness 錯、環境錯，還是規格本來就不清楚）？失敗的案例要不要自動收進評估集？
 
-## 11. Triggers / Schedule
+## 9. 可觀測性
 
-主動觸發 agent 工作（vs 設計軸 7 被動 hooks）。
+追蹤紀錄要用什麼格式？token 和花費怎麼記？失敗要不要自動歸檔？
 
-要決策：
-- 觸發類型（cron / 間隔 poll / 動態自我節奏 / 條件觸發 / 手動）
-- 頻率上限（cache TTL 5 分鐘是天然分界）
-- 失敗 / 漂移處理（過期補跑 vs skip / 重複去重）
-- 停止條件（達標 / 無進展 / 超預算）
-- Visibility（user 看不看得到排程）
+它跟成效評估是一對：評估告訴你分數，可觀測性告訴你為什麼。
 
-Claude Code 對應：`/loop` / `ScheduleWakeup` / `CronCreate` / `Monitor`
+## 10. 多 agent 協作
 
-## 飛輪
+把任務拆給多個 agent，並行或串聯處理，由主 agent 負責調度。
 
-四個核心 loop 串成一個迴圈：
+要決定的事：什麼情況才拆（上下文快爆了？可以並行？想隔離一個沒有前後文的查詢？要分開權限？）拆多細（一次性、長時間跑、還是做成流水線）？每個 agent 看得到什麼（完全隔離、父層給摘要、雙向溝通）？結果怎麼整合（子 agent 回報給主 agent 拍板、子 agent 直接寫檔、還是投票）？怎麼交接（單向、雙向、還是有向圖）？並行時有一個失敗怎麼辦（全部作廢、盡力而為、還是過半數就算數）？
+
+在 Claude Code 裡對應的是 `Agent` 工具、`.claude/agents/` 自訂 agent，以及 `run_in_background`。
+
+## 11. 觸發時機
+
+主動叫 agent 起來做事，跟第 7 個面向的被動攔截是相對的。
+
+要決定的事：怎麼觸發（排程、定時輪詢、動態自己抓節奏、條件成立時觸發、還是手動）？頻率上限多少（快取存活時間 5 分鐘是一個天然的分界）？失敗或時間飄掉了怎麼處理（過期的補跑還是跳過？重複的怎麼去重）？什麼時候停（達標、沒進展、超出預算）？使用者看不看得到這些排程？
+
+在 Claude Code 裡對應的是 `/loop`、`ScheduleWakeup`、`CronCreate`、`Monitor`。
+
+---
+
+## 四個迴圈怎麼串起來
+
+記憶、規劃、執行、評估這四個，串成一個循環：
 
 ```
-Memory（過往經驗）
+記憶（過往經驗）
    ↓ 餵給
-Planning（這次怎麼做）
+規劃（這次怎麼做）
    ↓ 指導
-Execution（實際做）
+執行（實際去做）
    ↓ 結果交給
-Evaluation（做得對不對）
+評估（做得對不對）
    ↓ 學到的東西回寫
-Memory
+記憶
 ```
 
-少任何一環，agent 就會在某個面向反覆失敗。其他設計軸（tool、context、safety、hooks、觀測）是支援這四個運作的基礎設施。
+少任何一環，agent 就會在某個地方反覆犯同樣的錯。
+
+其他面向（工具、上下文、安全、hook、可觀測性）則是支撐這四個運轉的基礎設施。

@@ -4,6 +4,6 @@ jq -n '{
   hookSpecificOutput: {
     hookEventName: "PreToolUse",
     permissionDecision: "allow",
-    additionalContext: "⚠️ 自查 R-5（提問必錨具體 artifact）+ R-6（不用未解釋專有名詞 / 縮寫）：題目 / 選項中是否有業主沒看過的 Part X / G-N / R-N 編號未展開？英文動名詞 / 縮寫未解釋？若有 → 取消送出、用中文功能名 / 業主講過的詞重寫。"
+    additionalContext: "⚠️ 自查 R-5（提問要錨到具體的檔案或東西）+ R-6（不用沒解釋過的術語和縮寫）：題目和選項裡，有沒有對方沒看過的 Part X / G-N / R-N 編號沒展開？有沒有英文動名詞或縮寫沒解釋？有的話取消送出，改用中文功能名、或對方講過的詞重寫。"
   }
 }'

@@ -1,20 +1,21 @@
 ---
-description: meta-harness 顧問——對跑一陣子的 target 做飛輪 retrospective（回顧進化）
-argument-hint: <target repo 絕對路徑>
+description: meta-harness 顧問——幫跑了一陣子的專案做一次回顧，看接下來該怎麼調整
+argument-hint: <目標專案的絕對路徑>
 ---
 
-你正在以 meta-harness 顧問身分進入「**飛輪 retrospective**」模式，target = $ARGUMENTS。
+你正在以 meta-harness 顧問身分進入「**回顧**」模式，目標專案 = $ARGUMENTS。
 
-這是「東西跑了一陣子後回頭看、讓它進化」，**不是設計、也不是定點體檢**。
-**前提**：target 已上線跑一段時間、有累積使用紀錄（log / 評分 / memory artifact）。
+這是「東西跑了一陣子之後回頭看、讓它往前走」，**不是設計，也不是體檢**。
 
-1. `pwd` 確認在 `~/meta-harness`。確認 target 絕對路徑（$ARGUMENTS 為空則問）。
-2. Read `.claude/skills/consultant/SKILL.md` 的 **Step 6 段落**。
-3. 走 Step 6 **四項檢視**：
-   - outcome → skill 沉澱（反覆手做 ≥ 2 次的該抽象）
-   - 訊號累積看反饋（評分 / tracking 達門檻 → 看哪類常被拒、哪 persona 該調）
-   - memory artifact 形狀檢視（類型有無塞錯、該存的有無持久化）
-   - 方法學缺口升級（反覆失誤是 target-specific 或 universal）
-4. 產出 **retrospective 紀要 + 行動建議**（改 target wiring／改方法學／沉澱 skill／補 incidents）。
+**前提**：這個專案已經上線跑了一段時間，累積了使用紀錄，例如 log、評分、或留下來的記憶檔案。
 
-若 target 還沒有累積紀錄可看 → 提示改用 `/healthcheck $ARGUMENTS`（定點體檢）。
+1. 跑 `pwd` 確認在 `~/meta-harness`。確認目標專案的絕對路徑（$ARGUMENTS 為空就問）。
+2. 讀 `.claude/skills/consultant/SKILL.md` 的 **Step 6** 那段。
+3. 走 Step 6 的**四項檢視**：
+   - **哪些成果該累積成 skill**：反覆手動做兩次以上的，就該抽象出來。
+   - **累積的訊號看得出什麼**：評分或追蹤紀錄達到門檻之後，看哪一類最常被拒絕、哪個角色的設定該調。
+   - **記憶的形狀對不對**：類型有沒有塞錯、該存下來的有沒有真的持久化。
+   - **這套方法本身有沒有缺口**：反覆出現的失誤，是只跟這個專案有關，還是跨專案通用的。
+4. 產出**回顧紀要加上行動建議**：要改專案的設定、改方法本身、把成果累積成 skill，還是補一份事件紀錄。
+
+如果這個專案還沒有累積紀錄可看，提示改用 `/healthcheck $ARGUMENTS` 做體檢。

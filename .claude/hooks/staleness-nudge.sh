@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SessionStart — meta-harness staleness nudge（warn-only，永不 block）
 # 讀 coverage.json.last_run.timestamp，距今 > 30 天 → stderr 一行警示；否則靜默。
-# 對應 D.2 / 設計軸 11：空窗期自維——人不在場數週後，開機時自己提醒登記簿失鮮。
+# 對應 D.2 / 設計面向 11：人不在的時候系統自己維護——隔了幾週沒人來，開機時自己提醒清單過期了。
 # 契約：任何情況都 exit 0（warn-only，Stop hook 才是唯一 blocking 層）。
 # 防呆一律靜默 exit 0：非 meta-harness cwd / coverage.json 不存在 / jq 缺 / JSON 壞 / timestamp 欄缺 / 非法值。
 set -u

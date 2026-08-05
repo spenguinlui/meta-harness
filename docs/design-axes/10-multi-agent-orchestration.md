@@ -1,87 +1,99 @@
-# 設計軸 10：Multi-agent / Sub-agent Orchestration
+# 設計面向 10：多 agent 協作
 
-把任務拆給多個 agent 並行 / 串聯處理，主 agent 負責編排（orchestration = 編排）。
+把任務拆給多個 agent，並行或串聯處理，由主 agent 負責調度。
 
-業界趨勢：從「一個 agent 自己跑長 chat loop」轉向「多個專職 agent 經由明確 hand-off（交棒）pattern 協作的 workflow graph」（參考 Externalization in LLM Agents 2026 / multi-agent flow engineering）。
+業界的趨勢是從「一個 agent 自己跑一個很長的對話迴圈」，轉向「多個各司其職的 agent，透過明確的交接方式協作」。可以參考 2026 年關於 LLM agent 外部化、以及多 agent 流程工程的討論。
 
 ---
 
-## 為什麼獨立成設計軸（不併入 Execution loop）
+## 為什麼它是獨立的一條，不併進執行迴圈
 
-- Execution loop（設計軸 5）= 單一 agent 的「模型↔工具」迴圈
-- Multi-agent orchestration = 多個 agent 之間的 hand-off / context 邊界 / 結果整合
-- 兩者的決策軸完全不同（並行失敗策略、context 隔離程度、子 agent 拆分顆粒）
-- 業界 2026 後普遍把 multi-agent 視為獨立架構層
+執行迴圈（面向 5）講的是單一 agent 內部「模型跟工具」的迴圈。
 
-## 設計決策
+多 agent 協作講的是多個 agent 之間怎麼交接、各自看得到什麼上下文、結果怎麼整合。
 
-### 1. 觸發條件（什麼時候開 sub-agent）
-- **Context 將爆**：主對話 token 用量逼近上限 → 把 read-heavy 工作派給 sub-agent
-- **任務並行可拆**：N 個獨立子任務（如「同時審 3 個專案」）→ fan-out
-- **高風險隔離**：destructive op 預演 → sub-agent 跑 dry-run，主 agent 看結果決定
-- **Cold-call 不污染主對話**：探索性 LLM 詢問（如「列出所有可能的 hypothesis」）放 sub-agent，避免噪音灌進主 context
-- **權限分隔**：高權限子任務（碰 prod）vs 低權限主對話
+兩者要決定的事完全不同：並行失敗的策略、上下文要隔離到什麼程度、子 agent 該拆多細。2026 年之後業界普遍把多 agent 當成獨立的架構層。
 
-### 2. 拆分顆粒
-- **One-shot sub-agent**：派一個任務、回一份結果、結束（最常見）
-- **Long-running worker**：跨多次 iteration、保留自己的 context（堡壘式）
-- **Pipeline stage**：上游 agent 輸出 → 下游 agent 輸入（DAG 形態）
+## 要決定的事
 
-### 3. Context 邊界
-- **完全隔離**：sub-agent 從零讀 brief，不看主對話 — 最乾淨、最浪費 token
-- **父給子摘要**：主 agent 寫一段 brief 傳給子 — 中間路線
-- **雙向 streaming**：子 agent 進度即時回主 — 彈性高、context 易爆
+### 一、什麼時候才開 sub-agent
 
-### 4. 結果整合
-- **子回主 + 主決策**：sub-agent 報告，主 agent 整合 / 拍板
-- **子直接寫檔**：sub-agent 改實際檔案，主 agent 只看 git diff
-- **Vote / merge**：N 個 sub-agent 投票 / 共識
-- **Chain-of-thought 合併**：把多個 sub-agent 的推理串成一份輸出
+- **上下文快爆了**：主對話的 token 用量逼近上限，把讀取量大的工作派給 sub-agent。
+- **任務可以拆開並行**：有 N 個獨立的子任務，例如同時審三個專案，就分派出去。
+- **隔離高風險的操作**：破壞性操作要先預演，讓 sub-agent 跑空跑，主 agent 看結果再決定。
+- **不想讓探索污染主對話**：探索性的詢問（例如「列出所有可能的假設」）放到 sub-agent，避免噪音灌進主上下文。
+- **權限要分開**：碰正式環境的高權限子任務，跟低權限的主對話分開。
 
-### 5. Hand-off pattern
-- **父→子單向**：派任務、子完成、結束（最常見）
-- **子→父單向**：子發現問題 → 中斷給父決定
-- **雙向**：子父反覆對話（容易變成 unstructured chat loop，反模式）
-- **DAG（有向無環圖）**：多個節點按依賴跑，不可循環
+### 二、拆多細
 
-### 6. 失敗處理
-- **子失敗 = 任務失敗**：fail-fast，主 agent 立刻 abort
-- **子失敗 = 主重派**：主 agent 試另一個 sub-agent / 換 prompt
-- **子部分成功 merge**：N 個 sub-agent 中 M 個成功也 OK，merge 成功部分
-- **子失敗 = 寫 BACKLOG**：當下不解，存案 review
+- **一次性的 sub-agent**：派一個任務、回一份結果、結束。最常見。
+- **長時間執行的工作者**：跨多次迭代，保有自己的上下文。
+- **流水線的一站**：上游 agent 的輸出當下游 agent 的輸入，形成一張有向圖。
 
-### 7. 並行失敗（fan-out 場景）
-- **All-or-nothing**：N 個並行 sub-agent，任 1 失敗整批 abort
-- **Best-effort**：失敗的 skip、成功的 merge
-- **Quorum**：M / N 成功就算總成功
+### 三、上下文的邊界
 
-### 8. 觀察 / 留痕
-- 每個 sub-agent 的 input / output / cost / duration 該寫進哪？
-- 失敗 sub-agent 的 trace 該保留多久？
+- **完全隔離**：sub-agent 從零開始讀一份任務說明，看不到主對話。最乾淨，也最浪費 token。
+- **父層給摘要**：主 agent 寫一段說明傳給子 agent。中間路線。
+- **雙向即時溝通**：子 agent 的進度即時回報給主 agent。彈性高，但上下文很容易爆。
 
-## 與其他設計軸耦合
+### 四、結果怎麼整合
 
-- **設計軸 2 Context**：sub-agent 是 context 隔離的主要工具；context 邊界決定要不要開
-- **設計軸 5 Execution loop**：每個 sub-agent 自己有 execution loop
-- **設計軸 6 Safety**：destructive op 經 sub-agent dry-run 是常見模式
-- **設計軸 7 Hooks**：sub-agent 完成可觸發 PostToolUse hook
-- **設計軸 8 Eval**：multi-agent vote 是一種 inner eval
-- **設計軸 9 觀測**：每個 sub-agent 是 trace 的一個 span
-- **設計軸 11 Triggers**：`/loop` 觸發批量 sub-agent fan-out 是常見組合
+- **子回報給主，主來拍板**：sub-agent 提出報告，主 agent 整合、決定。
+- **子直接寫檔案**：sub-agent 改實際的檔案，主 agent 只看 git diff。
+- **投票或合併**：N 個 sub-agent 投票取共識。
+- **把推理過程串起來**：把多個 sub-agent 的推理合成一份輸出。
 
-## Claude Code 對應機制
+### 五、怎麼交接
 
-- Claude Code 內建 `Agent` tool（subagent_type 參數）— 可指定 general-purpose / Explore / Plan 等專職 sub-agent
-- 在 `.claude/agents/<name>.md` 定義自訂 sub-agent
-- `run_in_background: true` 讓 sub-agent 背景跑、主對話不阻塞
-- 並行：單一回應內多個 Agent tool calls = 自動並行
+- **父到子的單向**：派任務、子完成、結束。最常見。
+- **子到父的單向**：子發現問題就中斷，交給父決定。
+- **雙向**：子和父反覆對話。這很容易變成一個沒有結構的對話迴圈，是個錯誤做法。
+- **有向無環圖**：多個節點照相依關係跑，不可以有循環。
 
-## 反模式
+### 六、失敗怎麼處理
 
-- **「多 agent 不解決問題只增加 latency」**：問題本來序列就能跑完，硬拆 sub-agent 反而慢（context 傳遞成本 > 並行省的時間）
-- **無 hand-off contract 的 chat loop**：父子來回 free-form 對話，無明確終止 / 結果格式 — 容易死循環
-- **子 agent 又 spawn 子 agent 失控樹**：嵌套無上限 → token 失控
-- **Sub-agent 沒被分配 read-only / mutating 邊界**：高權限子 agent 不該被父 agent 用來做低風險探索
-- **共用 memory / state 卻無鎖**：N 個 sub-agent 並行寫同一 state → race condition
+- **子失敗就整個失敗**：立刻中止。
+- **子失敗就重派**：主 agent 換一個 sub-agent 或換一個 prompt 再試。
+- **部分成功也合併**：N 個裡面有 M 個成功就可以，把成功的部分合起來。
+- **子失敗就記進待辦**：當下不解決，存起來之後 review。
 
-具體案例見 `cases/<target>-design axis-cases.md`。
+### 七、並行時有一個失敗怎麼辦
+
+- **全有或全無**：任何一個失敗，整批中止。
+- **盡力而為**：失敗的跳過，成功的合併。
+- **過半數就算數**：N 個裡面 M 個成功就算整體成功。
+
+### 八、留下什麼紀錄
+
+每個 sub-agent 的輸入、輸出、成本、耗時要寫到哪裡？失敗的 sub-agent 的追蹤紀錄要保留多久？
+
+## 跟其他面向的牽連
+
+- **上下文管理**：sub-agent 是隔離上下文的主要工具。上下文的邊界決定了要不要開。
+- **執行迴圈**：每個 sub-agent 自己都有一個執行迴圈。
+- **權限與安全**：破壞性的操作先讓 sub-agent 空跑，是常見的做法。
+- **Hook**：sub-agent 完成時可以觸發工具執行後的 hook。
+- **成效評估**：多 agent 投票本身就是一種每步驗證。
+- **可觀測性**：每個 sub-agent 是追蹤紀錄裡的一段。
+- **觸發時機**：用定時迴圈觸發一批 sub-agent 分派出去，是常見的組合。
+
+## 在 Claude Code 裡對應什麼
+
+- 內建的 `Agent` 工具，用 `subagent_type` 參數指定要哪一種：general-purpose、Explore、Plan 等等。
+- 在 `.claude/agents/<名稱>.md` 定義自訂的 sub-agent。
+- `run_in_background: true` 讓 sub-agent 在背景跑，主對話不會被卡住。
+- 並行的做法是在同一次回應裡發出多個 Agent 呼叫，它們會自動並行。
+
+## 常見的錯誤做法
+
+**多 agent 沒解決問題，只是增加延遲。** 這個問題本來照順序就跑得完，硬拆成 sub-agent 反而更慢——傳遞上下文的成本超過了並行省下的時間。
+
+**沒有交接約定的對話迴圈。** 父子之間來回自由對話，沒有明確的終止條件和結果格式。很容易變成死循環。
+
+**子 agent 又開子 agent，變成失控的樹。** 巢狀沒有上限，token 就失控了。
+
+**沒有幫 sub-agent 分好唯讀和可改動的邊界。** 高權限的子 agent 不該被主 agent 拿去做低風險的探索。
+
+**共用記憶或狀態卻沒有鎖。** N 個 sub-agent 並行寫同一份狀態，就會有競態問題。
+
+具體案例見 `cases/` 底下對應的檔案。

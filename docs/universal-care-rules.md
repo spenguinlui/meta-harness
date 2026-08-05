@@ -1,148 +1,210 @@
 ---
 layout: page
-eyebrow: R-1 ~ R-12 衛生規則
+eyebrow: R-1 ~ R-12 基本規則
 ---
 
-# Universal Rules
+# 12 條基本規則
 
-跨任何 harness target repo 通用的衛生規則。Domain 無關——不論該 repo 在做 infra 管理 / ATDD / figma 轉 code / google sheet builder / 別的，都該守。
+這 12 條規則跨所有專案通用，跟領域無關。不管那個 repo 是在做基礎設施管理、驗收測試、Figma 轉程式碼、Google Sheet 產生器，還是別的，都該守。
 
-規則簡稱 **R-N**（Universal Rule 第 N 條）。
-
----
-
-## R-1：CLAUDE.md ≤ 50 行（不含 fenced code block）
-- **為什麼**：超出嚴重佔 context budget（Claude 每 session 載入額度）、cache 命中率掉
-- **落地**：`grep -v '^\`\`\`' CLAUDE.md | grep -cv '^\`\`\`' | awk '$1 > 50'`
-
-## R-2：設定規則放 committed 檔
-- **為什麼**：gitignored 路徑「完成」是幻覺——改完無法 commit、新 session / fresh clone 看不到
-- **規則**：`.claude/settings.json` = 團隊規則（入版控）；`.claude/settings.local.json` = 個人 override（gitignored）
-- **落地**：`git status` 確認 settings.json 在版控
-
-## R-3：每個 hook ≤ 100 行
-- **為什麼**：hook 同步執行影響延遲；複雜邏輯抽 `bin/hook-helpers/<name>.sh`，hook 自身只做分派
-- **落地**：`wc -l .claude/hooks/*.sh`
-
-## R-4：文件 / plan 不允許流暢編造（fluent fabrication）
-- **定義**：LLM 寫出讀起來流暢、看似真實但實為虛構的內容（捏造 metric 值 / cost 數字 / 不存在的資源 ID / API endpoint）
-- **為什麼**：讀者錨定在虛構直到「等等，這個東西根本不存在」存在性危機
-- **規則**：所有具體範例必引真實 inspect / log / API 輸出。無證據時必明標 `[FABRICATED — replace with real data before execution]`
-- **落地**：plan review 抽樣校核資源 ID / metric / URL 對得上實際輸出
-
-## R-5：提問 / 寫文件必錨到具體 artifact
-- **為什麼**：拋抽象問題給使用者→「看不太懂」→ 設計選擇題滑成翻譯題
-- **規則**：送出前自檢三條 —
-  - (a) 名詞落到具體 artifact（檔案路徑 / 函式名 / 既有變數名）
-  - (b) 不熟術語時能否用使用者剛剛講過的話替換
-  - (c) 選項說明寫「選這個會發生什麼」而非設計者內部分類詞
-- **失敗回應**：使用者回「看不太懂」時**不要解釋抽象概念**，重新用具體物件提問
-
-## R-6：不用未解釋的專有名詞 / 縮寫
-- **為什麼**：使用者被未解釋詞 / 縮寫打斷反問「這是什麼意思」→ 節奏崩
-- **規則**：
-  - 動詞 / 名詞優先中文（reconcile→對帳、sunset→收掉、backlog→待辦清單、fan-out→分派）
-  - 縮寫首次出現必括號展開（ADR=Architecture Decision Record，架構決策紀錄）
-  - 真要用英文（檔名 / API / 業界唯一指稱）首次出現括號中文
-  - 已落到使用者自己常用的可繼續用
-- **範圍三條都適用**：
-  - (a) 顧問 ↔ builder 對話（meta-harness session 中）
-  - (b) **target repo 跑出來、由 AI 給 human 看的最終輸出**（如 `/advise` `/audit` 等指令的回應）。human 通常不是該領域 peer（非 SRE / 非會計師 / 非醫師），peer-level jargon 直丟 human = 等於沒做
-  - (c) **command description / help text / error message 等 viewer-facing 介面文字**（從 ai-infra-management v1 業主反饋學到）。human 在自動補全（`/<cmd>` 列表）/ `--help` / 出錯時讀這些 → 決定**用不用、何時用、出錯該怎麼救**。peer-level jargon 直丟 = 命令等於不存在 / error 等於無解。例：description 寫「External-knowledge advisor with 4-stage architect-debate pipeline」業主猜錯用法（誤以為「跨專案一次診斷」結果只跑單專案），命令對業主關閉
-  - **機制怎麼蓋** = 設計軸 12 Human Interface；**R-6 是 floor，設計軸 12 是 architecture**
-
-## R-7：wiring 升級不固化壞流程；fix 先找 root cause、不疊規則
-- **定義**：wiring = 對 harness 行為的程式化約束（hook / skill / slash command / sub-agent / settings.json）
-- **為什麼**：(a) 把當下踩過的壞流程加固成 enforcement 永久卡死；(b) 看到失敗就疊新規則 / 反模式段，會累積 1+1+1-1-1 補丁堆，越疊越脆
-- **規則**：
-  - 任何 wiring 落地前自問：「這把好習慣自動化嗎？」（OK）/「還是把當下踩過的壞流程加固成 enforcement？」（禁）
-  - 任何 fix 前先 grep root cause：默認動作是**刪源頭**而非**疊蓋住症狀的規則**
-- **落地**：
-  - 新 wiring commit message 必含「自動化什麼好習慣」
-  - 新規則 / 反模式段 commit 必含「為什麼不能刪源頭」；答不出 = 沒做 root cause 分析
-
-## R-8：跨層越權禁止——自家層的問題在自家層修，不替別層表態
-- **定義**：設計者 / 顧問 / 文件 / wiring 對「自家層級之外」（別 session / 別 repo / 別業主 / 別角色 / 別子系統的權限範圍）做命令式表態
-- **為什麼**：把「自家 X」生硬對比成「所以對方該 Y」的二分 table = 越權替別層做選擇、剝奪對方自主性。R-7 管「自家當下 vs 未來」（時間軸），R-8 管「自家 vs 別層」（空間軸），兩條互補
-- **典型踩法**（從 ai-infra-management v1 session 學到，2026-05-16）：
-  - meta-harness README 寫「大腦 = Opus 4.7 / **手腳 = Sonnet（target 用）**」table
-  - 「自家 = 大腦」陳述對，但生硬推論「對方 = 手腳所以用 X」就越權替 target repo 業主在 target session 內的 model 選擇表態
-  - 業主原話「我會在選擇適合的 model」明示自主——meta-harness 不需替他預設
-- **規則**：寫建議 / 文件 / 設計時自檢三條：
-  - (a) 這條建議是對哪個 session / repo / 角色 / 子系統開？對「自家」OK；對「別層」必停
-  - (b) 對立面（如「X 對 → Y 該」中的 Y）是不是另一層的權限範圍？是 → 砍掉或改單向陳述
-  - (c) 有沒有用「自家 default」掩飾「跨層命令」？例：把「target 用 Sonnet」包裝成「meta-harness 的 default 假設」就是
-- **落地**：「X 對 → Y 該」二分 table 看到先警覺；改成「自家 X」單向陳述 + 明示「對方層級自決，我不表態」
-
-## R-9：framework / 規則層 vs 任務內容 / 紀錄層分流
-- **定義**：建築師 / 顧問 / 工程師對某 target 的工作該分兩層——**framework**（規則 / wiring / schema / 文件結構 / 命令本身）vs **任務內容**（業主決策內容 / 進行中工作 / 業務邏輯實作 / runtime 累積資料）
-- **為什麼**：兩層責任主體不同——framework 是顧問該動的範圍（cross-人 共用）、任務內容是該 target 業主在 target session 內自決（個別判斷）。混淆會踩 R-8（替別人做業務決策）/ 或反過來「該動 framework 卻畏縮不動」
-- **典型踩法**（從 ai-infra-management session 學到，2026-05-16）：
-  - 看到 target `CLAUDE.md` 行數破 R-1（framework 違規）卻不敢動，怕踩 R-8
-  - 結果 framework 該升級（拆 CR-X 到 `docs/`）沒做、業主自己也沒空做
-- **規則**：對 target repo 改動先問：
-  - (a) 這是 **framework**（規則 / wiring / schema / 結構 / 命令本身 / `.claude/` 內 / `docs/` 內規則紀律類）→ 顧問該動 + commit + push
-  - (b) 這是 **任務內容**（業主拍板的 ADR 原文 / 進行中 runbook / 業務 skill 內部邏輯 / runtime 累積資料 / baseline snapshot）→ 業主自決 + 自己 commit
-  - (c) 模糊地帶（如新 skill 抽出 = framework 訊號 / skill 內容 = 業主實作）→ 介面層歸 framework、內部邏輯歸任務內容
-- **落地**：
-  - `git add` 用具體檔名清單，不用 `git add -A`（避免無意混入業主任務內容）
-  - R-8 防的是「替別人在他 session 內做業務決策」，**不是**「不能動 framework」；別矯枉過正
-  - R-8 跟 R-9 對偶：R-8 防越權跨層命令、R-9 區分自家層內部的 framework 子層 vs 任務子層
-
-## R-10：可機驗的 outcome 必須先自驗再交付（don't throw verification over the wall）
-- **定義**：當設計的 outcome 是「Claude 在某情境下會給某種輸出」「某 script / skill / slash command 跑某 input 會產某結果」這類**可重複跑、可機評**的東西時，禁止「設計 → 落地 → 丟業主驗」。必須中間插入 **自驗 loop**：寫 gold scenario → headless 跑（claude -p） → 比對 → 不通過就迭代 prompt / wiring / skill 設計，直到通過或明確標記 known limitation
-- **為什麼**：把「outcome 對不對 / 穩不穩定」推給業主跑 → (a) 業主時間貴 (b) 業主未必有完整脈絡能評（顧問才知設計意圖）(c) 失敗反饋遲到、迭代成本暴漲 (d) 顧問交付的「完工」其實是「未驗成品」，責任結構錯位
-- **典型踩法**（從 2026-05-18 ai-infra-management /advise 視角優化 session 學到）：
-  - 顧問訪談業主 → 寫 prescription → 落地實作 → 丟業主「請你 review + 跑跑看」
-  - 業主自己手動跑 3 次才發現「同 prompt 三次答案完全不同」「pipeline 在某情境會 fabrication」
-  - 這些反覆失敗本來顧問交付前自己跑 ≥ 3 次就會看到
-- **規則**：
-  - (a) 落地完任一可機驗 outcome → 先寫 ≥ 1 個 gold scenario（具體 prompt / input + 期待輸出的關鍵特徵 / 通過門檻）寫進 prescription 或 `experiments/<topic>/gold.md`
-  - (b) headless 跑 ≥ 3 次（穩定度本身就是訊號；單跑一次過 = 沒驗）
-  - (c) 評分用關鍵字覆蓋 / structural check / LLM-judge，**禁止只憑顧問肉眼瞄一次說 ok**
-  - (d) 不通過 → 迭代到通過 **或** 明確 commit 一條「未驗 known limitation：<具體哪部分 / 為什麼不能機驗 / 業主介入點是什麼>」
-  - (e) **無法現場驗時**（撞 API limit / 工具不可用 / 環境壞）→ 不可假裝驗過。交付時必標「⚠️ 自驗未跑：<原因>。預計 <時間 / 條件> 補跑」+ 補跑機制（cron / wakeup / 排程）
-- **不適用的 outcome**（這條不卡）：
-  - 純文件文字 / 概念說明（無 input-output 行為可驗）
-  - mutating ops 在 prod 的單次性動作（驗證代價 > 風險本身的，走人工 review）
-  - 業主明示「我自己想跑、不要先驗」
-- **落地**：
-  - `experiments/<target>-<topic>/` 結構：`run.sh` + `eval.sh` + `prompts/v1.md` + `gold.md` + `runs/`（參考 `experiments/consolidation-loop/`）
-  - prescription Part E（user intent demo）寫具體 ≥ 1 條 prompt + 期待覆蓋的關鍵字 / 結構
-  - consultant SKILL.md Step 4.5「自驗」強制（在 Step 4 落地 與 Step 5 驗收 之間）
-- **與其他 R 條關係**：
-  - R-4（fabrication 防線）：R-4 防內容造假、R-10 防「行為造假」（聲稱會這樣動但沒實測）
-  - R-7（不固化壞流程）：R-10 強制自驗會自然暴露壞流程，配合 R-7 改源頭而非疊蓋
-  - R-9（framework vs 任務內容）：R-10 適用於 framework 改動 + 任務內容中 outcome 可機驗的部分；mutating ops 走 R-9(b) 業主自決
-
-## R-11：可被他人使用的 target 必交付說明書（don't ship without a manual）
-- **定義**：target 設計 / 落地後若會給「**不是 builder 的人**」用（交接、團隊、開源、甚至半年後的自己），交付前必產**雙語說明書**——Viewer 說明書 + 維護者文件。
-- **為什麼**：harness 的價值要被別人接得住才算交付。沒說明書 = 只有 builder 腦中知道怎麼用 = 換人即斷層（對應設計軸 12「builder 必存在 / 回饋通道」+ 設計軸 9 vs 12 兩個 IO 邊界）。prescription 是設計圖（建築師看），**不是**使用者說明書。
-- **規則**：
-  - (a) **Viewer 說明書**（target `README.md` + `docs/`）給每天用它的人，用**他的語言**（深度看 viewer 是不是該領域 peer——peer 直用術語、非 peer 白話 + 括號 + 藏實作細節）
-  - (b) **維護者文件**（target `CONTRIBUTING.md` / `docs/architecture.md`）給日後接手改的人，講架構 / wiring / 怎麼擴充
-  - (c) 兩讀者**分流不混**（混 = 設計軸 9/12 邊界反模式：builder 嫌囉嗦 + viewer 看不懂）
-  - (d) **雙語兩個檔、不交錯**（主檔 + companion + 頂端語言切換行；只翻散文，不翻程式碼 / 路徑 / 指令 / env 名 / 識別字）
-  - (e) 內容從 prescription + repo 現況萃取，**每段有來源、不流暢虛構**（接 R-4；缺口標 `[需業主補：X]`）
-- **不適用**：一次性純自用腳本（明確不交接 + 壽命短）。判準同設計軸 12「builder 不存在的 target 不該設計」的反面——有第二個使用者 / 交接可能就適用。
-- **落地**：流程 Step 5.5 跑 `/document` skill（驗收後）；結構見 `docs/manual-template.md`。
-
-## R-12：target 落地檔必 self-contained——不洩漏 meta-harness 自身（don't leak the framework into the target）
-- **定義**：顧問寫進 target repo 的任何檔（README / docs / CONTRIBUTING / 程式註解 / skill / hook）**不可引用 meta-harness 自身的內部 artifact 或行話**：`prescriptions/<...>` 路徑、`R-N` 規則代號、`設計軸 N`、`顧問 / consultant`、`業主`（對 target 用 owner / 維護者 / 你）、`Stage N`（prescription 分期）等。
-- **為什麼**：target 是獨立專案。它的讀者 clone 下來**沒有 meta-harness**——指向 `prescriptions/…（本機）` 是死連結；`R-10`、`設計軸 5` 是 target 讀者不該需要懂的框架行話。框架的內部身分滲進 task content = 把 target 跟顧問工具耦死、破壞 self-containment（R-9 的延伸：R-9 管「誰改什麼」，R-12 管「改進去的內容不帶框架身分」）。
-- **典型踩法**（2026-05-24 figma2code dogfood 後業主抓到）：CONTRIBUTING 寫「完整設計圖在 meta-harness prescription（本機）」「動 wiring 前讀 universal-care-rules R-7/R-10」、known-diffs 寫「對應 prescription 設計軸 5」、code 註解寫「設計軸 5 預算護欄」——共 5 檔 7 處。
-- **規則**：
-  - (a) **設計依據用 target 自己的話講**：不是「因為 R-10」，而是把該原則翻成 target 語境的一句白話（「可機驗的改動先自己跑過再交付」）。
-  - (b) **provenance 最多一行可選 attribution**：業主想 credit 才加「Built with meta-harness（連結）」（如 ai-infra-management README）；預設不提。
-  - (c) prescription / 設計軸 / R-N 留在 **meta-harness 本機**（它們本來就 gitignored），不進 target。
-- **落地自檢**（顧問落地 / 跑 `/document` 後必跑）：跑 `bin/r12-gate.sh <target>`（**單一出處，勿再手抄 grep**）。退出碼 0 = 零命中過關；1 = 有命中並把命中行印出。關鍵字集合 / include 副檔名 / node_modules 排除都封在該 script 裡，改檢查語意改那支。
-  **這是 blocking gate、不是裝飾**：有命中（非 target 自身文案）→ 先清乾淨 → 再跑一次 `bin/r12-gate.sh` 確認零命中 → **才能 commit**。把 gate 跑成「印出來看看」就形同沒做（2026-05-24 顧問就是只看不擋，帶著 docs 網站洩漏 commit + push 出去才被抓）。
-- **不適用**：target 自身內容剛好含這些字（如綠電網站文案「專業顧問服務」）——看語境，非框架行話不算。
+規則編號寫成 R-1 到 R-12。
 
 ---
 
-## Domain-specific 規則不放這裡
+## R-1：CLAUDE.md 不超過 50 行（程式碼區塊不算）
 
-以下隨 target repo 不同，不入 universal：cache metadata（某 domain 沒 cache）、safety_level 分類（沒 mutating ops）、inventory `--refresh`（沒 inventory 概念）、skill schema 形式化（沒 skill 架構）。
+**為什麼。** 超過會嚴重吃掉每個 session 的上下文額度，快取的命中率也會掉。
 
-domain 規則範例見 `cases/<target>-domain-rules.md`，套用走 `docs/prescription-template.md` Part C。
+**怎麼檢查。** `grep -v '^\`\`\`' CLAUDE.md | grep -cv '^\`\`\`' | awk '$1 > 50'`
+
+## R-2：設定規則要放在有進版控的檔案裡
+
+**為什麼。** 寫在 gitignore 的路徑裡，「做完了」是一種幻覺：改完沒辦法 commit，開新 session 或重新 clone 之後就看不到了。
+
+**怎麼分。** `.claude/settings.json` 放團隊共用的規則，要進版控。`.claude/settings.local.json` 放個人的覆寫，維持 gitignore。
+
+**怎麼檢查。** 用 `git status` 確認 settings.json 有在版控裡。
+
+## R-3：每個 hook 不超過 100 行
+
+**為什麼。** hook 是同步執行的，太肥會拖慢反應。複雜的邏輯抽到 `bin/hook-helpers/<名稱>.sh`，hook 本身只負責分派。
+
+**怎麼檢查。** `wc -l .claude/hooks/*.sh`
+
+## R-4：文件和計畫不准編造
+
+**在講什麼。** LLM 很會寫出讀起來順、看起來像真的，但其實是捏造的內容：假的指標數值、假的成本數字、不存在的資源 ID、不存在的 API 端點。
+
+**為什麼。** 讀者會一路相信下去，直到某個瞬間發現「等等，這東西根本不存在」，那時已經浪費很多時間了。
+
+**規則。** 所有具體的例子都必須引用真實的檢查結果、log、或 API 輸出。沒有證據的地方，必須明確標上 `[FABRICATED — replace with real data before execution]`。
+
+**怎麼檢查。** review 計畫時抽樣，核對資源 ID、指標、URL 跟實際輸出對不對得上。
+
+## R-5：問問題和寫文件都要指向具體的東西
+
+**為什麼。** 丟一個抽象問題給對方，對方回「看不太懂」，接下來你的設計選擇題就變成了翻譯題，節奏全毀。
+
+**送出前自己檢查三件事。**
+
+- 你用的名詞有沒有落到具體的東西上：檔案路徑、函式名、既有的變數名。
+- 遇到對方不熟的術語，能不能改用他剛剛講過的話來替換。
+- 選項的說明，寫的是「選這個會發生什麼」，還是設計者腦中的內部分類詞。
+
+**對方說看不懂的時候。** 不要去解釋那個抽象概念，重新用具體的東西問一次。
+
+## R-6：不用沒解釋過的專有名詞和縮寫
+
+**為什麼。** 對方被一個沒解釋的詞打斷，反問「這是什麼意思」，整個節奏就崩了。
+
+**規則。**
+
+- 動詞和名詞優先用中文：reconcile 講對帳，sunset 講收掉，backlog 講待辦清單，fan-out 講分派。
+- 縮寫第一次出現一定要展開，例如 ADR（Architecture Decision Record，架構決策紀錄）。
+- 真的必須用英文（檔名、API、業界唯一的稱呼），第一次出現時括號附中文。
+- 對方自己已經在用的詞，可以繼續用。
+
+**這條規則的適用範圍有三個，不只對話。**
+
+第一，顧問跟設計者的對話。
+
+第二，目標專案跑出來、由 AI 給使用者看的最終輸出，例如各種指令的回應。使用者通常不是這個領域的內行人，不是 SRE、不是會計師、不是醫師。直接丟內行人才懂的術語給他，等於沒做。
+
+第三，指令說明、help 文字、錯誤訊息這些使用者會直接看到的介面文字。使用者是在自動補全清單、`--help`、以及出錯的時候讀到它們，並據此決定要不要用、什麼時候用、出錯了怎麼救。丟術語給他，等於這個指令不存在、這個錯誤沒有解法。
+
+這個第三點是從 ai-infra-management 第一版的實際回饋學到的。當時有個指令的說明寫著「External-knowledge advisor with 4-stage architect-debate pipeline」，結果使用者猜錯用法，以為可以一次診斷跨專案，實際上只跑單一專案。這個指令對他來說形同關閉。
+
+**跟設計面向 12 的關係。** R-6 是最低標準，設計面向 12「人的介面」講的是完整的做法。
+
+## R-7：改設定不要把壞流程固化；修東西先找根本原因
+
+**在講什麼。** 這裡的「設定」指的是對 harness 行為的程式化約束：hook、skill、指令、sub-agent、settings.json。
+
+**為什麼。** 有兩個風險。一是把你當下踩到的壞流程加固成強制規則，從此永久卡死。二是看到失敗就疊一條新規則、加一段「這樣不行」，最後累積成一堆補丁，越疊越脆。
+
+**規則。**
+
+- 任何設定寫進去之前先自問：這是在把好習慣自動化嗎（可以），還是在把當下踩到的壞流程加固成強制規則（不行）？
+- 任何修改之前，先 grep 找出根本原因。預設動作是把源頭砍掉，不是疊一條規則去蓋住症狀。
+
+**怎麼落實。** 新設定的 commit message 要寫清楚「這是在自動化什麼好習慣」。新規則或新的「錯誤做法」段落，commit 要寫清楚「為什麼不能把源頭刪掉」。答不出來，就表示沒做根本原因分析。
+
+## R-8：自家層的問題在自家層修，不要替別層表態
+
+**在講什麼。** 設計者、顧問、文件、設定，對「自己權限範圍以外」的事情下命令式的結論。別的 session、別的 repo、別的專案負責人、別的角色、別的子系統，都算範圍以外。
+
+**為什麼。** 把「我這邊是 X」硬推成「所以你那邊該 Y」，做成一張對照表，就是越權替別人做選擇，剝奪對方的自主性。
+
+R-7 管的是自家的當下對上未來，是時間軸。R-8 管的是自家對上別層，是空間軸。兩條互補。
+
+**踩過的實例。** 2026-05-16 的 ai-infra-management session。meta-harness 的 README 裡寫了一張表：「大腦用 Opus 4.7，手腳用 Sonnet（目標專案用）」。前半句「我這邊是大腦」是對的，但硬推出「所以對方是手腳，該用 Sonnet」就越權了——那是目標專案的負責人在他自己 session 裡的 model 選擇。他原話是「我會自己選適合的 model」，已經明示要自主決定，meta-harness 不需要替他預設。
+
+**寫建議、文件、設計時自己檢查三件事。**
+
+- 這條建議是對哪個 session、哪個 repo、哪個角色、哪個子系統講的？對自家講可以，對別層講就要停。
+- 如果你寫成「X 對，所以 Y 該」，那個 Y 是不是別層的權限範圍？是的話，砍掉，或改成單向陳述。
+- 有沒有用「這是我這邊的預設」去包裝一個跨層的命令？把「目標專案用 Sonnet」包裝成「meta-harness 的預設假設」就是這種。
+
+**怎麼落實。** 看到「X 對 → Y 該」這種二分表就先警覺。改成單向陳述講自家的情況，並明講「對方那層自己決定，我不表態」。
+
+## R-9：框架層歸框架層，任務內容歸任務內容
+
+**在講什麼。** 對某個目標專案的工作要分兩層。框架層是規則、設定、資料格式、文件結構、指令本身。任務內容層是專案負責人的決策、正在進行的工作、業務邏輯實作、執行時累積的資料。
+
+**為什麼。** 兩層的負責人不同。框架層是顧問該動的範圍，跨人共用。任務內容是目標專案的負責人在他自己 session 裡決定的，屬於個別判斷。搞混會踩到 R-8（替別人做業務決策），或者反過來——該動框架卻不敢動。
+
+**踩過的實例。** 同樣是 ai-infra-management 那次。看到目標專案的 `CLAUDE.md` 行數超過 R-1 的上限，那是框架層的違規，但因為怕踩 R-8 而不敢動。結果框架該升級的（把內容拆到 `docs/`）沒做，專案負責人自己也沒空做。
+
+**要改目標專案之前先問。**
+
+- 這是框架嗎？規則、設定、資料格式、結構、指令本身、`.claude/` 裡的東西、`docs/` 裡的規則類文件。是的話顧問該動，動完 commit 加 push。
+- 這是任務內容嗎？負責人拍板的決策紀錄原文、進行中的操作手冊、業務 skill 的內部邏輯、執行時累積的資料、基準快照。是的話由負責人自己決定、自己 commit。
+- 模糊地帶怎麼辦？例如「抽出一個新 skill」是框架訊號，但「skill 裡面寫什麼」是負責人的實作。原則是：介面層歸框架，內部邏輯歸任務內容。
+
+**怎麼落實。**
+
+- `git add` 用具體檔名清單，不要用 `git add -A`，避免不小心把別人的任務內容一起加進去。
+- R-8 防的是「替別人在他的 session 裡做業務決策」，不是「不能動框架」。別矯枉過正。
+- R-8 和 R-9 是一組的：R-8 防的是跨層下命令，R-9 分的是自家層裡面框架和任務的界線。
+
+## R-10：機器驗得了的產出，交付前必須先自己驗過
+
+**在講什麼。** 當你設計的成果是「Claude 在某情境下會給某種輸出」「某個腳本、skill、指令跑某個輸入會產某個結果」這類可以重複跑、可以讓機器評分的東西時，不准「設計完、實作完，丟給對方驗」。
+
+中間必須插入一輪自我驗證：先寫標準情境，用非互動模式（`claude -p`）跑，比對結果，沒過就回頭改 prompt、改設定、改 skill 設計，直到通過，或者明確標記成已知限制。
+
+**為什麼。** 把「結果對不對、穩不穩定」推給對方去跑，有四個問題。對方的時間很貴。對方未必有完整的脈絡能評，只有你知道當初的設計意圖。失敗的回饋會遲到，迭代成本暴漲。而你交付的所謂「完工」，其實是「還沒驗過的成品」，責任結構是錯的。
+
+**踩過的實例。** 2026-05-18 那次 ai-infra-management 的優化 session。顧問訪談完、寫方案、實作、然後丟給對方說「請你 review 一下、跑跑看」。對方自己手動跑了三次才發現：同一個 prompt 三次答案完全不同，而且流程在某些情境下會編造內容。這些問題，顧問交付前自己跑三次就會看到。
+
+**規則。**
+
+- 實作完任何一個機器驗得了的成果，先寫至少一個標準情境：具體的 prompt 或輸入、期待輸出的關鍵特徵、通過的門檻。寫進設計方案，或 `experiments/<主題>/gold.md`。
+- 非互動模式跑至少三次。穩定度本身就是訊號，只跑一次就過等於沒驗。
+- 評分方式可以是關鍵字涵蓋、結構檢查、或讓 LLM 當評審。不准只憑肉眼瞄一次就說 OK。
+- 沒過的話，要嘛改到過，要嘛明確 commit 一條已知限制，寫清楚是哪部分沒驗、為什麼機器驗不了、需要人介入的點在哪。
+- 當場驗不了的時候（撞到 API 上限、工具不能用、環境壞了），不可以假裝驗過。交付時要標「自驗未跑：原因是什麼。預計什麼時間或什麼條件下補跑」，並且真的排一個補跑機制。
+
+**哪些情況不適用。**
+
+- 純文件、純概念說明，沒有輸入輸出的行為可驗。
+- 正式環境上的一次性改動操作，驗證的代價大於風險本身，走人工 review。
+- 對方明講「我自己想跑，不要先驗」。
+
+**怎麼落實。**
+
+- `experiments/<目標專案>-<主題>/` 底下放 `run.sh`、`eval.sh`、`prompts/v1.md`、`gold.md`、`runs/`。參考 `experiments/consolidation-loop/`。
+- 設計方案的 Part E 要寫至少一條具體的 prompt，加上期待涵蓋的關鍵字或結構。
+- consultant SKILL.md 的第 4.5 步強制執行，位置在第 4 步實作和第 5 步驗收之間。
+
+**跟其他規則的關係。** R-4 防的是內容造假，R-10 防的是行為造假——聲稱會這樣運作但沒實測過。R-10 強制自驗會自然暴露壞流程，這時要配合 R-7 去改源頭，不要疊規則掩蓋。至於哪些改動適用，見 R-9：框架改動和任務內容裡機器驗得了的部分都適用；正式環境的改動操作走 R-9 的第二類，由負責人自己決定。
+
+## R-11：會給別人用的東西，一定要附說明書
+
+**在講什麼。** 目標專案設計完、實作完之後，如果會給「不是設計者本人」的人用——交接、給團隊、開源，甚至是半年後的自己——交付前必須產出中英雙語的說明書，包含給使用者的那份和給維護者的那份。
+
+**為什麼。** 一個 harness 要被別人接得住才算交付完成。沒有說明書，就只有設計者腦中知道怎麼用，換個人就斷層。
+
+設計方案不是說明書。方案是給設計者看的，說明書是給使用者看的。
+
+**規則。**
+
+- **給使用者的說明書**放在目標專案的 `README.md` 和 `docs/`，要用他的語言。深淺看那個人是不是這個領域的內行：內行可以直接用術語，外行就要用白話、加括號解釋、藏起實作細節。
+- **給維護者的文件**放在目標專案的 `CONTRIBUTING.md` 或 `docs/architecture.md`，講架構、講各元件怎麼接起來、講怎麼擴充。
+- 兩種讀者分開寫，不要混。混在一起的結果是設計者嫌囉嗦，使用者看不懂。
+- 雙語寫成兩個檔案，不要交錯排。主檔加上對應的另一語言檔，頂端放語言切換那一行。只翻譯散文，不要翻程式碼、路徑、指令、環境變數名、識別字。
+- 內容從設計方案和專案現況萃取出來，每一段都要有來源，不准編造（接 R-4）。有缺口就標 `[需負責人補：X]`。
+
+**哪些情況不適用。** 一次性的純自用腳本，明確不會交接、壽命也短。判斷標準是設計面向 12 的反面：只要有第二個使用者，或有交接的可能，就適用。
+
+**怎麼落實。** 驗收之後跑 `/document` skill，格式見 `docs/manual-template.md`。
+
+## R-12：寫進目標專案的檔案要能獨立看懂
+
+**在講什麼。** 顧問寫進目標專案的任何檔案——README、docs、CONTRIBUTING、程式註解、skill、hook——都不可以引用 meta-harness 自己的內部東西或行話。包含 `prescriptions/<...>` 這種路徑、`R-N` 規則編號、「設計軸 N」、「顧問」、「業主」（對目標專案要講 owner、維護者、或你）、「Stage N」這種階段編號。
+
+**為什麼。** 目標專案是獨立的專案。它的讀者 clone 下來的時候手上沒有 meta-harness。指向 `prescriptions/…（本機）` 是死連結；`R-10`、「設計軸 5」是他們根本不該需要懂的框架行話。
+
+把框架的內部身分滲進任務內容，等於把目標專案跟這個顧問工具綁死，破壞了它的獨立性。這是 R-9 的延伸：R-9 管「誰該改什麼」，R-12 管「改進去的內容不要帶框架的身分」。
+
+**踩過的實例。** 2026-05-24 拿 figma2code 自己試用之後被抓到的。CONTRIBUTING 裡寫「完整設計圖在 meta-harness prescription（本機）」「動設定前先讀 universal-care-rules 的 R-7 和 R-10」；差異清單裡寫「對應 prescription 設計軸 5」；程式註解裡寫「設計軸 5 預算護欄」。總共五個檔案、七處。
+
+**規則。**
+
+- 設計依據要用目標專案自己的話講。不是「因為 R-10」，而是把那條原則翻成該專案語境下的一句白話：「機器驗得了的改動，先自己跑過再交付」。
+- 出處最多留一行可選的致謝。負責人想 credit 才加「Built with meta-harness（連結）」，預設不提。
+- 設計方案、設計面向、規則編號都留在 meta-harness 本機，它們本來就在 gitignore 裡，不要進到目標專案。
+
+**怎麼檢查。** 顧問實作完、或跑完 `/document` 之後，一定要跑 `bin/r12-gate.sh <目標專案>`。這是唯一的出處，不要再手抄 grep 指令。退出碼 0 表示零命中、過關；1 表示有命中，並會把命中的行印出來。要檢查的關鍵字、要看的副檔名、要排除的 node_modules，全都封在那支腳本裡；要改檢查邏輯就改那一支。
+
+這是會擋下來的關卡，不是裝飾。有命中（而且不是目標專案自己的文案）就先清乾淨，再跑一次確認零命中，才能 commit。把它跑成「印出來看看」就等於沒做——2026-05-24 那次顧問就是只看不擋，帶著網站文件的洩漏 commit 加 push 出去才被抓到。
+
+**哪些情況不適用。** 目標專案自己的內容剛好含這些字。例如綠電網站的文案寫「專業顧問服務」，那不是框架行話，看語境判斷。
+
+---
+
+## 跟特定領域有關的規則不放這裡
+
+下面這些會隨目標專案而不同，不算通用規則：快取的中繼資料（有些領域根本沒快取）、安全等級分類（有些沒有會改動狀態的操作）、庫存的 `--refresh`（有些沒有庫存概念）、skill 資料格式的形式化（有些沒有 skill 架構）。
+
+領域規則的範例見 `cases/<目標專案>-domain-rules.md`，套用的方式走 `docs/prescription-template.md` 的 Part C。

@@ -1,203 +1,226 @@
 > 🌐 [繁體中文](CONTRIBUTING.md) | **English**
 
-# Extending the meta-harness Methodology
+# Extending the meta-harness method
 
-For people **extending the consultant methodology itself** (adding design axes, rules, lessons, skills).
-If you want to **use** this flow to design your own harness, see [`README.en.md`](./README.en.md); this doc covers **the methodology's architecture and how to evolve it**.
+This document is for people extending the method itself: adding a design dimension, adding a rule, recording a lesson, adding a mode or a skill.
 
-> Two-reader split (meta-harness eats its own dogfood): README = users of the consultant flow (Viewer); this doc = those modifying the consultant framework (Maintainer).
+If you just want to use this flow to design your own harness, read [`README.en.md`](./README.en.md). This one is about the architecture of the method and how to change it.
+
+Two audiences, two documents — meta-harness follows its own rule here. The README is for people using the flow; this one is for people modifying the framework.
 
 ---
 
 ## Architecture overview
 
-meta-harness is not a framework; it's "**consultant identity + pattern library + conversational flow**". Three layers:
+meta-harness is not a framework. It's a consultant role, a catalogue of techniques, and a conversation flow. Four layers:
 
 ```
-Identity layer  .claude/skills/consultant/SKILL.md     Architect persona + 6-step flow (non-drifting)
-                .claude/skills/document/SKILL.md       /document mode (bilingual manual production)
+Role layer        .claude/skills/consultant/SKILL.md   The consultant role and six-step flow.
+                                                       Must not drift.
+                  .claude/skills/document/SKILL.md     Produces bilingual documentation
 
-Knowledge layer docs/design-axes/ (13 axes)            Design parameter space (including axis 13 Self-Verify Coverage)
-                docs/universal-care-rules.md (R-1~R-12) Hygiene rule floor
-                docs/prescription-template.md          Blueprint format (includes "software engineering discipline mapping" section)
-                docs/manual-template.md                Manual format
-                docs/lessons.md                        Insights accumulated (not necessarily elevated to R-N)
+Knowledge layer   docs/design-axes/                    The 13 design dimensions — a space of options
+                  docs/universal-care-rules.md         R-1 through R-12, the baseline rules
+                  docs/prescription-template.md        Design plan format, including the mapping
+                                                       to software engineering practice
+                  docs/manual-template.md              Documentation format
+                  docs/lessons.md                      Accumulated lessons; not all become rules
 
-Front-door     .claude/commands/                       design / healthcheck / retro / document four slash commands
-                .claude/hooks/                          cwd guard + line/question reminders (3 advisory) + self-verify-on-stop (1 blocking)
+Entry layer       .claude/commands/                    design / healthcheck / retro / document
+                  .claude/hooks/                       working-directory guard, line-count check,
+                                                       pre-question self-check (all three only warn),
+                                                       plus self-verify-on-stop (the only blocker)
 
-Self-verify    experiments/meta-harness-eval/          meta-harness's own axis 13 landing
-                ├── run-self-verify.sh                  Single entry point (runs every test-*.sh scorer)
-                ├── test-*.sh                           Pattern A/B scorers
-                ├── coverage.json                       KPI dashboard (live scorer/check/coverage source of truth)
-                └── generate-coverage.sh                Generates coverage.json from test results
+Verification      experiments/meta-harness-eval/       meta-harness verifying itself
+                  ├── run-self-verify.sh               Single entry point; runs every test-*.sh
+                  ├── test-*.sh                        The individual verification scripts
+                  ├── coverage.json                    The dashboard; live numbers come from here
+                  └── generate-coverage.sh             Builds coverage.json from test results
 ```
 
-- **13 design axes** = design **parameter space** (not a checklist), coupled to each other.
-- **R-1~R-12** = cross-target hygiene floor (written rules; landing is mostly hook reminders — only the Stop hook can block).
-- **`docs/lessons.md`** = insights (the why), distinct from rules: rules are mandatory, lessons are experience.
+A few things to understand up front.
 
-### Dog food three-layer closed loop (meta-harness proves its own methodology)
+The 13 design dimensions are a space of options, not a checklist, and they affect each other.
+
+R-1 through R-12 are the baseline that applies across projects. They're written rules; enforcement is mostly hook reminders, and only the Stop hook can actually block.
+
+`docs/lessons.md` holds insights — the reasoning behind decisions. The difference from rules: rules are mandatory, lessons are experience.
+
+### Dogfooding is a three-layer loop
 
 ```
-atdd-task passes its own self-verify (ships its own scorer set; live numbers in its coverage.json)
-    ↑ Required by
-meta-harness (requires targets to self-verify)
-    ↑ Requires itself too
-meta-harness passes its own self-verify (scorer/check/coverage live in coverage.json, maintained by generate-coverage.sh)
-    ↑ Requires prescription structure
-This CONTRIBUTING (meta-harness's maintainer doc to itself)
+atdd-task passes its own verification (own scripts; live numbers in its coverage.json)
+    ↑ required by
+meta-harness requires target projects to self-verify
+    ↑ and requires itself to do the same
+meta-harness passes its own verification (numbers in coverage.json,
+                                          maintained by generate-coverage.sh)
+    ↑ which is required by
+this CONTRIBUTING (meta-harness's own maintainer documentation)
 ```
 
-"The shoemaker's child has shoes" is a **verifiable engineering fact** here, not a metaphor.
+"The cobbler's children have shoes" is a verifiable engineering fact here, not a metaphor.
 
 ---
 
-## How wiring works
+## What each piece does
 
-| Component | Purpose |
+| Piece | What it does |
 |---|---|
-| `.claude/skills/consultant/` | Consultant identity + complete 6-step flow (core; loads on any mode entry) |
-| `.claude/skills/document/` | `/document` mode logic (bilingual README + CONTRIBUTING auto-production) |
-| `.claude/commands/{design,healthcheck,retro,document}.md` | Four front-door slash commands |
-| `.claude/hooks/cwd-guard.sh` | SessionStart: guards cwd from leaving meta-harness (**advisory**, prints a warning, does not block) |
-| `.claude/hooks/post-write-line-check.sh` | PostToolUse(Write/Edit): reminds when R-1 (CLAUDE.md line count) / R-3 (hook line count) exceed the threshold (**advisory**, no block) |
-| `.claude/hooks/pre-askquestion-reminder.sh` | PreToolUse(AskUserQuestion): R-5 (questions anchor artifacts) / R-6 (no unexplained jargon) self-audit reminder (**advisory**, no block) |
-| `.claude/hooks/self-verify-on-stop.sh` | Stop: **the only blocking hook** — runs full self-verify at session end; drift exit 2 blocks (axis 13 physical gate) |
-| `.claude/settings.json` | Hook registration (SessionStart / PreToolUse / PostToolUse / Stop) — **1 blocking (Stop) + 3 advisory (remind but don't block)** |
-| `docs/*-template.md` | Prescription (blueprint) + manual format |
-| `experiments/<topic>/` | Reference implementation (e.g., `consolidation-loop/`) |
-| `experiments/meta-harness-eval/` | **meta-harness's own axis 13 landing** — dog food evidence |
+| `.claude/skills/consultant/` | The consultant role and the full six-step flow. Core; loaded by every mode |
+| `.claude/skills/document/` | The logic behind `/document`, producing bilingual README and CONTRIBUTING |
+| `.claude/commands/{design,healthcheck,retro,document}.md` | The four entry points aimed at target projects |
+| `.claude/commands/upkeep.md` | For maintaining meta-harness itself. After nobody has touched it for a while, run one round of upkeep: self-verification, recomputing the project list and coverage, checking whether backlog items have gone stale, then a health summary. Weekly is a reasonable cadence |
+| `.claude/hooks/cwd-guard.sh` | At session start, checks the working directory hasn't left meta-harness. Warns only |
+| `.claude/hooks/post-write-line-check.sh` | After a write, checks CLAUDE.md and hook line counts. Reminds only |
+| `.claude/hooks/pre-askquestion-reminder.sh` | Before asking a question, reminds about R-5 and R-6. Reminds only |
+| `.claude/hooks/self-verify-on-stop.sh` | The only hook that blocks. Runs the full verification suite at session end; exits 2 if things don't line up |
+| `.claude/settings.json` | Hook registration: one blocking, three advisory |
+| `docs/*-template.md` | Formats for the design plan and the documentation |
+| `experiments/<topic>/` | Reference implementations, e.g. `consolidation-loop/` |
+| `experiments/meta-harness-eval/` | meta-harness verifying itself; the dogfooding evidence |
 
 ---
 
-## How to extend
+## How to extend it
 
-### Add a design axis
+### Add a design dimension
 
-1. Create `docs/design-axes/<n>-<name>.md` (decision options + couplings + anti-patterns + cases)
-2. Add a line to the `docs/design-axes.md` index
-3. Bump the `# Harness <N> design axes (index)` title number
-4. Update `.claude/commands/healthcheck.md` axis count references (self-verify will catch drift)
-5. **Orthogonality check**: don't overlap with the existing 13 axes (e.g., 7 vs 11, 9 vs 12 boundaries are already drawn)
+1. Create `docs/design-axes/<n>-<name>.md` covering the options, how it interacts with other dimensions, common mistakes, and real cases.
+2. Add a line to the index in `docs/design-axes.md`.
+3. Bump the count in that file's title.
+4. Update the count referenced in `.claude/commands/healthcheck.md`. Verification checks that these two agree.
+5. Make sure it doesn't overlap an existing dimension. The boundaries between 7 and 11, and between 9 and 12, are already drawn — use them as examples.
 
-Run `bash experiments/meta-harness-eval/run-self-verify.sh` → should be all green (`test-healthcheck-axis-consistency` catches axis count alignment).
+Run `bash experiments/meta-harness-eval/run-self-verify.sh`; everything should pass.
 
-### Add a universal rule (R-N)
+### Add a rule
 
-1. Add a `## R-N：<name>` section in `docs/universal-care-rules.md` (definition / why / rule / landing)
-2. **Criterion**: **Does it still hold leaving this target / this person**? Only cross-target qualifies as universal; target-specific stays in the target's own doc.
-3. Commit message must answer "**why can't we delete the source**" (R-7 discipline — don't ossify bad flow, fix root cause)
-4. Run self-verify → `test-universal-care-rules-schema.sh` checks R-N numbering continuity + content completeness
+1. Add a `## R-N: <name>` section to `docs/universal-care-rules.md` covering what it is, why, the rule itself, and how it's enforced.
+2. The test is: does this still hold in a different project, for a different person? Only rules that travel become general rules. Project-specific ones stay in that project's own documentation.
+3. The commit message must answer "why can't the root cause just be removed?" That's the R-7 discipline: don't cement bad workflows, fix the root cause first.
+4. Run verification. `test-universal-care-rules-schema.sh` checks the numbering is contiguous and every rule has content.
 
-### Add a lesson
+### Record a lesson
 
-Hit a recurring failure → write in `docs/lessons.md` (insight, **not a mandatory rule**). Once validated to be universal across enough cases → elevate to R-N.
+When you hit a recurring mistake, write it into `docs/lessons.md`. That's an insight, not a mandatory rule.
 
-### Add a mode / skill
+Once it's been validated enough times to look general, promote it to a rule.
 
-Follow `document` skill as template:
+### Add a mode or skill
 
-1. Create `.claude/skills/<name>/SKILL.md` (frontmatter `name:` + `description:` required)
-2. Add a row to the consultant skill's trigger table
-3. Hook into the 6-step flow if needed (e.g., Step 5.5 / Step 6)
-4. Add the matching slash command in `.claude/commands/<name>.md` (front door)
-5. Self-verify will catch frontmatter / reference alignment via `test-skill-spec-format.sh` + `test-slash-command-flow-integrity.sh`
+Follow the shape of the `document` skill:
 
-### Modify prescription / manual template
+1. Create `.claude/skills/<name>/SKILL.md`; `name` and `description` in the frontmatter are required.
+2. Add a row to the trigger table in the consultant skill.
+3. Hook it into the six-step flow if it belongs there.
+4. Add a matching command at `.claude/commands/<name>.md`.
+5. Verification will check frontmatter and references via `test-skill-spec-format.sh` and `test-slash-command-flow-integrity.sh`.
 
-Edit `docs/prescription-template.md` or `docs/manual-template.md` directly. Run self-verify → `test-prescription-template-structure.sh` checks structure (Header + Part A-F + the "modal-use guidelines" all still present).
+### Change the design plan or documentation format
 
----
+Edit `docs/prescription-template.md` or `docs/manual-template.md` directly.
 
-## Design rationale (why this way)
-
-- **Consultant, not scaffold**: 13 axes are coupled parameters; no standard template fits all → conversation + pattern library as the body.
-- **Layered rules** (avoid "a single doc with 13 disconnected anti-patterns"): cross-flow universals (R-N) / design flow (consultant-flow) / blueprint format (template) / anti-patterns kept separate.
-- **R-10 physicalized (axis 13)**: R-10 "machine-verifiable outcomes must self-verify before delivery" was originally a discipline, now elevated to a **physical gate** — Stop hook + coverage.json + run-self-verify.sh kit. So "no self-verify no commit" becomes an OS-level fact, not relying on human memory.
-- **R-12 self-containment** (target landing files don't leak meta-harness identity): targets are independent repos; their readers don't have meta-harness. But **R-12 doesn't apply to meta-harness itself** — prescription / design axis / R-N are meta-harness's ubiquitous language; they should be spoken here.
-
-### Four governance rules (must read before modifying methodology)
-
-- **R-7**: Don't ossify bad flow; fix root cause first (piling on patches = rule bloat trap)
-- **R-8**: No cross-layer overreach (method-level rules don't go into target-specific docs)
-- **R-9**: Framework vs task content split (meta-harness touches framework, not target business logic)
-- **R-12**: Target landing files self-contained (**doesn't apply to meta-harness itself**, but understand its purpose when modifying R-12 / `/document` skill)
+Run verification; `test-prescription-template-structure.sh` checks the structure is intact (Header, Part A through F, and the usage rules section).
 
 ---
 
-## How to verify changes
+## Why it's built this way
 
-### Axis 13 self-verify (OS-level gate)
+**Why a consultant rather than a generator.** The 13 dimensions are coupled parameters. No template fits everyone, so the body of the work is conversation plus a catalogue of techniques.
 
-Run `bash experiments/meta-harness-eval/run-self-verify.sh` → **must be all green (every scorer passes)**.
+**Why rules live in separate layers.** This avoids ending up with a single document holding 13 disconnected "don't do this" entries. General rules, the design flow, the plan format, and common mistakes each live somewhere different.
 
-Any scorer red = drift. Stop hook will block session end (unless drift is fixed).
+**Why R-10 became an automatic gate.** R-10 says anything a machine can verify must be verified before delivery. It used to be just a rule. Now it's three files — the Stop hook, coverage.json, and run-self-verify.sh — that make "no commit without verification" an operating-system-level fact rather than something a person has to remember.
 
-Representative scorers and the mechanisms they cover (full list + live numbers in `coverage.json`; table below is a subset):
+**Why files written into a target project must stand on their own.** A target project is an independent repo, and its readers don't have meta-harness.
 
-| Scorer | Covers |
+That rule (R-12) doesn't apply to meta-harness itself, though. Design plans, dimensions, and rule numbers are meta-harness's own shared vocabulary, and they belong here.
+
+### Four rules to read before changing the method
+
+- **R-7**: don't cement bad workflows; find the root cause before fixing. Stacking rules to cover symptoms ends in a pile of rules.
+- **R-8**: don't overstep between layers. Method-level rules don't belong in project-specific documents.
+- **R-9**: framework is framework, task content is task content. meta-harness touches the framework, not a target project's business logic.
+- **R-12**: files written into a target project must stand on their own. This doesn't apply to meta-harness itself, but you need to understand its purpose before changing R-12 or the `/document` skill.
+
+---
+
+## How to verify your changes
+
+### Run the verification suite
+
+Run `bash experiments/meta-harness-eval/run-self-verify.sh`. Everything must pass.
+
+Any failure means something is out of sync. The Stop hook will block the session from ending until it's fixed.
+
+Here's roughly what the scripts cover. The full list and live numbers are in `coverage.json`; this table is a subset:
+
+| Script | What it covers |
 |---|---|
-| `test-cross-references.sh` | Prescription R-N / axis-N reference integrity |
-| `test-prescription-format.sh` | Prescriptions structure (Part A-F + frontmatter) |
-| `test-prescription-template-structure.sh` | Template's own structure |
-| `test-target-coverage.sh` | targets.yml ↔ target coverage.json landing progress |
-| `test-design-axes-doc-completeness.sh` | 13 design axes doc structure complete |
-| `test-healthcheck-axis-consistency.sh` | healthcheck axis count refs ↔ actual |
+| `test-cross-references.sh` | Rule and dimension references in design plans actually exist |
+| `test-prescription-format.sh` | The structure of each design plan |
+| `test-prescription-template-structure.sh` | The structure of the plan format itself |
+| `test-target-coverage.sh` | Progress across targets.yml and each project's coverage.json |
+| `test-design-axes-doc-completeness.sh` | All 13 dimension documents are structurally complete |
+| `test-healthcheck-axis-consistency.sh` | The count referenced in healthcheck matches reality |
 | `test-skill-spec-format.sh` | SKILL.md frontmatter |
-| `test-universal-care-rules-schema.sh` | R-N numbering continuity + content existence |
-| `test-self-verify-stop-hook-behavior.sh` | Stop hook three behaviors (no runner / green / red) |
-| `test-run-self-verify-runner-integrity.sh` | Runner three states (no test / all green / red) |
-| `test-slash-command-flow-integrity.sh` | Slash command frontmatter + ref file existence |
-| `test-consultant-skill-structure.sh` | Consultant core vocab completeness |
-| `test-coverage-json-schema.sh` | Cross-target coverage.json schema consistency |
+| `test-universal-care-rules-schema.sh` | Rule numbering is contiguous and every rule has content |
+| `test-self-verify-stop-hook-behavior.sh` | The Stop hook in three situations: no runner, passing, failing |
+| `test-run-self-verify-runner-integrity.sh` | The entry script in three states |
+| `test-slash-command-flow-integrity.sh` | Command frontmatter, and that referenced files exist |
+| `test-consultant-skill-structure.sh` | The consultant's core vocabulary is intact |
+| `test-coverage-json-schema.sh` | coverage.json format is consistent across projects |
 
-New wiring → new `test-*.sh` to cover it. **Pick one of the four Patterns** (see axis 13 doc):
+Add new configuration, add a `test-*.sh` to cover it. Pick one of the four verification approaches (details in the dimension 13 document):
 
-- **A. Single source of truth + drift detection** (config / wiring cross-file consistency)
-- **B. Trigger + assert** (does the hook / middleware receive the correct trigger)
-- **C. Scorer + METRICS line** (behavioral quality / agent output)
-- **D. Snapshot + diff** (are side effects correct)
+- **A. Check that configuration agrees with itself**, when one setting is spread across files.
+- **B. Trigger it and see if anything happens**, for hooks and middleware.
+- **C. Score the output**, for content an agent produces.
+- **D. Compare before and after**, for side effects.
 
-### Dogfood (any new capability runs live first)
+### Use any new capability yourself first
 
-Any new skill / command / template must run on a real target once (e.g., `/document` wrote figma2code before writing itself; axis 13 landed in meta-harness before rolling to atdd-task). **No dogfood = unverified delivery (R-10 anti-pattern)**.
+Any new skill, command, or format has to be run against a real project first.
 
-### Hygiene checks when changing rules / adding axes
+`/document` was tried on figma2code before it was used to write these docs. Self-verification was built into meta-harness itself before being pushed to atdd-task.
 
-- **grep root cause**: don't just patch symptoms (R-7).
-- **Orthogonality confirmation**: don't overlap with existing axes / R-N (e.g., 7 vs 11, 9 vs 12 boundaries drawn; axis 13 vs R-10 is "KPI vs discipline" layering).
-- **Cross-target trial**: before elevating to universal, verify the rule holds in ≥ 2 real targets (otherwise put it in `docs/lessons.md`).
-- **commit message R-7**: before commit, self-answer "why can't we delete the source, only add a rule".
+Shipping without using it yourself means shipping something unverified — exactly what R-10 exists to prevent.
 
-### After modifying prescription / template
+### Checks when changing rules or adding dimensions
 
-Run self-verify; `test-prescription-template-structure.sh` should stay green. If you change structure outside Part A-F (e.g., adding Part G), update that test's expectations too.
+- **Grep for the root cause.** Don't just stack something on top to cover a symptom (R-7).
+- **Confirm it doesn't overlap.** The 7/11 and 9/12 boundaries are already drawn. Dimension 13 and R-10 split as "metric" versus "discipline".
+- **Try it across projects.** Before promoting something to a general rule, validate it on at least two real projects. Otherwise it goes in `docs/lessons.md`.
+- **Answer R-7 in the commit message.** Before committing, answer "why can't the root cause be removed instead?"
+
+### After changing a format
+
+Run verification and confirm `test-prescription-template-structure.sh` still passes.
+
+If you changed structure outside Part A through F — adding a Part G, say — update that test's expectations too.
 
 ---
 
-## Relationship with external targets
+## Relationship with external projects
 
-Targets designed by meta-harness are **independent repos** — they should self-contain, not require meta-harness to run. R-12 specifies "target landing files don't leak meta-harness identity" (don't reference `prescription / design axis / R-N` jargon in the target README).
+A target project designed by meta-harness is an independent repo. It should stand on its own and not need meta-harness to run.
 
-But **this relationship is one-way**: targets don't know meta-harness; meta-harness knows and tracks targets (via `targets.yml` + `test-target-coverage.sh`).
+That's what R-12 governs: files written into a target project must not leak meta-harness's internal identity — no mentions of design plans, dimensions, or rule numbers in the target's README.
 
-Cross-target dog-food progress is continuously monitored by `experiments/meta-harness-eval/test-target-coverage.sh`:
+The relationship is one-directional. The target project shouldn't know about meta-harness; meta-harness knows about and tracks its target projects, via `targets.yml` and `test-target-coverage.sh`.
 
-| Target | Axis 13 landing |
-|---|---|
-| meta-harness itself | ✅ 100% (15/15) |
-| atdd-task | ✅ 47% (7/15) |
-| ai-infra-management | ⏳ Pending |
-| figma2code | ⏳ Pending |
-| self-profile | ⏳ Pending |
-| google_sheet_builder | ⏳ Pending |
+Per-project verification progress changes over time, so it isn't copied here. To see the current state, run:
 
-Process for landing axis 13 in a new target:
+```bash
+bash experiments/meta-harness-eval/test-target-coverage.sh
+```
 
-1. Create `experiments/<target>-eval/run-self-verify.sh` in the target (reuse meta-harness's portable version)
-2. Add `.claude/hooks/self-verify-on-stop.sh` + `settings.json` Stop registration
-3. Write `test-*.sh` for each of the target's wirings (per the four Patterns)
-4. Run `generate-coverage.sh` to produce `coverage.json`; the builder fills in `mechanisms_inventory` manually
-5. In meta-harness's `targets.yml` entry for that target, add `eval_dir` (if the directory isn't `<target>-eval`)
-6. Run `meta-harness/experiments/meta-harness-eval/test-target-coverage.sh` to confirm landing detected
+To bring self-verification to a new project:
+
+1. Create `experiments/<project>-eval/run-self-verify.sh` in that project; the portable version from meta-harness can be reused.
+2. Add `.claude/hooks/self-verify-on-stop.sh` and register it under `Stop` in `settings.json`.
+3. Write a `test-*.sh` for each piece of configuration, picking one of the four approaches.
+4. Run `generate-coverage.sh` to produce `coverage.json`, and fill in the inventory of items by hand.
+5. In meta-harness's `targets.yml`, add `eval_dir` to that project's entry if its directory isn't named `<project>-eval`.
+6. Run `test-target-coverage.sh`; it should pick up the new progress.

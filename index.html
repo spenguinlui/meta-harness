@@ -4,18 +4,18 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>meta-harness · AI agent harness 設計顧問</title>
-<meta name="description" content="meta-harness 是一位住在 Claude Code 裡的 AI agent 系統設計顧問。腦中內建 13 大設計軸的 pattern library，陪你設計、健檢、回顧任何 AI agent 工具。" />
+<meta name="description" content="meta-harness 是一位住在 Claude Code 裡的顧問，專門幫你設計 AI agent 系統。它記得 13 個該想清楚的設計面向，陪你設計、健檢、回顧任何 AI agent 工具。" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="meta-harness" />
-<meta property="og:title" content="meta-harness · AI Harness Design Methodology" />
-<meta property="og:description" content="設計 AI agent harness 的方法論 + 顧問 wiring：13 設計軸、4 模式、9 條 care rules。陪你設計、健檢、回顧任何 AI agent 工具。" />
+<meta property="og:title" content="meta-harness · 設計 AI agent harness 的方法" />
+<meta property="og:description" content="一套設計 AI agent harness 的方法，外加一個會動手實作的顧問：13 個設計面向、4 種模式、12 條基本規則。" />
 <meta property="og:url" content="https://spenguinlui.github.io/meta-harness/" />
 <meta property="og:image" content="https://spenguinlui.github.io/meta-harness/og.png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="meta-harness · AI Harness Design Methodology" />
-<meta name="twitter:description" content="設計 AI agent harness 的方法論 + 顧問 wiring：13 設計軸、4 模式、9 條 care rules。" />
+<meta name="twitter:title" content="meta-harness · 設計 AI agent harness 的方法" />
+<meta name="twitter:description" content="一套設計 AI agent harness 的方法，外加一個會動手實作的顧問：13 個設計面向、4 種模式、12 條基本規則。" />
 <meta name="twitter:image" content="https://spenguinlui.github.io/meta-harness/og.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -37,8 +37,8 @@
       </div>
       <nav class="nav-links">
         <a href="#start">入門</a>
-        <a href="#modes">四模式</a>
-        <a href="#axes">13 設計軸</a>
+        <a href="#modes">四種模式</a>
+        <a href="#axes">13 個設計面向</a>
         <a href="#flow">設計流程</a>
         <a href="#rules">規則</a>
       </nav>
@@ -52,14 +52,14 @@
 <!-- ============== HERO ============== -->
 <section class="hero">
   <div class="hero-inner">
-    <h1>Hi, <strong>how can we help</strong> you design<br/>an AI agent harness?</h1>
+    <h1>你的 AI agent<br/><strong>該怎麼設計</strong>？</h1>
     <p class="lede">
-      meta-harness 是一位住在 Claude Code 裡的「AI agent 系統設計顧問」。腦中內建 13 大設計軸的 pattern library，
-      陪你把任何 AI agent 工具設計好、蓋出來。<br />
-      <span style="color:var(--ink-light)">harness engineering &gt; prompt engineering · 改字 vs 改整套系統</span>
+      meta-harness 是一位住在 Claude Code 裡的顧問，專門幫你設計 AI agent 系統，也會動手實作。
+      它記得 13 個設計時該想清楚的面向，陪你把工具設計好、蓋出來。<br />
+      <span style="color:var(--ink-light)">改 prompt 是調字句，設計 harness 是調整模型周圍的整套系統。</span>
     </p>
     <div class="search">
-      <input id="kb-search" type="search" placeholder="搜尋主題…（例：設計軸、hook、人類介面、自驗）" aria-label="搜尋" />
+      <input id="kb-search" type="search" placeholder="搜尋主題…（例：設計面向、hook、人的介面、自我驗證）" aria-label="搜尋" />
       <button class="search-btn" aria-label="search">→</button>
     </div>
   </div>
@@ -69,8 +69,8 @@
 <section id="topics">
   <div class="container">
     <div class="section-head">
-      <h2>Browse <strong>Help Topics</strong></h2>
-      <p>六個入口卡片，涵蓋從第一次開 session 到 12 設計軸深度。卡住了用上面的搜尋框過濾。</p>
+      <h2>從<strong>哪裡開始</strong></h2>
+      <p>六張卡片，從第一次開 session 到每個設計面向的細節。卡住的話，用上面的搜尋框過濾。</p>
     </div>
 
     <div class="kb-grid" id="kb-grid">
@@ -79,17 +79,17 @@
       <article class="kb-card blue" id="start">
         <div class="kb-card-head">
           <div class="kb-dot"></div>
-          <div class="kb-card-title">入門 / Getting Started</div>
+          <div class="kb-card-title">入門</div>
         </div>
         <ul class="kb-list">
-          <li>這個專案是什麼？為什麼是顧問而非腳手架？</li>
-          <li>前置條件：Claude Code CLI、想設計的 target repo</li>
+          <li>這是什麼？為什麼是顧問，不是產目錄骨架的工具？</li>
+          <li>需要什麼：裝好 Claude Code CLI，心裡有個想設計的專案</li>
           <li>三行裝起來：<code>git clone</code> → <code>cd</code> → <code>claude</code></li>
-          <li>第一次開 session 先 <code>/model</code> 切最強 model</li>
-          <li>不需要 <code>.env</code>、不需要 API key</li>
+          <li>開 session 第一件事，用 <code>/model</code> 切到最強的 model</li>
+          <li>不需要 <code>.env</code>，不需要 API key</li>
         </ul>
         <div class="kb-card-foot">
-          <span>5 主題</span>
+          <span>5 個主題</span>
           <span class="level"><a href="docs/getting-started.html">→ 新手入口</a></span>
         </div>
       </article>
@@ -98,36 +98,36 @@
       <article class="kb-card green" id="modes">
         <div class="kb-card-head">
           <div class="kb-dot"></div>
-          <div class="kb-card-title">顧問四模式 / 4 Modes</div>
+          <div class="kb-card-title">顧問的四種模式</div>
         </div>
         <ul class="kb-list">
-          <li><code>/design &lt;target&gt;</code> — 新建或重設一個 harness</li>
-          <li><code>/healthcheck &lt;target&gt;</code> — 用 13 軸定點體檢</li>
-          <li><code>/retro &lt;target&gt;</code> — 飛輪 retrospective</li>
-          <li><code>/document &lt;target&gt;</code> — 產雙語交付說明書</li>
-          <li>不打 command 直接講白話也可（自動載入 consultant skill）</li>
+          <li><code>/design &lt;專案&gt;</code>：設計新的，或打掉重來</li>
+          <li><code>/healthcheck &lt;專案&gt;</code>：拿 13 個面向做一次體檢</li>
+          <li><code>/retro &lt;專案&gt;</code>：跑一陣子之後回頭檢視</li>
+          <li><code>/document &lt;專案&gt;</code>：產中英雙語說明書</li>
+          <li>不打指令、直接講白話也可以，顧問角色會自動載入</li>
         </ul>
         <div class="kb-card-foot">
-          <span>4 模式</span>
-          <span class="level">前門</span>
+          <span>4 種模式</span>
+          <span class="level">入口</span>
         </div>
       </article>
 
-      <!-- 3. 13 設計軸 -->
+      <!-- 3. 13 個設計面向 -->
       <article class="kb-card violet" id="axes">
         <div class="kb-card-head">
           <div class="kb-dot"></div>
-          <div class="kb-card-title">13 大設計軸 / Pattern Library</div>
+          <div class="kb-card-title">13 個設計面向</div>
         </div>
         <ul class="kb-list">
-          <li>Tool · Context · Memory · Planning · Execution</li>
-          <li>Safety · Hooks · Evaluation · Observability</li>
-          <li>Multi-agent · Triggers · Human Interface</li>
-          <li>Self-verify Coverage（軸 13）</li>
-          <li>每軸都是「設計參數」而非開關，彼此耦合</li>
+          <li>工具執行 · 上下文管理 · 記憶 · 規劃 · 執行迴圈</li>
+          <li>權限與安全 · hook · 成效評估 · 可觀測性</li>
+          <li>多 agent 協作 · 觸發時機 · 人的介面</li>
+          <li>自我驗證覆蓋率（第 13 個）</li>
+          <li>每一個都有很多選項，不是開關，而且彼此牽連</li>
         </ul>
         <div class="kb-card-foot">
-          <span>13 軸</span>
+          <span>13 個面向</span>
           <span class="level"><a href="docs/design-axes.html">→ 索引</a></span>
         </div>
       </article>
@@ -136,19 +136,19 @@
       <article class="kb-card amber" id="flow">
         <div class="kb-card-head">
           <div class="kb-dot"></div>
-          <div class="kb-card-title">設計流程 6 步 / Design Flow</div>
+          <div class="kb-card-title">設計流程的六個步驟</div>
         </div>
         <ul class="kb-list">
-          <li>Step 1 需求訪談（10–20 分鐘，5 件事）</li>
-          <li>Step 2 建築師獨自出設計圖</li>
-          <li>Step 3 你 review、白話收斂</li>
-          <li>Step 4 分期實作落地（Stage 1/2/3）</li>
-          <li>Step 4.5 自驗 loop（headless 跑 ≥3 次 + 機評）</li>
-          <li>Step 5 驗收 · Step 6 飛輪 retrospective</li>
+          <li>1　需求訪談，10 到 20 分鐘，問五件事</li>
+          <li>2　顧問自己寫設計方案，你不用做事</li>
+          <li>3　你看過、給意見，來回改到定案</li>
+          <li>4　分階段把檔案寫進你的專案</li>
+          <li>4.5　自我驗證：非互動跑至少三次加上跑分</li>
+          <li>5　驗收　·　6　幾週後回頭檢視</li>
         </ul>
         <div class="kb-card-foot">
-          <span>6 步 + 自驗</span>
-          <span class="level"><a href="docs/consultant-flow.html">→ 決策邏輯</a></span>
+          <span>6 步 + 自我驗證</span>
+          <span class="level"><a href="docs/consultant-flow.html">→ 判斷邏輯</a></span>
         </div>
       </article>
 
@@ -156,18 +156,18 @@
       <article class="kb-card red" id="rules">
         <div class="kb-card-head">
           <div class="kb-dot"></div>
-          <div class="kb-card-title">R-1 ~ R-12 衛生規則 / Universal Rules</div>
+          <div class="kb-card-title">R-1 到 R-12：12 條基本規則</div>
         </div>
         <ul class="kb-list">
-          <li>R-1 cwd 守衛 · R-3 行數檢查 · R-5 提問自查</li>
-          <li>R-6 不用未解釋專有名詞 / 縮寫</li>
-          <li>R-8 跨層越權禁止 · R-9 framework vs 任務分流</li>
-          <li>R-10 可機驗 outcome 必先自驗</li>
-          <li>R-11 可被他人使用必交付雙語說明書</li>
-          <li>R-12 grep 自檢 blocking gate</li>
+          <li>R-1 CLAUDE.md 不超過 50 行 · R-3 每個 hook 不超過 100 行</li>
+          <li>R-4 找不到就說找不到，不用流暢的猜測填補</li>
+          <li>R-6 不用沒解釋過的專有名詞和縮寫</li>
+          <li>R-8 自家層的問題自家層修 · R-9 框架層不碰任務內容</li>
+          <li>R-10 機器驗得了的產出，交付前先自己驗過</li>
+          <li>R-11 給別人用的東西一定要附說明書 · R-12 寫進專案的檔案要能獨立看懂</li>
         </ul>
         <div class="kb-card-foot">
-          <span>12 條 + hook 強制</span>
+          <span>12 條，部分由 hook 強制</span>
           <span class="level"><a href="docs/universal-care-rules.html">→ 詳解</a></span>
         </div>
       </article>
@@ -176,31 +176,31 @@
       <article class="kb-card cyan" id="files">
         <div class="kb-card-head">
           <div class="kb-dot"></div>
-          <div class="kb-card-title">角色 & 檔案產出 / Roles &amp; Artifacts</div>
+          <div class="kb-card-title">兩種人，還有會產出什麼</div>
         </div>
         <ul class="kb-list">
-          <li><strong>Builder vs Human</strong>：設計者 vs 每天用 target 的人</li>
-          <li><code>sessions/</code> 訪談紀要</li>
-          <li><code>prescriptions/</code> 顧問設計圖</li>
-          <li><code>experiments/&lt;target&gt;/runs/</code> 自驗證據</li>
-          <li><code>BACKLOG.md</code> 未消化的方法學缺口</li>
-          <li>真實內容全 gitignored，fork 拿到不互相污染</li>
+          <li>設計者是設計這個工具的人，使用者是每天用它的人</li>
+          <li><code>sessions/</code>：訪談紀要</li>
+          <li><code>prescriptions/</code>：顧問寫的設計方案</li>
+          <li><code>experiments/&lt;專案&gt;/runs/</code>：自我驗證的原始證據</li>
+          <li><code>BACKLOG.md</code>：還沒處理的缺口</li>
+          <li>實際內容全部在 .gitignore 裡，fork 出去不會互相污染</li>
         </ul>
         <div class="kb-card-foot">
-          <span>6 落點</span>
-          <span class="level">留痕</span>
+          <span>6 個落點</span>
+          <span class="level">留檔</span>
         </div>
       </article>
 
-      <div class="kb-empty">沒找到對應主題——試試別的關鍵字，或 <a href="https://github.com/spenguinlui/meta-harness">直接到 GitHub 翻 source</a>。</div>
+      <div class="kb-empty">沒找到對應主題。換個關鍵字試試，或<a href="https://github.com/spenguinlui/meta-harness">直接到 GitHub 翻原始碼</a>。</div>
     </div>
   </div>
 </section>
 
 <!-- ============== CTA ============== -->
 <section class="cta-strip">
-  <h3>準備好設計你的第一個 harness？</h3>
-  <p>三行裝起來；或先讀新手入口、看看顧問流程怎麼跑。</p>
+  <h3>準備好設計你的第一個 harness 了嗎？</h3>
+  <p>三行就裝好了。或者先讀新手入口，看看整個流程怎麼跑。</p>
   <div class="cta-row">
     <a class="btn btn-primary" href="https://github.com/spenguinlui/meta-harness">→ Clone repo</a>
     <a class="btn btn-ghost" href="docs/getting-started.html">新手入口</a>
@@ -214,7 +214,7 @@
   <div class="container">
     <div>
       <div class="brand" style="margin-bottom:6px"><div class="logo"></div><div class="name">meta<em>·</em>harness</div></div>
-      <div>MIT · harness engineering &gt; prompt engineering</div>
+      <div>MIT · 設計整套系統，不只調 prompt</div>
     </div>
     <div class="foot-toggle">
       <span style="color:var(--ink-mute)">你正在看：</span>

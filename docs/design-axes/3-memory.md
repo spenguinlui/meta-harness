@@ -1,279 +1,221 @@
-# 設計軸 3：Memory 管理
+# 設計面向 3：記憶
 
-跨 session 的持續知識。和 context 不是同一件事——context 管「這次怎麼塞」，memory 管「下次還在不在」。
+跨 session 留下來的知識。
 
-## 多軸分類（2026 業界共識，**不是只一條 scope 軸**）
+這跟上下文不是同一件事：上下文管的是「這次怎麼塞得下」，記憶管的是「下次還在不在」。
 
-業界 de facto framework：CoALA paper (arXiv:2309.02427) + 2025/12 survey 升級為 **3 正交軸**（Form × Function × Dynamics）。實務上設計 target memory 該至少跨 **4 軸**思考，每軸選擇形狀；單看「scope」會踩反模式（業主常把所有東西全塞 user-scope auto-memory）。
+## 記憶要分四個維度想，不是只分範圍
 
-### 軸 A：Content type（內容類型，認知科學分類）
+業界目前的共識是 CoALA 那篇論文（arXiv:2309.02427），加上 2025 年 12 月的綜述把它升級成三個互相獨立的維度：形式、功能、動態。
+
+實務上設計一個專案的記憶，至少要跨四個維度去想，每個維度都選一個形狀。只看「範圍」這一個維度就會踩坑——最常見的是把所有東西全塞進個人層的自動記憶。
+
+### 維度一：內容是什麼類型
+
+這是認知科學的分類方式。
 
 | 類型 | 是什麼 | 例子 |
 |---|---|---|
-| **Working memory** | 當前 session 的短期暫存 | TaskList、當前 plan、in-flight 對話 |
-| **Episodic**（事件記憶） | 過去發生的事 / 互動紀錄 | advise 全文紀錄、過去 incident、commit history |
-| **Semantic**（事實知識） | 客觀事實 / 知識 / 名單 | 客戶清單、價格表、`docs/concepts.md`、業界 tool landscape |
-| **Procedural**（流程規則） | 怎麼做事的規則 | system prompt、skill `.md`、settings.json、hook 邏輯 |
+| 工作記憶 | 當前 session 的短期暫存 | 任務清單、當前的計畫、進行中的對話 |
+| 事件記憶 | 過去發生的事、互動紀錄 | 完整的討論紀錄、過去的事故、commit 歷史 |
+| 事實知識 | 客觀的事實、知識、名單 | 客戶清單、價目表、`docs/concepts.md`、業界工具地圖 |
+| 流程規則 | 怎麼做事的規則 | 系統 prompt、skill 的 `.md`、settings.json、hook 的邏輯 |
 
-**LangGraph/LangMem 明確警告**：procedural **不該全塞 memory store**，它本質是「prompt + code + weights」。
+LangGraph 和 LangMem 有明確警告：流程規則不該全塞進記憶儲存區，它本質上是 prompt 加程式碼加模型權重。
 
-### 軸 B：Scope（誰能看到）
+### 維度二：誰看得到
 
-| 層 | 範圍 | 例子 |
+| 層級 | 範圍 | 例子 |
 |---|---|---|
-| Session | 單 session | TaskList、當前 plan |
-| Project | 跟 repo 走、團隊共用 | CLAUDE.md、AGENTS.md、settings.json |
-| User | 個人、跨專案 | `~/.claude-work/.../MEMORY.md` |
-| Shared/world | 團隊知識庫 / 跨組織 | runbook、ADR、RAG corpus |
+| session | 單一 session | 任務清單、當前計畫 |
+| 專案 | 跟著 repo 走，團隊共用 | CLAUDE.md、AGENTS.md、settings.json |
+| 個人 | 個人的，跨專案 | `~/.claude-work/.../MEMORY.md` |
+| 共享 | 團隊知識庫，或跨組織 | 操作手冊、決策紀錄、檢索用的語料 |
 
-### 軸 C：Storage form（儲存形態）
+### 維度三：存成什麼形式
 
-| 形態 | 適合什麼 | 取捨 |
+| 形式 | 適合什麼 | 取捨 |
 |---|---|---|
-| **File**（markdown / json） | 小量、可讀、易 grep | 規模大就慢 |
-| **Vector DB** | 語意檢索、模糊召回 | 多 hop 查詢弱 |
-| **Graph DB** | 關係查詢、多 hop traversal | 寫入成本高 |
-| **Parametric** (model weights) | 內化、隱式 | 不可控、不可審 |
-| **Latent**（中間 hidden state） | 跨步驟保留 | 不可解釋 |
+| 檔案（markdown 或 json） | 量少、人看得懂、好 grep | 規模一大就慢 |
+| 向量資料庫 | 語意檢索、模糊召回 | 多層次的關聯查詢很弱 |
+| 圖資料庫 | 關係查詢、多層次追溯 | 寫入成本高 |
+| 存進模型權重 | 內化、隱式 | 不可控、不能稽核 |
+| 存成中間狀態 | 跨步驟保留 | 無法解釋 |
 
-2026 主流：vector + graph **hybrid**（Graph-RAG 68.4% vs vector-only 66.9% LLM score）。
+2026 年的主流是向量加圖的混合。Graph-RAG 的 LLM 評分是 68.4%，只用向量是 66.9%。
 
-### 軸 D：Access pattern（取用模式）
+### 維度四：什麼時候取用
 
-| 模式 | 何時取用 |
+| 模式 | 什麼時候取 |
 |---|---|
-| **Auto-inject** | session start 自動載（CLAUDE.md、MEMORY.md 索引） |
-| **Explicit recall** | 主動 grep / Read 特定路徑 |
-| **Agent-driven tool call** | sub-agent 自主查詢（RAG / DB query） |
+| 自動注入 | session 開始就載入，例如 CLAUDE.md、MEMORY.md 的索引 |
+| 主動召回 | 主動去 grep 或讀特定路徑 |
+| 由 agent 自己查 | sub-agent 自主查詢，例如檢索或資料庫查詢 |
 
 ---
 
-## 業界 framework 對位（你下次設計時可選 reference）
+## 可以參考的業界做法
 
-| Framework | Memory model | URL（抓取 2026-05-12） |
+| 來源 | 記憶模型 | 網址（2026-05-12 抓取） |
 |---|---|---|
-| **CoALA**（學術 de facto） | working + episodic + semantic + procedural × internal/external action | https://arxiv.org/abs/2309.02427 |
-| **Anthropic 官方 memory tool** | file-based `/memories` + context-management beta；強調 deliberate bootstrapping | https://platform.claude.com/docs/en/agents-and-tools/tool-use/memory-tool |
-| **Anthropic effective harnesses** | progress log + feature checklist + init script，不要 ad-hoc 寫入 | https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents |
-| **LangGraph/LangMem** | short-term thread state + long-term namespace；procedural = prompt+code+weights | https://docs.langchain.com/oss/python/langgraph/memory |
-| **Letta/MemGPT** | 3-tier OS 類比：core (RAM) / recall (raw history) / archival (processed) | https://docs.letta.com/concepts/memgpt/ |
+| CoALA，學術上的事實標準 | 工作、事件、事實、流程四種記憶，乘上內部和外部動作 | https://arxiv.org/abs/2309.02427 |
+| Anthropic 官方的記憶工具 | 以檔案為基礎的 `/memories`，加上上下文管理的 beta 功能。強調要刻意做初始化 | https://platform.claude.com/docs/en/agents-and-tools/tool-use/memory-tool |
+| Anthropic 談長時間執行的 agent | 進度 log、功能檢查清單、初始化腳本。不要臨時起意亂寫 | https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents |
+| LangGraph 和 LangMem | 短期是討論串的狀態，長期用命名空間。流程規則等於 prompt 加程式碼加權重 | https://docs.langchain.com/oss/python/langgraph/memory |
+| Letta / MemGPT | 用作業系統來類比的三層：核心（記憶體）、召回（原始歷史）、封存（處理過的） | https://docs.letta.com/concepts/memgpt/ |
 
 ---
 
-## 分流原則（哪類訊息該落哪格）
+## 什麼訊息該放哪裡
 
-設計 target repo 時逐項問：
+設計目標專案的時候，逐項問過去。
 
-| 訊息類別 | Content type | 該落哪 Scope | 該用什麼 Storage form | 反模式 |
+| 訊息類別 | 內容類型 | 該放哪一層 | 該用什麼形式 | 放錯會怎樣 |
 |---|---|---|---|---|
-| 個人風格偏好（不用 jargon） | Procedural | User | File（`~/.claude-work/memory`） | 寫進 project memory 強迫團隊接受 |
-| 團隊規則（hook 邏輯、CLAUDE.md） | Procedural | Project | File（git tracked） | 塞 user memory 換人接手斷層 |
-| 過去 advise 全文紀錄 | Episodic | Project | File `decisions/<id>-debate/` | 落 `/tmp/`（開機就清=沒落地） |
-| 客戶 / 資源清單 | Semantic | Project / Shared | File（小）/ Vector DB（大）| 全塞 user memory |
-| 業界 best practice / tool landscape | Semantic | Shared | 即時 WebSearch + 緩存 file | 寫死成靜態 list（會撞作者知識上限）|
-| 當前 task 狀態 | Working | Session | TodoWrite / 主對話 | 寫進跨 session memory |
-| 過去類似 plan template | Procedural / Episodic 混 | Project | File（git tracked）| 每次重新發明 |
-| 業主給的 ad-hoc 指令 | Procedural | User（個人偏好）/ Project（團隊規則） | 看 scope 決定 | 不分層全塞同一檔 |
+| 個人的風格偏好，例如不要用術語 | 流程規則 | 個人 | 檔案（`~/.claude-work/memory`） | 寫進專案記憶就是強迫團隊接受 |
+| 團隊規則，例如 hook 邏輯、CLAUDE.md | 流程規則 | 專案 | 檔案，進 git | 塞進個人記憶，換人接手就斷層 |
+| 過去完整的討論紀錄 | 事件記憶 | 專案 | 檔案 `decisions/<id>-debate/` | 放 `/tmp/` 等於沒存 |
+| 客戶或資源清單 | 事實知識 | 專案或共享 | 量少用檔案，量大用向量資料庫 | 全塞個人記憶 |
+| 業界的最佳實務、工具地圖 | 事實知識 | 共享 | 即時搜尋加上快取成檔案 | 寫死成靜態清單，會撞到寫的人的知識上限 |
+| 當前任務的狀態 | 工作記憶 | session | 任務清單或主對話 | 寫進跨 session 的記憶 |
+| 過去類似的計畫範本 | 流程規則和事件記憶混合 | 專案 | 檔案，進 git | 每次都重新發明 |
+| 對方臨時給的指令 | 流程規則 | 看是個人偏好還是團隊規則 | 依範圍決定 | 不分層全塞同一個檔案 |
 
 ---
 
-## 設計決策
+## 要決定的事
 
-### 1. 寫入觸發
-- **明確觸發**：用戶說「記下這個」
-- **自動觸發**：模型判斷重要 → 寫
-- **事件觸發**：某類動作後強制寫（destructive 操作後寫 ADR）
-- **失敗觸發**：eval 失敗自動歸檔
+### 一、什麼時候寫入
 
-預設「明確 + 事件」，「自動」要小心會堆積垃圾。
+- **明確觸發**：對方說「記下這個」。
+- **自動觸發**：模型自己判斷重要就寫。
+- **事件觸發**：某類動作之後強制寫，例如做完有破壞性的操作就寫決策紀錄。
+- **失敗觸發**：評估失敗自動歸檔。
 
-### 2. 寫入分類
-分類學決定後續召回效率。常見：
-- `fact` — 客觀事實
-- `preference` — 用戶偏好
-- `decision` — 為什麼選 A 不選 B
-- `failure-lesson` — 踩過的坑
-- `reference` — 外部系統指標
+預設用「明確」加「事件」。「自動」要小心，很容易堆垃圾。
 
-每類有不同 TTL、不同召回時機。
+### 二、寫入的分類
 
-### 3. 寫入格式
-- 自由文字：寫得快、召回難
-- 結構化（frontmatter + body）：寫得慢、可索引可過濾
-- 混合：metadata 結構化、內容自由
+分類方式決定了之後召回的效率。常見的分法：
 
-中型 repo 推薦結構化 + 自由 body。
+- 事實：客觀存在的事。
+- 偏好：對方的偏好。
+- 決定：為什麼選 A 不選 B。
+- 失敗教訓：踩過的坑。
+- 外部參考：指向外部系統的指標。
 
-### 4. 讀取策略
-- **全載**：所有 memory 進系統 prompt（小規模可用）
-- **索引**：MEMORY.md 列摘要，按需讀全文（Claude Code 的做法）
-- **語意召回**：embedding 找相關（規模大才需要）
-- **規則召回**：tag/category 過濾
+每一類的存活時間不同，召回的時機也不同。
 
-### 5. TTL 與失效
-- 永久：用戶身分、團隊習慣
-- 中期：當前專案目標
-- 短期：「升級進行到 phase 3」這種會過期
-- 失效機制：時間 / 條件 / 手動標記
+### 三、寫入的格式
 
-沒有 TTL 設計 = memory 變垃圾場。
+自由文字寫得快，但召回困難。結構化（開頭 metadata 加上內文）寫得慢，但可以索引、可以過濾。混合的做法是 metadata 結構化、內容自由。
 
-### 6. 衝突解決
-新事實跟舊 memory 矛盾：
-- 信現況（讀 code / state）
-- 更新或刪除 memory
-- 不要兩邊都留（會精神分裂）
+中型的 repo 推薦用結構化的 metadata 加上自由的內文。
 
-### 7. 驗證
-Memory 說 X 存在，用前要 grep 一下。Memory 是「過去某時為真」，不保證「現在為真」。
+### 四、怎麼讀取
 
-### 8. 隱私邊界
-- User memory 不該寫公司機密（會跨 repo 流動）
-- Project memory 不該寫個人偏好（會 commit 出去）
-- 邊界清楚比節省精巧重要
+- **全部載入**：所有記憶都進系統 prompt。規模小的時候可以。
+- **索引**：MEMORY.md 列出摘要，需要時才讀全文。Claude Code 用的是這種。
+- **語意召回**：用 embedding 找相關的。規模大才需要。
+- **規則召回**：用標籤或分類過濾。
 
-## 設計決策
+### 五、存活時間和失效
 
-### 1. 寫入觸發
-- **明確觸發**：用戶說「記下這個」
-- **自動觸發**：模型判斷重要 → 寫
-- **事件觸發**：某類動作後強制寫（destructive 操作後寫 ADR）
-- **失敗觸發**：eval 失敗自動歸檔
+- 永久的：對方的身分、團隊的習慣。
+- 中期的：當前專案的目標。
+- 短期的：像「升級進行到第三階段」這種，會過期。
 
-預設「明確 + 事件」，「自動」要小心會堆積垃圾。
+失效機制可以靠時間、靠條件、或手動標記。沒有設計存活時間，記憶就會變垃圾場。
 
-### 2. 寫入分類
-分類學決定後續召回效率。常見：
-- `fact` — 客觀事實
-- `preference` — 用戶偏好
-- `decision` — 為什麼選 A 不選 B
-- `failure-lesson` — 踩過的坑
-- `reference` — 外部系統指標
+### 六、衝突怎麼解
 
-每類有不同 TTL、不同召回時機。
+新的事實跟舊的記憶矛盾時：相信現況（去讀程式碼或實際狀態），然後更新或刪掉舊記憶。
 
-### 3. 寫入格式
-- 自由文字：寫得快、召回難
-- 結構化（frontmatter + body）：寫得慢、可索引可過濾
-- 混合：metadata 結構化、內容自由
+不要兩邊都留著，那會人格分裂。
 
-中型 repo 推薦結構化 + 自由 body。
+### 七、驗證
 
-### 4. 讀取策略
-- **全載**：所有 memory 進系統 prompt（小規模可用）
-- **索引**：MEMORY.md 列摘要，按需讀全文（Claude Code 的做法）
-- **語意召回**：embedding 找相關（規模大才需要）
-- **規則召回**：tag/category 過濾
+記憶說 X 存在，用之前先 grep 一下。
 
-### 5. TTL 與失效
-- 永久：用戶身分、團隊習慣
-- 中期：當前專案目標
-- 短期：「升級進行到 phase 3」這種會過期
-- 失效機制：時間 / 條件 / 手動標記
+記憶代表的是「過去某個時間點為真」，不保證「現在為真」。
 
-沒有 TTL 設計 = memory 變垃圾場。
+### 八、隱私的邊界
 
-### 6. 衝突解決
-新事實跟舊 memory 矛盾：
-- 信現況（讀 code / state）
-- 更新或刪除 memory
-- 不要兩邊都留（會精神分裂）
+個人記憶不該寫公司機密，因為它會跨 repo 流動。專案記憶不該寫個人偏好，因為它會被 commit 出去。
 
-### 7. 驗證
-Memory 說 X 存在，用前要 grep 一下。Memory 是「過去某時為真」，不保證「現在為真」。
+邊界清楚比省事精巧重要。
 
-### 8. 隱私邊界
-- User memory 不該寫公司機密（會跨 repo 流動）
-- Project memory 不該寫個人偏好（會 commit 出去）
-- 邊界清楚比節省精巧重要
+## 跟其他面向的牽連
 
-## 跟其他設計軸的耦合
-
-| 設計軸 | 耦合點 |
+| 面向 | 牽連在哪 |
 |---|---|
-| Eval | eval 失敗 → 寫 memory；memory 累積 → eval 驗證有效性。**飛輪核心**。|
-| Planning | plan 該召回類似任務的 memory |
-| Context | memory 召回後塞 context，要看 budget |
-| Hooks | 寫入觸發常用 hook 實作 |
-| Tool | destructive tool 完成後該強制寫 decision memory |
+| 成效評估 | 評估失敗就寫記憶；記憶累積起來，靠評估驗證它還有沒有用。這是整個循環的核心 |
+| 規劃 | 做計畫時該召回類似任務的記憶 |
+| 上下文管理 | 記憶召回之後要塞進上下文，要看額度 |
+| Hook | 寫入的觸發常常用 hook 來實作 |
+| 工具執行 | 有破壞性的工具跑完，該強制寫一筆決策記憶 |
 
-## 反模式
+## 常見的錯誤做法
 
-### 1. Memory 變日誌
-- 什麼都記、不分類、不刪
-- 三個月後召回噪音 > 訊號
-- 要有寫入門檻：「下次會用到嗎？」
+**記憶變成日誌。** 什麼都記、不分類、不刪。三個月後召回的噪音多過訊號。要有寫入的門檻：「下次真的會用到嗎？」
 
-### 2. 沒 TTL 的進度記錄
-- 「升級到 phase 3」永遠留著
-- 升完了還在誤導模型
-- 帶日期 + 完成後刪
+**進度紀錄沒有存活時間。** 「升級到第三階段」永遠留著，升級完了還在誤導模型。要帶日期，完成之後刪掉。
 
-### 3. Memory 跟 code 真相分離
-- Memory 說「使用 ALB」，code 改用 NLB 沒同步
-- 模型按 memory 行動 = 撞牆
-- 用前驗證、用後更新
+**記憶跟程式碼的真相分家。** 記憶說「用 ALB」，但程式碼早就改成 NLB 了沒同步。模型照著記憶行動就會撞牆。用之前驗證，用之後更新。
 
-### 4. 把 memory 當文件
-- 寫長篇大論
-- 模型讀不完、人讀不完
-- Memory 是 hint 不是 manual；長文寫進 docs
+**把記憶當成文件寫。** 寫長篇大論，模型讀不完，人也讀不完。記憶是提示，不是說明書。長文寫進 docs。
 
-### 5. Memory 寫滿個人偏好但沒寫 why
-- 「不要用 yarn」← 為什麼？
-- 沒 why 之後遇到邊界 case 不知能否破例
-- 寫 rule 必附 reason
+**記了偏好但沒記原因。** 寫「不要用 yarn」，但為什麼？沒有原因的話，之後遇到邊界情況不知道能不能破例。寫規則一定要附上理由。
 
-### 6. 全靠 user memory 撐 project knowledge
-- 團隊 / 跨 session 重要的東西放個人 memory
-- 換人接手 = 知識斷層
-- Project-relevant 必須 commit 進 repo
+**全靠個人記憶撐專案知識。** 團隊和跨 session 重要的東西放在個人記憶裡，換人接手就是知識斷層。跟專案相關的必須 commit 進 repo。
 
-### 7. 不分層
-- 個人偏好寫 CLAUDE.md（強迫團隊接受）
-- 團隊規則寫 user memory（其他人看不到）
-- 邊界搞錯整個 memory 系統失效
+**不分層。** 個人偏好寫進 CLAUDE.md，等於強迫團隊接受。團隊規則寫進個人記憶，別人看不到。邊界搞錯，整個記憶系統就失效了。
 
-### 8. Reasoning artifact 落 `/tmp/`（**從 ai-infra-management v1 學到**）
-- AI 跑完 sub-agent 辯論 / draft 推理過程把全文丟 `/tmp/<x>/`
-- `/tmp/` 開機就清 = 跨 session 看不到 = memory 沒落地
-- 本質是「episodic memory（事件記憶）落不對 scope+storage 組合」：應該落 project scope + git tracked file（`decisions/<id>-debate/`），不是 ephemeral 暫存
-- 業主自發補的解：移 `decisions/advise-<advise_id>-debate/` 永久保留
+**推理過程丟在 `/tmp/`。** 這條是從 ai-infra-management 第一版學到的。
 
-### 9. 過度依賴 user-scope auto-memory（**從業主原話「不要把所有東西都存進 Claude MEMORY」學到**）
-- Claude auto-memory（`~/.claude-work/memory`）按 CoALA 分類 = user-scope file-based，**只該裝個人 procedural memory**（你的習慣 / 用詞偏好 / 跨專案紀律）
-- **不該裝**：episodic（事件→`decisions/`）、大量 semantic（事實→`docs/`）、project-scope procedural（團隊規則→git）
-- 全塞 user memory 的代價：換人接手知識斷層、跨專案污染、git 看不到、團隊看不到、無法 audit
-- 寫入前自問：「這條離開我這個人還對嗎？離開這 session 還對嗎？」決定 scope
+AI 跑完 sub-agent 之間的辯論、或草稿的推理過程，把全文丟到 `/tmp/<x>/`。`/tmp/` 開機就清空，跨 session 就看不到了，等於沒存。
 
-### 10. Auto-memory 變終點而非孵化層（**Claude Code 預設行為的結構性傾向**）
-- Claude Code 預設 prompt 鼓勵 AI 看到「值得記住的偏好」就寫 user-scope auto-memory——但沒分流判準告訴 AI「這該存 user memory 還是該升 git docs/」
-- 後果：規則卡在 user memory 永遠不升級，team 接手看不到、跨 fork 不共用
-- 對位機制本身的問題：「per-project user memory」hybrid scope（`~/.claude-work/projects/<path>/memory/`）讓「個人偏好」跟「專案知識」混存，AI 無 scope 判準 → 預設都往這塞
+本質上這是「事件記憶放錯了層級和形式的組合」。它應該放在專案層、存成進 git 的檔案（`decisions/<id>-debate/`），不是丟在暫存區。後來對方自己補的解法是移到 `decisions/advise-<id>-debate/` 永久保留。
+
+**過度依賴個人層的自動記憶。** 這條是從對方原話「不要把所有東西都存進 Claude MEMORY」學到的。
+
+Claude 的自動記憶（`~/.claude-work/memory`）按分類來看是個人層的檔案儲存，它只該裝個人的流程規則：你的習慣、用詞偏好、跨專案的紀律。
+
+不該裝的是：事件記憶（該進 `decisions/`）、大量的事實知識（該進 `docs/`）、專案層的流程規則（該進 git）。
+
+全塞進個人記憶的代價：換人接手知識斷層、跨專案互相污染、git 看不到、團隊看不到、沒辦法稽核。
+
+寫入之前自問兩句：這條離開我這個人還對嗎？離開這個 session 還對嗎？答案決定它該放哪一層。
+
+**自動記憶變成終點，而不是孵化的中繼站。** 這是 Claude Code 預設行為造成的結構性傾向。
+
+Claude Code 預設的 prompt 鼓勵 AI 看到「值得記住的偏好」就寫進個人層的自動記憶，但沒有給分流的判準去告訴 AI「這該存個人記憶，還是該升級進 git 的 docs」。
+
+後果是規則卡在個人記憶裡永遠不升級，團隊接手看不到，別人 fork 也不共用。
+
+機制本身也有問題：「每個專案各自的個人記憶」這種混合層級的設計（`~/.claude-work/projects/<路徑>/memory/`），讓個人偏好和專案知識混在一起存。AI 沒有判準可以分，預設就都往那裡塞。
 
 ---
 
-## Auto-memory 健康使用 pattern：孵化層 vs 成熟層
+## 自動記憶的健康用法：當孵化層，不當終點
 
-user-scope auto-memory 該當「**規則尚未成熟到升 universal rule 的孵化中介層**」，不該當「永久存放規則的終點」：
+個人層的自動記憶該當成「規則還沒成熟到可以升級成通用規則的孵化中繼站」，不該當成永久存放規則的終點。
 
 ```
-踩到某類失敗 → 寫 auto-memory 條目（孵化期）
-            ↓ 累積跑過幾次驗證確實普世
+踩到某類失敗 → 寫一條自動記憶（孵化期）
+            ↓ 累積跑過幾次，確認它真的普遍適用
             ↓
-升 docs/universal-care-rules.md R-N（成熟期 / 跨 fork 共用）
-            ↓ auto-memory 該條目可砍或保留當「個人風格版」
+升級進 docs/universal-care-rules.md 的 R-N（成熟期，跨 fork 共用）
+            ↓ 原本那條自動記憶可以砍掉，也可以留著當個人風格版
 ```
 
-**範例**（從 meta-harness session 學到）：
-- `feedback_no_cross_layer_overreach`：踩過 → 寫 auto-memory → 確認跨類重複適用 → 升 R-8 ✅
-- 升完 universal rule 後 auto-memory 條目仍保留也 OK（個人風格不衝突）
+實際的例子（從 meta-harness 自己的 session 學到）：跨層越權那條，先是踩到，寫進自動記憶，確認在不同類型的情況下都適用，才升級成 R-8。升級之後那條自動記憶留著也沒關係，個人風格跟通用規則不衝突。
 
-**判準（什麼時候該升 git）**：
-- (a) 這條規則離開「我這個人」還對嗎？跨 user 還對 → 升 user-level `~/.claude/CLAUDE.md` 或 universal rule
-- (b) 這條規則離開「這個專案」還對嗎？跨 project 還對 → 升 universal rule
-- (c) 累積踩過幾次都吻合此規則 → 升 git
-- (d) team 接手新人也該看到 → 升 git
+**什麼時候該升級進 git？** 符合下面任一條就該升：
 
-**反向 pattern（避免）**：寫一次 auto-memory 就放著、永遠不 review 升級。這違反設計軸 3 反模式 #10「auto-memory 變終點」。
+- 這條規則離開「我這個人」還對嗎？跨使用者都對的話，升到使用者層的 `~/.claude/CLAUDE.md` 或通用規則。
+- 這條規則離開「這個專案」還對嗎？跨專案都對的話，升成通用規則。
+- 累積踩過好幾次，每次都吻合這條規則。
+- 團隊新來的人也該看到。
 
+要避免的反向模式：寫一次自動記憶就放著，永遠不回頭 review、不升級。這就是上面講的「自動記憶變成終點」。

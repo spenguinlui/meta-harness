@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>meta-harness · 維護者版</title>
-<meta name="description" content="給擴充 meta-harness 方法學本身的人：架構、wiring、怎麼加設計軸 / R-N / skill、軸 13 自驗閘門、治理紀律。" />
+<meta name="description" content="給要擴充 meta-harness 這套方法本身的人：架構長什麼樣、怎麼加設計面向 / 規則 / skill、自我驗證怎麼擋關、有哪些不能破的原則。" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -26,8 +26,8 @@
       <nav class="nav-links">
         <a href="#arch">架構</a>
         <a href="#extend">擴充</a>
-        <a href="#self-verify">軸 13</a>
-        <a href="#governance">治理</a>
+        <a href="#self-verify">自我驗證</a>
+        <a href="#governance">原則</a>
       </nav>
       <a class="btn-signup" href="https://github.com/spenguinlui/meta-harness">GitHub</a>
     </div>
@@ -39,13 +39,13 @@
 <!-- ============== HERO ============== -->
 <section class="hero">
   <div class="hero-inner">
-    <h1>Extend the <strong>methodology</strong>,<br/>not just the workspace.</h1>
+    <h1>要改的是<strong>這套方法本身</strong>，<br/>不只是你的工作區。</h1>
     <p class="lede">
-      給<strong>擴充 meta-harness 方法學本身</strong>的人：加新設計軸、寫新 universal rule、加 skill / 模式、改 prescription / manual template、補軸 13 自驗 scorer。
-      <br/><span style="color:var(--ink-light)">想「用」這套流程設計你的 target → 切到 <a href="index.html">使用者版</a></span>
+      這頁給要擴充 meta-harness 本身的人：加一個新的設計面向、寫一條新規則、加一種模式或 skill、改設計方案和說明書的格式、補自我驗證的腳本。
+      <br/><span style="color:var(--ink-light)">只是想用這套流程設計你自己的工具？切到<a href="index.html">使用者版</a>。</span>
     </p>
     <div class="search">
-      <input id="kb-search" type="search" placeholder="搜尋主題…（例：加設計軸、R-7、scorer、dog food）" aria-label="搜尋" />
+      <input id="kb-search" type="search" placeholder="搜尋主題…（例：加設計面向、R-7、驗證腳本、自己驗自己）" aria-label="搜尋" />
       <button class="search-btn" aria-label="search">→</button>
     </div>
   </div>
@@ -55,8 +55,8 @@
 <section id="topics">
   <div class="container">
     <div class="section-head">
-      <h2>Maintainer's <strong>Knowledgebase</strong></h2>
-      <p>六張卡片：架構地圖、三個擴充入口、軸 13 自驗閘門、治理紀律與設計依據。</p>
+      <h2>維護者<strong>該知道的事</strong></h2>
+      <p>六張卡片：架構長什麼樣、三個擴充入口、自我驗證怎麼擋關、有哪些原則不能破以及為什麼。</p>
     </div>
 
     <div class="kb-grid" id="kb-grid">
@@ -65,14 +65,14 @@
       <article class="kb-card blue" id="arch">
         <div class="kb-card-head">
           <div class="kb-dot"></div>
-          <div class="kb-card-title">架構概覽 / Architecture</div>
+          <div class="kb-card-title">架構概覽</div>
         </div>
         <ul class="kb-list">
-          <li><strong>身分層</strong>：<code>.claude/skills/consultant/</code>（建築師人格 + 6 步流程）+ <code>document/</code> 雙語說明書</li>
-          <li><strong>知識層</strong>：13 設計軸 + R-1~R-12 + lessons</li>
-          <li><strong>前門層</strong>：<code>.claude/commands/</code> 三 slash command + <code>.claude/hooks/</code> 強制規則</li>
-          <li><strong>自驗層</strong>：<code>experiments/meta-harness-eval/</code>（13 scorer / 216 check / 100% coverage）</li>
-          <li>不是 framework — 是「顧問身分 + pattern library + 對話流程」</li>
+          <li>角色層：<code>.claude/skills/consultant/</code> 定義顧問角色和六步流程，<code>document/</code> 產雙語說明書</li>
+          <li>知識層：13 個設計面向、R-1 到 R-12、踩過的坑</li>
+          <li>入口層：<code>.claude/commands/</code> 的指令，加上 <code>.claude/hooks/</code> 強制規則</li>
+          <li>驗證層：<code>experiments/meta-harness-eval/</code>，即時數字看 <code>coverage.json</code></li>
+          <li>它不是 framework，是一個顧問角色、一份手法清單、一段對話流程</li>
         </ul>
         <div class="kb-card-foot">
           <span>4 層</span>
@@ -80,18 +80,18 @@
         </div>
       </article>
 
-      <!-- 2. 加設計軸 -->
+      <!-- 2. 加設計面向 -->
       <article class="kb-card violet" id="extend">
         <div class="kb-card-head">
           <div class="kb-dot"></div>
-          <div class="kb-card-title">加設計軸 / Add Design Axis</div>
+          <div class="kb-card-title">加一個設計面向</div>
         </div>
         <ul class="kb-list">
-          <li>建 <code>docs/design-axes/&lt;n&gt;-&lt;name&gt;.md</code>（決策選項 + 耦合 + 反模式 + 案例）</li>
+          <li>建 <code>docs/design-axes/&lt;編號&gt;-&lt;名稱&gt;.md</code>，寫清楚有哪些選項、跟別的面向怎麼牽連、常見錯誤做法、實際案例</li>
           <li>在 <code>docs/design-axes.md</code> 索引加一條</li>
-          <li>升標題的軸數，更新 <code>healthcheck.md</code> 引用</li>
-          <li><strong>正交檢查</strong>：別跟現有 13 軸重疊（如 7 vs 11、9 vs 12 邊界已劃清）</li>
-          <li>跑 <code>run-self-verify.sh</code> 確認全綠（軸數 drift 會被抓）</li>
+          <li>把標題裡的總數加一，順手更新 <code>healthcheck.md</code> 裡的引用</li>
+          <li>確認不跟現有的重疊。第 7 和第 11、第 9 和第 12 的界線已經劃清楚了，可參考</li>
+          <li>跑 <code>run-self-verify.sh</code> 確認全過，總數對不上會被抓出來</li>
         </ul>
         <div class="kb-card-foot">
           <span>5 步</span>
@@ -103,17 +103,17 @@
       <article class="kb-card red">
         <div class="kb-card-head">
           <div class="kb-dot"></div>
-          <div class="kb-card-title">加 R-N / Universal Rule</div>
+          <div class="kb-card-title">加一條規則</div>
         </div>
         <ul class="kb-list">
-          <li>在 <code>docs/universal-care-rules.md</code> 加 <code>## R-N</code></li>
-          <li><strong>判準</strong>：離開這個 target / 這個人還成立嗎？跨 target 才入 universal</li>
-          <li>commit message 必答「<strong>為什麼不能刪源頭</strong>」（R-7：fix root cause，不固化壞流程）</li>
-          <li>未通過跨 target 驗證 → 先落 <code>docs/lessons.md</code>（洞察，非強制規則）</li>
-          <li>自驗會跑 <code>test-universal-care-rules-schema.sh</code> 驗 R-N 編號連續</li>
+          <li>在 <code>docs/universal-care-rules.md</code> 加一個 <code>## R-N</code> 段落</li>
+          <li>判斷標準：換一個專案、換一個人，這條還成立嗎？跨得過去才收進通用規則</li>
+          <li>commit message 要回答「為什麼不能直接把問題的源頭砍掉」。這是 R-7：先找根本原因，不要疊規則掩蓋症狀</li>
+          <li>還沒在別的專案上驗證過的，先寫進 <code>docs/lessons.md</code> 當心得，不要當強制規則</li>
+          <li>自驗會跑 <code>test-universal-care-rules-schema.sh</code>，檢查編號是否連續</li>
         </ul>
         <div class="kb-card-foot">
-          <span>4 步 + R-7 自問</span>
+          <span>4 步，加上 R-7 的自問</span>
           <span class="level"><a href="docs/universal-care-rules.html">→ R-1~R-12</a></span>
         </div>
       </article>
@@ -122,15 +122,15 @@
       <article class="kb-card green">
         <div class="kb-card-head">
           <div class="kb-dot"></div>
-          <div class="kb-card-title">加模式 / Add Skill</div>
+          <div class="kb-card-title">加一種模式或 skill</div>
         </div>
         <ul class="kb-list">
-          <li>建 <code>.claude/skills/&lt;name&gt;/SKILL.md</code>（frontmatter <code>name</code> / <code>description</code> 必填）</li>
-          <li>在 consultant skill 觸發表加一列</li>
-          <li>必要時掛進 6 步流程（如 Step 5.5 / Step 6）</li>
-          <li>加 <code>.claude/commands/&lt;name&gt;.md</code> 前門</li>
-          <li>仿 <code>document</code> skill 的結構與雙語自驗循環</li>
-          <li>scorer：<code>test-skill-spec-format.sh</code> 抓 frontmatter / 引用對齊</li>
+          <li>建 <code>.claude/skills/&lt;名稱&gt;/SKILL.md</code>，frontmatter 的 <code>name</code> 和 <code>description</code> 必填</li>
+          <li>在 consultant skill 的觸發表加一列</li>
+          <li>需要的話掛進六步流程裡</li>
+          <li>加一個 <code>.claude/commands/&lt;名稱&gt;.md</code> 當入口</li>
+          <li>結構可以照抄 <code>document</code> skill</li>
+          <li>驗證腳本用 <code>test-skill-spec-format.sh</code>，它會檢查 frontmatter 和引用有沒有對上</li>
         </ul>
         <div class="kb-card-foot">
           <span>5 步</span>
@@ -142,18 +142,18 @@
       <article class="kb-card amber" id="self-verify">
         <div class="kb-card-head">
           <div class="kb-dot"></div>
-          <div class="kb-card-title">軸 13 自驗閘門 / Self-verify</div>
+          <div class="kb-card-title">自我驗證怎麼擋關</div>
         </div>
         <ul class="kb-list">
-          <li><code>bash experiments/meta-harness-eval/run-self-verify.sh</code> → 必 13/13 全綠</li>
-          <li>Stop hook 會擋住 session 結束（drift 修掉才放行）</li>
-          <li>13 支 scorer 涵蓋 cross-references / prescription / target coverage / 設計軸 doc / healthcheck 一致性 / SKILL frontmatter / R-N schema / Stop hook 行為 / runner 完整性 / slash command 流 / consultant 核心 vocab / coverage.json schema</li>
-          <li>寫新 scorer 用四 Pattern 之一：A 真實來源 + drift / B 觸發 + 斷言 / C scorer + METRICS / D 快照 + diff</li>
-          <li><strong>dog food 三層閉環</strong>：atdd-task 自驗 ← meta-harness 規定自己也得自驗 ← CONTRIBUTING（鞋匠的孩子有鞋穿，是工程事實）</li>
+          <li>跑 <code>bash experiments/meta-harness-eval/run-self-verify.sh</code>，必須全過</li>
+          <li>沒過的話 Stop hook 會擋住 session 結束，修好才放行</li>
+          <li>驗證腳本涵蓋的範圍：交叉引用、設計方案格式、各專案的覆蓋率、設計面向文件、指令引用的數字一不一致、SKILL frontmatter、規則編號、Stop hook 行為、入口腳本完整性、指令流程、顧問用詞、coverage.json 格式</li>
+          <li>寫新腳本時挑一種驗法：A 比對設定是否一致、B 觸發後看有沒有反應、C 跑分評輸出品質、D 比對前後差異</li>
+          <li>自己驗自己是三層的：atdd-task 有自驗，是因為 meta-harness 規定自己也得自驗，而這條規定寫在 CONTRIBUTING 裡</li>
         </ul>
         <div class="kb-card-foot">
-          <span>13 scorer · 216 check</span>
-          <span class="level"><a href="docs/design-axes/13-self-verify-coverage.html">→ 軸 13</a></span>
+          <span>即時數字見 coverage.json</span>
+          <span class="level"><a href="docs/design-axes/13-self-verify-coverage.html">→ 細節</a></span>
         </div>
       </article>
 
@@ -161,32 +161,32 @@
       <article class="kb-card slate" id="governance">
         <div class="kb-card-head">
           <div class="kb-dot"></div>
-          <div class="kb-card-title">治理四條 / Governance</div>
+          <div class="kb-card-title">四條不能破的原則</div>
         </div>
         <ul class="kb-list">
-          <li><strong>R-7</strong>：不固化壞流程、fix 先 root cause（疊蓋症狀 = 規則膨脹陷阱）</li>
-          <li><strong>R-8</strong>：不跨層越權（method-level 規則別寫進 target-specific 文件）</li>
-          <li><strong>R-9</strong>：framework vs 任務內容分流</li>
-          <li><strong>R-12</strong>：target 落地檔 self-contained（<em>對 meta-harness 自身不適用</em>——R-N / 設計軸是這裡的 ubiquitous language）</li>
-          <li>顧問而非腳手架：13 軸耦合、沒對誰都剛好的標準模板</li>
-          <li>規則分層：通則（R-N）/ 流程（consultant-flow）/ 格式（template）/ 反模式 分開放</li>
+          <li>R-7：先找根本原因再修。疊規則掩蓋症狀，最後會變成一堆規則</li>
+          <li>R-8：自家層的問題在自家層修。方法層的規則不要寫進針對特定專案的文件</li>
+          <li>R-9：框架層歸框架層，任務內容歸任務內容</li>
+          <li>R-12：寫進目標專案的檔案要能獨立看懂。這條對 meta-harness 自己不適用，因為規則編號和設計面向就是這裡的共通語言</li>
+          <li>為什麼是顧問不是產生器：13 個面向彼此牽連，沒有一組模板對所有人都剛好</li>
+          <li>規則分層擺放：通用規則、流程、格式、常見錯誤做法各放各的地方</li>
         </ul>
         <div class="kb-card-foot">
-          <span>4 條 + 設計哲學</span>
+          <span>4 條原則加上設計理由</span>
           <span class="level"><a href="CONTRIBUTING.html#設計依據為什麼這樣">→ 詳解</a></span>
         </div>
       </article>
 
-      <div class="kb-empty">沒找到對應主題——試試別的關鍵字，或 <a href="https://github.com/spenguinlui/meta-harness">直接看 source</a>。</div>
+      <div class="kb-empty">沒找到對應主題。換個關鍵字試試，或<a href="https://github.com/spenguinlui/meta-harness">直接看原始碼</a>。</div>
     </div>
   </div>
 </section>
 
 <!-- ============== CTA ============== -->
 <section class="cta-strip">
-  <h3>動手前的 checklist</h3>
+  <h3>動手前先過一遍這四件事</h3>
   <p>
-    grep root cause（R-7）· 正交確認別跟現有軸 / R-N 重疊 · 升 universal 前先在 ≥ 2 個 target 驗證 · commit message 自答「為什麼不能刪源頭」
+    先 grep 找出根本原因（R-7）· 確認不跟現有的面向或規則重疊 · 要升成通用規則前，先在至少兩個專案上驗證過 · commit message 裡回答「為什麼不能把源頭砍掉」
   </p>
   <div class="cta-row">
     <a class="btn btn-primary" href="https://github.com/spenguinlui/meta-harness">→ Fork repo</a>
@@ -201,7 +201,7 @@
   <div class="container">
     <div>
       <div class="brand" style="margin-bottom:6px"><div class="logo"></div><div class="name">meta<em>·</em>harness</div></div>
-      <div>MIT · 擴充方法學本身</div>
+      <div>MIT · 擴充這套方法本身</div>
     </div>
     <div class="foot-toggle">
       <span style="color:var(--ink-mute)">你正在看：</span>
