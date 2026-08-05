@@ -144,7 +144,7 @@ R-10「先自驗」怎麼物理化？最小基建只有三塊，都可以照抄�
 |---|---|---|
 | 一支 `test-<feature>.sh` | [`test-prescription-template-structure.sh`](../experiments/meta-harness-eval/test-prescription-template-structure.sh)（簡單 Pattern A：grep 關鍵結構在不在）| 驗某條 wiring 沒漂走 |
 | `run-self-verify.sh` | [`run-self-verify.sh`](../experiments/meta-harness-eval/run-self-verify.sh) | 單一 entry point，跑所有 `test-*.sh`，回 0 / 1 |
-| Stop hook | [`self-verify-on-stop.sh`](../.claude/hooks/self-verify-on-stop.sh) + [`settings.json`](../.claude/settings.json) 的 `Stop` 註冊 | drift 時擋住 session 結束，讓「沒自驗就收工」變成不可能 |
+| Stop hook | [`self-verify-on-stop.sh`](../.claude/hooks/self-verify-on-stop.sh) + [`settings.json`](../.claude/settings.json) 的 `Stop` 註冊 | 動過架構檔的那輪才跑自驗，drift 時擋住 session 結束，讓「改了沒驗就收工」變成不可能 |
 
 先做後兩塊基建（一次性），之後每加一條 wiring，只多寫一支 `test-*.sh`。
 

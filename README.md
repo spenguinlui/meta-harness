@@ -150,7 +150,7 @@ meta-harness 設計出來的 target repo 服務兩種人：
 
 **你拿回控制驗收的時機**：Step 1（你提需求）、Step 3（review 設計圖）、Step 5 的「跨 session 試用」、Step 6（飛輪回顧）。
 
-**自動關卡**：Step 4.5（headless 自驗 ≥ 3 次通過才往下）+ 軸 13 Stop hook（drift 就擋 session 結束）。這兩個是**物理閘門**——R-10「可機驗 outcome 必先自驗再交付」的執行層，不能繞過。
+**自動關卡**：Step 4.5（headless 自驗 ≥ 3 次通過才往下）+ 軸 13 Stop hook（**動過架構檔**才跑自驗；drift 就擋 session 結束）。這兩個是**物理閘門**——R-10「可機驗 outcome 必先自驗再交付」的執行層，不能繞過。純諮詢／純閱讀的 session 不會被罰跑套件（指紋比對；`META_HARNESS_VERIFY=always` 可強制全驗）。
 
 ---
 
@@ -219,7 +219,7 @@ Tool / Context / Memory / Planning / Execution / Safety / Hooks / Eval / Observa
 - `experiments/<target>-eval/run-self-verify.sh` — 單一 entry point，跑所有 `test-*.sh`
 - `experiments/<target>-eval/test-*.sh` — 各 wiring 對應 scorer（依四 Pattern 寫）
 - `experiments/<target>-eval/coverage.json` — 數據面板（scorers／check 總數／mechanism 覆蓋率）
-- `.claude/hooks/self-verify-on-stop.sh` + settings.json Stop 註冊 — drift 物理擋 session 結束
+- `.claude/hooks/self-verify-on-stop.sh` + settings.json Stop 註冊 — 動過架構才驗，drift 物理擋 session 結束
 
 **四 Pattern 分類**（每支 `test-*.sh` 必歸屬其一）：
 

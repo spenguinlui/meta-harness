@@ -30,7 +30,7 @@ experiments/<target>-eval/
   ├── test-*.sh                # scorers：每支對應一個 wiring / mechanism
   └── coverage.json            # 數據面板（schema 見 §3）
 
-.claude/hooks/self-verify-on-stop.sh   # Stop hook：drift → exit 2 擋 session 結束
+.claude/hooks/self-verify-on-stop.sh   # Stop hook：動過架構才驗；drift → exit 2 擋 session 結束
 .claude/settings.json                  # 註冊 Stop hook
 ```
 

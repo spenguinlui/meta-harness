@@ -23,6 +23,9 @@ experiments/*/runs/
 # ScheduleWakeup runtime 狀態 — 不上 git
 .claude/scheduled_tasks.lock
 
+# Stop hook 的架構指紋（上次通過自驗時的狀態）— 本機 runtime，不上 git
+/.claude/.state/
+
 # /upkeep 每週維生產出的健康時序 log（含本機路徑 / 執行結果）— 本機 runtime，不上 git
 /experiments/meta-harness-eval/upkeep-log.md
 

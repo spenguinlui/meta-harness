@@ -290,7 +290,7 @@ top-level 新目錄（含入版控的空檔確保結構存在）。
 **串成硬規則**（target 端施作）：
 
 - `experiments/<target>-eval/run-self-verify.sh` 為**單一 entry point**：跑所有 `test-*.sh`，回 0 / 1。`/done`、Stop hook、CI 都叫同一個。
-- `.claude/hooks/self-verify-on-stop.sh` 註冊到 `settings.json` 的 `Stop`：drift → exit 2 擋住 Claude 結束本輪。
+- `.claude/hooks/self-verify-on-stop.sh` 註冊到 `settings.json` 的 `Stop`：drift → exit 2 擋住 Claude 結束本輪。**觸發條件**：架構檔（wiring / 文件 / scorer）指紋變了才跑套件；純諮詢、純閱讀的 session 靜默放行——閘門管的是「改了東西沒驗」，不是「每次收工都罰跑一次」。指紋只在通過後才寫入，失敗的改動下輪仍會被抓。
 - target 端先做這兩條基建（一次性），之後每加一個 V<n>=script，只多寫一支 `test-*.sh`。
 
 **參考實作**（首落地 target）：`atdd-task` repo

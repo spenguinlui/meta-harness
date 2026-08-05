@@ -150,7 +150,7 @@ Design axis 12 "Human Interface" is the layer specifically for humans (translati
 
 **When you take back control for acceptance**: Step 1 (state needs), Step 3 (review blueprint), Step 5's "across-session trial use", Step 6 (flywheel retrospective).
 
-**Automatic gates**: Step 4.5 (headless self-verify ≥ 3 times passing before proceeding) + axis 13 Stop hook (drift blocks session end). These are **physical gates** — the execution layer of R-10 "machine-verifiable outcomes must self-verify before delivery", not bypassable.
+**Automatic gates**: Step 4.5 (headless self-verify ≥ 3 times passing before proceeding) + axis 13 Stop hook (runs the suite **only when architecture files changed**; drift blocks session end). These are **physical gates** — the execution layer of R-10 "machine-verifiable outcomes must self-verify before delivery", not bypassable. Consult-only / read-only sessions aren't taxed with a suite run (fingerprint comparison; `META_HARNESS_VERIFY=always` forces a full run).
 
 ---
 
@@ -219,7 +219,7 @@ Every target repo (meta-harness itself included) lands a three-piece kit:
 - `experiments/<target>-eval/run-self-verify.sh` — single entry point, runs all `test-*.sh`
 - `experiments/<target>-eval/test-*.sh` — wiring-specific scorers (written per the 4 Patterns)
 - `experiments/<target>-eval/coverage.json` — data dashboard (scorers / check totals / mechanism coverage)
-- `.claude/hooks/self-verify-on-stop.sh` + settings.json Stop registration — drift physically blocks session end
+- `.claude/hooks/self-verify-on-stop.sh` + settings.json Stop registration — runs only when architecture files changed; drift physically blocks session end
 
 **Four Pattern classification** (every `test-*.sh` must belong to one):
 
